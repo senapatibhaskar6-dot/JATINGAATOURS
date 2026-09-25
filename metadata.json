@@ -1,0 +1,6 @@
+{
+  "name": "Jatingaa Tours - All-India Local Tourism Aggregator",
+  "description": "Connecting travelers directly with verified local tour operators, homestays, and guides across India with a transparent 5% platform fee and direct contact unlock.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
