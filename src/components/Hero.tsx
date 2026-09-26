@@ -1,40 +1,79 @@
-import React, { useState, useEffect } from 'react';
-import { Search, Compass, Users, Sparkles, MapPin, ShieldCheck, ChevronRight, ArrowRight } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Search, Compass, Users, Sparkles, MapPin, ShieldCheck, ChevronRight, ArrowRight, Camera, Upload, Sun, RotateCcw, X, ChevronLeft } from 'lucide-react';
 
-// Curated high-resolution imagery showcasing Assam tea gardens, Brahmaputra, Meghalaya hills & national heritage
-const BACKGROUND_DESTINATIONS = [
+// Local high-fidelity photography assets
+import northeastTeaImg from '../assets/images/hero_jatingaa_landscape_1790299532077.jpg';
+import kazirangaImg from '../assets/images/scenic_nature_hero_1790322395376.jpg';
+import vibrantHillsImg from '../assets/images/hero_vibrant_landscape_1790322285172.jpg';
+import ladakhImg from '../assets/images/tour_ladakh_himalayas_1790299546121.jpg';
+import keralaImg from '../assets/images/tour_kerala_backwaters_1790299559090.jpg';
+import rajasthanImg from '../assets/images/tour_rajasthan_heritage_1790299571893.jpg';
+
+// Exactly 8 curated high-resolution destinations representing the diverse beauty of India
+export const BACKGROUND_DESTINATIONS = [
   {
-    id: 'northeast-tea-hills',
-    title: 'Emerald Tea Gardens & Misty Hills',
-    region: 'Assam & Meghalaya, Northeast India',
-    tag: 'NORTHEAST UNTAMED',
-    // High-res Unsplash scenic lush green landscape & tea gardens of Northeast India
-    imageUrl: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=2071&auto=format&fit=crop',
-    alt: 'Lush green tea estate and mist covered hills of Assam and Meghalaya',
+    id: 'assam-tea-gardens',
+    title: 'Emerald Tea Estates of Assam',
+    region: 'Jorhat & Upper Assam',
+    tag: 'NORTHEAST TEA HERITAGE',
+    imageUrl: northeastTeaImg,
+    alt: 'Lush green tea gardens and rolling hills of Assam',
   },
   {
-    id: 'brahmaputra-valleys',
-    title: 'Brahmaputra River Valleys & Living Bridges',
-    region: 'Kaziranga & Cherrapunji',
-    tag: 'SACRED WATERS & FORESTS',
+    id: 'brahmaputra-kaziranga',
+    title: 'Brahmaputra Basin & Kaziranga Sanctuary',
+    region: 'Kaziranga & Brahmaputra River',
+    tag: 'UNESCO WILDLIFE & RIVERS',
+    imageUrl: kazirangaImg,
+    alt: 'Scenic Brahmaputra river valley, lush greenery and wildlife reserve',
+  },
+  {
+    id: 'meghalaya-living-root',
+    title: 'Living Root Bridges & Nohkalikai Waterfalls',
+    region: 'Cherrapunji & Mawlynnong, Meghalaya',
+    tag: 'RAINFOREST WONDERS',
     imageUrl: 'https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?q=80&w=2070&auto=format&fit=crop',
-    alt: 'Scenic Brahmaputra river canyon and pristine waterfall valleys',
+    alt: 'Sacred waterfalls and living root bridges in Meghalaya mist valleys',
   },
   {
-    id: 'himalayan-passes',
-    title: 'High-Altitude Peaks & Monasteries',
-    region: 'Arunachal, Sikkim & Ladakh',
+    id: 'majuli-river-island',
+    title: 'Majuli River Island & Vaishnavite Satras',
+    region: 'Majuli, Brahmaputra Island',
+    tag: 'CULTURAL RIVER ISLAND',
+    imageUrl: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=2071&auto=format&fit=crop',
+    alt: 'World largest inhabited river island on the Brahmaputra at sunset',
+  },
+  {
+    id: 'arunachal-tawang',
+    title: 'Tawang Monasteries & Sela Pass',
+    region: 'Arunachal Pradesh, Eastern Himalayas',
     tag: 'HIMALAYAN FRONTIER',
-    imageUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=2070&auto=format&fit=crop',
-    alt: 'Majestic mountain ranges and pristine valleys',
+    imageUrl: vibrantHillsImg,
+    alt: 'Mighty snow-capped mountain passes and mountain streams of Arunachal',
   },
   {
-    id: 'heritage-wonders',
-    title: 'Living Heritage & Ancient Architecture',
-    region: 'Heritage Citadels & Sacred Temples',
-    tag: 'INCREDIBLE INDIA HERITAGE',
-    imageUrl: 'https://images.unsplash.com/photo-1599661046289-e31897846e41?q=80&w=2070&auto=format&fit=crop',
-    alt: 'Iconic royal heritage and ancient stone craftsmanship across India',
+    id: 'ladakh-pangong',
+    title: 'Ladakh High-Altitude Passes & Pangong Lake',
+    region: 'Ladakh, Zanskar & Spiti',
+    tag: 'ROOF OF THE WORLD',
+    imageUrl: ladakhImg,
+    alt: 'Deep blue alpine waters of Pangong Tso surrounded by rugged peaks',
+  },
+  {
+    id: 'kerala-backwaters',
+    title: 'Alleppey Palm Backwaters & Munnar Hills',
+    region: 'Alleppey & Munnar, Kerala',
+    tag: 'SOUTH INDIA WATERWAYS',
+    imageUrl: keralaImg,
+    alt: 'Traditional wooden houseboat gliding through palm fringed canals',
+  },
+  {
+    id: 'rajasthan-heritage',
+    title: 'Golden Sandstone Citadels & Thar Desert',
+    region: 'Jaisalmer & Jodhpur, Rajasthan',
+    tag: 'ROYAL HERITAGE & DESERT',
+    imageUrl: rajasthanImg,
+    alt: 'Majestic golden sandstone fort rising over royal desert landscape',
   },
 ];
 
@@ -64,14 +103,25 @@ export const Hero: React.FC<HeroProps> = ({
 }) => {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [internalSearch, setInternalSearch] = useState(searchQuery);
+  const [customImage, setCustomImage] = useState<string | null>(null);
+  const [isCustomizing, setIsCustomizing] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  
+  // 'bright' = open & very clear image (low dark overlay)
+  // 'balanced' = moderate overlay
+  // 'high-contrast' = dark overlay for maximum reading comfort
+  const [overlayIntensity, setOverlayIntensity] = useState<'bright' | 'balanced' | 'high-contrast'>('balanced');
+  
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Auto-transition background imagery every 7 seconds
+  // Auto-transition background imagery every 6.5 seconds through all 8 destinations
   useEffect(() => {
+    if (customImage || isPaused) return;
     const timer = setInterval(() => {
       setActiveImageIndex((prevIndex) => (prevIndex + 1) % BACKGROUND_DESTINATIONS.length);
-    }, 7000);
+    }, 6500);
     return () => clearInterval(timer);
-  }, []);
+  }, [customImage, isPaused]);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -81,43 +131,103 @@ export const Hero: React.FC<HeroProps> = ({
     onExploreClick();
   };
 
-  const currentDestination = BACKGROUND_DESTINATIONS[activeImageIndex];
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (event.target?.result) {
+          setCustomImage(event.target.result as string);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handlePrevImage = () => {
+    setCustomImage(null);
+    setActiveImageIndex((prev) => (prev - 1 + BACKGROUND_DESTINATIONS.length) % BACKGROUND_DESTINATIONS.length);
+  };
+
+  const handleNextImage = () => {
+    setCustomImage(null);
+    setActiveImageIndex((prev) => (prev + 1) % BACKGROUND_DESTINATIONS.length);
+  };
+
+  const safeIndex =
+    typeof activeImageIndex === 'number' &&
+    activeImageIndex >= 0 &&
+    activeImageIndex < BACKGROUND_DESTINATIONS.length
+      ? activeImageIndex
+      : 0;
+
+  const currentDestination = BACKGROUND_DESTINATIONS[safeIndex] || BACKGROUND_DESTINATIONS[0];
 
   return (
-    <section className="relative w-full min-h-[90vh] lg:min-h-[88vh] flex items-center justify-center overflow-hidden bg-stone-950 text-white select-none">
+    <section
+      className="relative w-full min-h-[90vh] lg:min-h-[88vh] flex items-center justify-center overflow-hidden bg-stone-950 text-white select-none"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+    >
       
       {/* ========================================================================= */}
-      {/* 1. VISUAL BACKGROUND LAYER (Lush Green Northeast & National Heritage)    */}
+      {/* 1. VISUAL BACKGROUND LAYER (8 DIVERSE HIGHLIGHTS ACROSS INDIA)             */}
       {/* ========================================================================= */}
       <div className="absolute inset-0 z-0">
-        {BACKGROUND_DESTINATIONS.map((dest, index) => (
-          <div
-            key={dest.id}
-            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-              index === activeImageIndex ? 'opacity-100 scale-100' : 'opacity-0 scale-105 pointer-events-none'
-            }`}
-          >
+        {customImage ? (
+          <div className="absolute inset-0 transition-opacity duration-700 ease-in-out opacity-100 scale-100">
             <img
-              src={dest.imageUrl}
-              alt={dest.alt}
+              src={customImage}
+              alt="Custom uploaded background"
               className="w-full h-full object-cover object-center transform transition-transform duration-[8000ms] ease-out scale-105"
-              loading={index === 0 ? 'eager' : 'lazy'}
             />
           </div>
-        ))}
+        ) : (
+          BACKGROUND_DESTINATIONS.map((dest, index) => (
+            <div
+              key={dest.id}
+              className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+                index === activeImageIndex ? 'opacity-100 scale-100' : 'opacity-0 scale-105 pointer-events-none'
+              }`}
+            >
+              <img
+                src={dest.imageUrl}
+                alt={dest.alt}
+                className="w-full h-full object-cover object-center transform transition-transform duration-[8000ms] ease-out scale-105"
+                loading={index === 0 ? 'eager' : 'lazy'}
+                onError={(e) => {
+                  (e.currentTarget as HTMLImageElement).src = northeastTeaImg;
+                }}
+              />
+            </div>
+          ))
+        )}
 
         {/* ========================================================================= */}
-        {/* 2. READABILITY OVERLAY (Subtle Dark Gradient & Vignette Scrim)            */}
-        {/* Deep Charcoal & Forest Green tint guarantees crisp white text contrast    */}
+        {/* 2. READABILITY OVERLAY (Adjustable brightness & openness)                 */}
         {/* ========================================================================= */}
-        {/* Central dark scrim for text clarity */}
-        <div className="absolute inset-0 bg-stone-950/75 sm:bg-stone-950/70 backdrop-blur-[0.5px]" />
-        
-        {/* Vertical gradient: darker on top and bottom for smooth blending */}
-        <div className="absolute inset-0 bg-gradient-to-b from-stone-950/90 via-transparent to-stone-950/95" />
-        
-        {/* Subtle radial forest green brand illumination */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(11,70,25,0.35)_0%,rgba(12,10,9,0.85)_100%)] pointer-events-none" />
+        {overlayIntensity === 'bright' && (
+          // Bright / Open mode: Image is vivid and very open
+          <div className="absolute inset-0 bg-stone-950/40 backdrop-blur-[0px] transition-all duration-500" />
+        )}
+
+        {overlayIntensity === 'balanced' && (
+          // Balanced mode: Clear image + crisp text readability
+          <>
+            <div className="absolute inset-0 bg-stone-950/60 backdrop-blur-[0.5px] transition-all duration-500" />
+            <div className="absolute inset-0 bg-gradient-to-b from-stone-950/80 via-transparent to-stone-950/90" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(11,70,25,0.25)_0%,rgba(12,10,9,0.75)_100%)] pointer-events-none" />
+          </>
+        )}
+
+        {overlayIntensity === 'high-contrast' && (
+          // High Contrast mode: Deep scrim for maximal focus
+          <>
+            <div className="absolute inset-0 bg-stone-950/80 backdrop-blur-[0.5px] transition-all duration-500" />
+            <div className="absolute inset-0 bg-gradient-to-b from-stone-950/95 via-stone-950/60 to-stone-950/95" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(11,70,25,0.35)_0%,rgba(12,10,9,0.85)_100%)] pointer-events-none" />
+          </>
+        )}
       </div>
 
       {/* ========================================================================= */}
@@ -179,7 +289,7 @@ export const Hero: React.FC<HeroProps> = ({
         {/* ========================================================================= */}
         <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto">
           
-          {/* Primary CTA: Search / Browse Tours */}
+          {/* Primary CTA: Search Tours */}
           <button
             type="button"
             onClick={onExploreClick}
@@ -203,38 +313,225 @@ export const Hero: React.FC<HeroProps> = ({
 
         </div>
 
-        {/* Trust Badges / Assurance Row */}
-        <div className="mt-12 flex flex-wrap items-center justify-center gap-4 sm:gap-8 text-xs text-stone-300">
-          <div className="flex items-center gap-2">
+        {/* Current Active Destination Banner (Highlights the 8 destinations with count) */}
+        <div className="mt-10 flex flex-wrap items-center justify-center gap-3 sm:gap-6 text-xs text-stone-200">
+          <div className="flex items-center gap-2 bg-black/40 px-3 py-1.5 rounded-full border border-white/15 backdrop-blur-md">
+            <MapPin className="w-4 h-4 text-[#f39c12]" />
+            <span className="font-semibold text-white">
+              {customImage ? 'Custom Photo' : `${currentDestination?.title || 'Incredible India'}`}
+            </span>
+            <span className="text-[10px] text-amber-300 bg-white/10 px-1.5 py-0.5 rounded font-mono">
+              {activeImageIndex + 1}/8
+            </span>
+          </div>
+
+          <div className="hidden sm:flex items-center gap-2 bg-black/40 px-3 py-1.5 rounded-full border border-white/15 backdrop-blur-md">
             <ShieldCheck className="w-4 h-4 text-emerald-400" />
             <span>100% Verified Local Hosts</span>
           </div>
-          <span className="hidden sm:inline text-white/30">•</span>
-          <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-[#f39c12]" />
-            <span>Transparent 5% Platform Fee</span>
-          </div>
-          <span className="hidden sm:inline text-white/30">•</span>
-          <div className="flex items-center gap-2">
-            <MapPin className="w-4 h-4 text-teal-400" />
-            <span>{currentDestination.region}</span>
+
+          <div className="hidden sm:flex items-center gap-2 bg-black/40 px-3 py-1.5 rounded-full border border-white/15 backdrop-blur-md">
+            <Sparkles className="w-4 h-4 text-teal-300" />
+            <span>0% Commission Deducted</span>
           </div>
         </div>
 
       </div>
 
-      {/* Slide Indicator Bar at Bottom */}
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/40 backdrop-blur-md border border-white/10">
-        {BACKGROUND_DESTINATIONS.map((dest, i) => (
+      {/* ========================================================================= */}
+      {/* 4. SLIDE CONTROLS: 8 INDICATOR DOTS & PREV/NEXT ARROWS                    */}
+      {/* ========================================================================= */}
+      {!customImage && (
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/50 backdrop-blur-md border border-white/15 shadow-xl">
           <button
-            key={dest.id}
-            onClick={() => setActiveImageIndex(i)}
-            className={`h-1.5 rounded-full transition-all cursor-pointer ${
-              i === activeImageIndex ? 'w-6 bg-[#f39c12]' : 'w-2 bg-white/40 hover:bg-white/70'
-            }`}
-            title={`Slide ${i + 1}: ${dest.title}`}
-          />
-        ))}
+            type="button"
+            onClick={handlePrevImage}
+            className="text-stone-300 hover:text-white p-0.5 cursor-pointer"
+            title="Previous image"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </button>
+
+          {/* 8 Destination Indicator Dots */}
+          <div className="flex items-center gap-1.5 px-1">
+            {BACKGROUND_DESTINATIONS.map((dest, i) => (
+              <button
+                key={dest.id}
+                onClick={() => setActiveImageIndex(i)}
+                className={`h-2 rounded-full transition-all cursor-pointer ${
+                  i === activeImageIndex
+                    ? 'w-7 bg-[#f39c12] shadow-sm'
+                    : 'w-2 bg-white/40 hover:bg-white/80'
+                }`}
+                title={`Image ${i + 1} of 8: ${dest.title}`}
+              />
+            ))}
+          </div>
+
+          <button
+            type="button"
+            onClick={handleNextImage}
+            className="text-stone-300 hover:text-white p-0.5 cursor-pointer"
+            title="Next image"
+          >
+            <ChevronRight className="w-4 h-4" />
+          </button>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* 5. BACKGROUND CONTROLS BUTTON & 8-IMAGE GALLERY POPUP                      */}
+      {/* ========================================================================= */}
+      <div className="absolute bottom-4 right-4 z-30">
+        <button
+          type="button"
+          onClick={() => setIsCustomizing(!isCustomizing)}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-stone-900/85 hover:bg-stone-900 active:scale-95 text-stone-200 border border-white/20 backdrop-blur-md text-xs font-medium shadow-xl transition-all cursor-pointer"
+          title="Customize background image & brightness"
+        >
+          <Camera className="w-3.5 h-3.5 text-[#f39c12]" />
+          <span>ফটো গেলৰী (৮ খন ছবি)</span>
+        </button>
+
+        {/* Customization Popup Menu displaying all 8 destinations */}
+        {isCustomizing && (
+          <div className="absolute bottom-11 right-0 w-80 sm:w-96 p-4 rounded-2xl bg-stone-900/95 backdrop-blur-2xl border border-white/20 shadow-2xl text-white text-xs z-40 animate-fade-in max-h-[85vh] flex flex-col">
+            <div className="flex items-center justify-between pb-2 border-b border-stone-800 shrink-0">
+              <span className="font-bold flex items-center gap-1.5 text-amber-300">
+                <Sun className="w-4 h-4 text-[#f39c12]" />
+                <span>ভাৰতৰ ৮ খন আকৰ্ষণীয় ফটো (Gallery)</span>
+              </span>
+              <button
+                type="button"
+                onClick={() => setIsCustomizing(false)}
+                className="text-stone-400 hover:text-white p-0.5"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="overflow-y-auto pr-1 space-y-3 mt-3 scrollbar-thin">
+              {/* 1. All 8 Curated Indian Visuals */}
+              <div>
+                <div className="text-[11px] font-semibold text-stone-300 mb-1.5 flex items-center justify-between">
+                  <span>১. যিকোনো এখন ফটো বাছক (৮ খন):</span>
+                  <span className="text-[10px] text-amber-400 font-mono">৮ টা অঞ্চল</span>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-1.5">
+                  {BACKGROUND_DESTINATIONS.map((dest, i) => (
+                    <button
+                      key={dest.id}
+                      type="button"
+                      onClick={() => {
+                        setCustomImage(null);
+                        setActiveImageIndex(i);
+                      }}
+                      className={`p-1.5 rounded-xl border text-left flex items-center gap-2 transition-all cursor-pointer group ${
+                        !customImage && activeImageIndex === i
+                          ? 'border-[#f39c12] bg-[#f39c12]/20 text-amber-200 ring-1 ring-[#f39c12]/50'
+                          : 'border-stone-800 bg-stone-950/50 text-stone-300 hover:bg-stone-800/80 hover:text-white'
+                      }`}
+                    >
+                      <img
+                        src={dest.imageUrl}
+                        alt=""
+                        className="w-8 h-8 rounded-lg object-cover shrink-0 shadow-xs"
+                        onError={(e) => {
+                          (e.currentTarget as HTMLImageElement).src = northeastTeaImg;
+                        }}
+                      />
+                      <div className="min-w-0">
+                        <div className="truncate text-[10px] font-semibold leading-tight">
+                          {i + 1}. {dest?.title ? dest.title.split('&')[0] : 'Tour'}
+                        </div>
+                        <div className="truncate text-[9px] text-stone-400">
+                          {dest?.region ? dest.region.split(',')[0] : 'India'}
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* 2. Brightness / Openness Toggle */}
+              <div className="pt-2 border-t border-stone-800">
+                <div className="text-[11px] font-semibold text-stone-300 mb-1.5">
+                  ২. ফটোৰ পোহৰ আৰু স্বচ্ছতা (Light Intensity):
+                </div>
+                <div className="grid grid-cols-3 gap-1.5 p-1 bg-stone-950/80 rounded-xl border border-stone-800">
+                  <button
+                    type="button"
+                    onClick={() => setOverlayIntensity('bright')}
+                    className={`py-1.5 px-2 rounded-lg text-center transition-all cursor-pointer ${
+                      overlayIntensity === 'bright'
+                        ? 'bg-[#f39c12] text-stone-950 font-bold shadow-sm'
+                        : 'text-stone-400 hover:text-white'
+                    }`}
+                  >
+                    উজ্জ্বল (Bright)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setOverlayIntensity('balanced')}
+                    className={`py-1.5 px-2 rounded-lg text-center transition-all cursor-pointer ${
+                      overlayIntensity === 'balanced'
+                        ? 'bg-[#f39c12] text-stone-950 font-bold shadow-sm'
+                        : 'text-stone-400 hover:text-white'
+                    }`}
+                  >
+                    মধ্যম (Normal)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setOverlayIntensity('high-contrast')}
+                    className={`py-1.5 px-2 rounded-lg text-center transition-all cursor-pointer ${
+                      overlayIntensity === 'high-contrast'
+                        ? 'bg-[#f39c12] text-stone-950 font-bold shadow-sm'
+                        : 'text-stone-400 hover:text-white'
+                    }`}
+                  >
+                    ডাৰ্ক (Dark)
+                  </button>
+                </div>
+              </div>
+
+              {/* 3. Upload Own Image */}
+              <div className="pt-2 border-t border-stone-800">
+                <div className="text-[11px] font-semibold text-stone-300 mb-1.5">
+                  ৩. নিজৰ ডিভাইচৰ পৰা ফটো আপলোড:
+                </div>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileUpload}
+                  className="hidden"
+                />
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="w-full py-2 px-3 rounded-xl bg-emerald-600/30 hover:bg-emerald-600/40 border border-emerald-500/40 text-emerald-200 font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer text-xs"
+                >
+                  <Upload className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>মোবাইল/PC ৰ পৰা ফটো দিয়ক</span>
+                </button>
+              </div>
+
+              {/* Reset option */}
+              {customImage && (
+                <button
+                  type="button"
+                  onClick={() => setCustomImage(null)}
+                  className="w-full py-1.5 text-[11px] text-stone-400 hover:text-white flex items-center justify-center gap-1 border-t border-stone-800 pt-2"
+                >
+                  <RotateCcw className="w-3 h-3" />
+                  <span>মূল ৮ খন ফটোৰ গেলৰীলৈ উভতি যাওক (Reset)</span>
+                </button>
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
     </section>
