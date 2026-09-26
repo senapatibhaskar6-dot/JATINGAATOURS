@@ -381,25 +381,40 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                   </button>
                 </div>
 
-                {/* Tab 1: UPI */}
+                {/* Tab 1: UPI / Dynamic QR Code */}
                 {paymentMethod === 'upi' && (
                   <div className="p-4 rounded-xl bg-stone-50 border border-stone-200 grid grid-cols-1 sm:grid-cols-12 gap-4 items-center">
-                    <div className="sm:col-span-5 flex flex-col items-center justify-center p-3 bg-white rounded-lg border border-stone-200">
-                      {/* Simulated QR Code */}
-                      <div className="w-32 h-32 bg-stone-900 p-2 rounded-lg flex flex-col items-center justify-center relative overflow-hidden">
-                        <div className="w-full h-full bg-white p-1.5 rounded flex items-center justify-center">
+                    <div className="sm:col-span-5 flex flex-col items-center justify-center p-3 bg-white rounded-xl border border-stone-200 shadow-xs text-center">
+                      <div className="text-[10px] font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full mb-1.5 flex items-center gap-1">
+                        <Sparkles className="w-3 h-3 text-[#f39c12]" />
+                        <span>Dynamic UPI QR ({formatINR(calc.totalAdvancePayable)})</span>
+                      </div>
+
+                      {/* Dynamic QR Code Box */}
+                      <div className="w-32 h-32 bg-stone-900 p-2 rounded-xl flex flex-col items-center justify-center relative overflow-hidden shadow-inner border border-stone-800">
+                        <div className="w-full h-full bg-white p-1.5 rounded-lg flex items-center justify-center">
                           <QrCode className="w-24 h-24 text-stone-900" />
                         </div>
                       </div>
-                      <div className="text-[11px] text-stone-500 mt-2 font-mono">
-                        Scan via GPay / PhonePe / Paytm
+
+                      <div className="text-[10px] font-semibold text-stone-700 mt-2">
+                        Scan with GPay / PhonePe / Paytm / BHIM
+                      </div>
+                      <div className="text-[9px] text-stone-400 mt-0.5">
+                        Auto-generated via Razorpay Gateway
                       </div>
                     </div>
 
-                    <div className="sm:col-span-7 space-y-3">
-                      <div className="text-xs font-semibold text-stone-700">
-                        Or enter UPI Virtual Payment Address (VPA):
+                    <div className="sm:col-span-7 space-y-2.5">
+                      <div className="flex items-center justify-between">
+                        <div className="text-xs font-semibold text-stone-700">
+                          Or Pay via UPI ID / VPA:
+                        </div>
+                        <span className="text-[10px] bg-stone-200/80 text-stone-700 px-1.5 py-0.2 rounded font-mono">
+                          0% Fee
+                        </span>
                       </div>
+
                       <input
                         type="text"
                         value={upiId}
@@ -413,15 +428,16 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                             key={suf}
                             type="button"
                             onClick={() => setUpiId('user' + suf)}
-                            className="px-2 py-0.5 text-[10px] bg-white border border-stone-200 rounded text-stone-600 hover:bg-stone-50"
+                            className="px-2 py-0.5 text-[10px] bg-white border border-stone-200 rounded text-stone-600 hover:bg-stone-50 cursor-pointer"
                           >
                             {suf}
                           </button>
                         ))}
                       </div>
-                      <p className="text-[11px] text-stone-500">
-                        Instant 0% transaction charges on UPI payments.
-                      </p>
+
+                      <div className="p-2 rounded-lg bg-emerald-50/80 border border-emerald-200 text-[11px] text-emerald-900">
+                        <strong>কেনেদৰে কাম কৰে:</strong> পৰ্যটকে কিউআৰ কোড স্কেন কৰাৰ লগে লগে ₹১,০০০ এডভান্স পোনপটীয়াকৈ লক হয় আৰু আপোনাৰ এজেঞ্চিৰ ফোন/হোৱাটছএপলৈ তৎক্ষণাৎ বুকিং তথ্য গুচি যায়।
+                      </div>
                     </div>
                   </div>
                 )}

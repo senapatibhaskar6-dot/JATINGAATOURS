@@ -12,6 +12,9 @@ export interface Agency {
   rating: number;
   totalToursCompleted: number;
   bio: string;
+  avatar?: string;
+  specialty?: string;
+  status?: 'verified' | 'pending';
 }
 
 export interface DayItinerary {
@@ -42,6 +45,33 @@ export interface TourPackage {
   bestSeason: string;
   startingPoint: string;
   featured?: boolean;
+  moderationStatus?: 'published' | 'in_review' | 'draft';
+  isUserGenerated?: boolean;
+}
+
+export interface TravelStory {
+  id: string;
+  title: string;
+  subtitle: string;
+  slug: string;
+  coverImage: string;
+  galleryImages: string[];
+  region: 'northeast' | 'himalayas' | 'south' | 'west' | 'islands';
+  regionLabel: string;
+  destination: string;
+  authorAgency: Agency;
+  authorRole: string; // e.g. "Native Khasi Senior Guide"
+  readTimeMinutes: number;
+  publishedDate: string;
+  contentParagraphs: string[];
+  insiderTips: string[];
+  culturalEtiquette: string[];
+  bestVisitingMonths: string;
+  associatedPackageId?: string;
+  tags: string[];
+  moderationStatus: 'published' | 'in_review' | 'draft';
+  likesCount: number;
+  isUserGenerated?: boolean;
 }
 
 export interface BookingFeeCalculation {

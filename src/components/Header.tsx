@@ -6,6 +6,7 @@ interface HeaderProps {
   onOpenAgencyPortal: () => void;
   onOpenBookings: () => void;
   onOpenRegisterAgency: () => void;
+  onOpenCodeGuidance?: () => void;
   bookingsCount: number;
 }
 
@@ -13,6 +14,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenAgencyPortal,
   onOpenBookings,
   onOpenRegisterAgency,
+  onOpenCodeGuidance,
   bookingsCount,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -52,13 +54,22 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         </a>
 
-        {/* Zone 2: Navigation Links (Tour Packages, 5% Pricing Model, How It Works, For Local Agencies, My Bookings) */}
-        <nav className="hidden lg:flex items-center gap-6 xl:gap-7 text-sm font-medium text-stone-600">
+        {/* Zone 2: Navigation Links */}
+        <nav className="hidden lg:flex items-center gap-5 xl:gap-6 text-sm font-medium text-stone-600">
           <button
             onClick={() => scrollToSection('packages-section')}
             className="hover:text-[#0b4619] transition-colors cursor-pointer py-1"
           >
             Tour Packages
+          </button>
+          <button
+            onClick={() => scrollToSection('travel-stories-section')}
+            className="hover:text-[#0b4619] transition-colors cursor-pointer py-1 flex items-center gap-1"
+          >
+            <span>Stories & Guides</span>
+            <span className="text-[10px] bg-amber-100 text-amber-800 font-bold px-1.5 py-0.2 rounded-full">
+              UGC
+            </span>
           </button>
           <button
             onClick={() => scrollToSection('financial-model')}
@@ -92,10 +103,20 @@ export const Header: React.FC<HeaderProps> = ({
         </nav>
 
         {/* Zone 3: Primary Action Controls */}
-        <div className="hidden sm:flex items-center gap-2.5">
+        <div className="hidden sm:flex items-center gap-2">
+          {onOpenCodeGuidance && (
+            <button
+              onClick={onOpenCodeGuidance}
+              className="px-2.5 py-2 text-xs font-semibold text-stone-600 hover:text-stone-900 hover:bg-stone-100 rounded-lg transition-colors cursor-pointer whitespace-nowrap"
+              title="View Supabase, S3/Storage, Auth & Moderation Architecture"
+            >
+              Dev Blueprint
+            </button>
+          )}
+
           <button
             onClick={onOpenAgencyPortal}
-            className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-stone-700 hover:text-stone-900 bg-stone-100 hover:bg-stone-200 rounded-lg transition-colors cursor-pointer whitespace-nowrap"
+            className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-stone-700 hover:text-stone-900 bg-stone-100 hover:bg-stone-200 rounded-lg transition-colors cursor-pointer whitespace-nowrap"
           >
             <ShieldCheck className="w-4 h-4 text-[#0b4619]" />
             <span>Agency Portal</span>
@@ -103,7 +124,7 @@ export const Header: React.FC<HeaderProps> = ({
 
           <button
             onClick={onOpenRegisterAgency}
-            className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-[#0b4619] hover:bg-[#062b0f] rounded-lg shadow-sm transition-all hover:shadow cursor-pointer whitespace-nowrap"
+            className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-white bg-[#0b4619] hover:bg-[#062b0f] rounded-lg shadow-sm transition-all hover:shadow cursor-pointer whitespace-nowrap"
           >
             <UserCheck className="w-4 h-4 text-[#f39c12]" />
             <span>Register Agency</span>

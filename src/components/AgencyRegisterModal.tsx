@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { X, ShieldCheck, CheckCircle2, ArrowRight } from 'lucide-react';
+import { Agency } from '../types';
 
 interface AgencyRegisterModalProps {
   onClose: () => void;
-  onRegistered: (agencyName: string) => void;
+  onRegistered: (newAgency: Agency) => void;
 }
 
 export const AgencyRegisterModal: React.FC<AgencyRegisterModalProps> = ({
@@ -26,10 +27,28 @@ export const AgencyRegisterModal: React.FC<AgencyRegisterModalProps> = ({
       alert('Please fill in all required fields including your state tourism license / GSTIN.');
       return;
     }
+    const newAgency: Agency = {
+      id: `ag-new-${Date.now()}`,
+      name: agencyName,
+      founder: founderName,
+      baseCity: baseCity || 'Local Base',
+      state: stateRegion.split(' ')[0],
+      phone: phone,
+      whatsapp: phone,
+      email: email || `${agencyName.toLowerCase().replace(/\s+/g, '')}@partner.in`,
+      licenseNumber: licenseNumber,
+      verifiedSince: new Date().getFullYear().toString(),
+      rating: 5.0,
+      totalToursCompleted: 0,
+      bio: `${agencyName} is a verified local tour operator specializing in ${specialty}.`,
+      specialty: specialty,
+      status: 'verified',
+    };
+
     setSubmitted(true);
     setTimeout(() => {
-      onRegistered(agencyName);
-    }, 2000);
+      onRegistered(newAgency);
+    }, 1500);
   };
 
   return (

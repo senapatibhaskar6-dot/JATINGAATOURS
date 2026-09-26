@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
-import { TourPackage, BookingRecord } from './types';
+import { TourPackage, BookingRecord, Agency, TravelStory } from './types';
 import { TOUR_PACKAGES } from './data/packages';
+import { INITIAL_TRAVEL_STORIES } from './data/travelStories';
 import { calculateBookingFees } from './utils/pricing';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
@@ -9,14 +10,17 @@ import { PackageGrid } from './components/PackageGrid';
 import { PackageModal } from './components/PackageModal';
 import { BookingModal } from './components/BookingModal';
 import { BookingConfirmationModal } from './components/BookingConfirmationModal';
+import { TravelStoriesSection } from './components/TravelStoriesSection';
+import { TravelStoryModal } from './components/TravelStoryModal';
 import { HowItWorks } from './components/HowItWorks';
 import { AgencySection } from './components/AgencySection';
 import { AgencyDashboardModal } from './components/AgencyDashboardModal';
 import { AgencyRegisterModal } from './components/AgencyRegisterModal';
+import { CodeIntegrationModal } from './components/CodeIntegrationModal';
 import { MyBookingsModal } from './components/MyBookingsModal';
 import { Footer } from './components/Footer';
 
-// Seed sample initial confirmed bookings so Agency Portal and My Bookings have rich data right away
+// Seed sample initial confirmed bookings
 const INITIAL_BOOKINGS: BookingRecord[] = [
   {
     id: 'bk-init-1',
@@ -61,18 +65,39 @@ const INITIAL_BOOKINGS: BookingRecord[] = [
 ];
 
 export default function App() {
+  // Tour packages state (dynamically updated by vendor additions)
   const [packages, setPackages] = useState<TourPackage[]>(TOUR_PACKAGES);
+
+  // User-Generated Content: Travel Stories & Field Journals
+  const [stories, setStories] = useState<TravelStory[]>(INITIAL_TRAVEL_STORIES);
+
+  // Registered Agencies
+  const initialAgencies = useMemo(() => {
+    const map = new Map<string, Agency>();
+    TOUR_PACKAGES.forEach((p) => {
+      if (!map.has(p.agency.id)) {
+        map.set(p.agency.id, p.agency);
+      }
+    });
+    return Array.from(map.values());
+  }, []);
+  const [agenciesList, setAgenciesList] = useState<Agency[]>(initialAgencies);
+  const [activeAgency, setActiveAgency] = useState<Agency>(initialAgencies[0]);
+
+  // Search & Filter state
   const [selectedRegion, setSelectedRegion] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   // Modals state
   const [selectedPackage, setSelectedPackage] = useState<TourPackage | null>(null);
+  const [selectedStory, setSelectedStory] = useState<TravelStory | null>(null);
   const [bookingTour, setBookingTour] = useState<TourPackage | null>(null);
   const [bookingTravelersCount, setBookingTravelersCount] = useState<number>(1);
   const [confirmedBooking, setConfirmedBooking] = useState<BookingRecord | null>(null);
 
   const [isAgencyPortalOpen, setIsAgencyPortalOpen] = useState(false);
   const [isRegisterAgencyOpen, setIsRegisterAgencyOpen] = useState(false);
+  const [isCodeGuidanceOpen, setIsCodeGuidanceOpen] = useState(false);
   const [isMyBookingsOpen, setIsMyBookingsOpen] = useState(false);
 
   // Bookings state
@@ -108,9 +133,10 @@ export default function App() {
     });
   }, [packages, selectedRegion, searchQuery]);
 
-  // Handlers
+  // Handlers for Bookings
   const handleOpenBooking = (tour: TourPackage, travelersCount: number = 1) => {
     setSelectedPackage(null);
+    setSelectedStory(null);
     setBookingTour(tour);
     setBookingTravelersCount(travelersCount);
   };
@@ -124,8 +150,8 @@ export default function App() {
 
   const handleSimulateNewBooking = () => {
     const randomTour = packages[Math.floor(Math.random() * packages.length)];
-    const names = ['Vikram Sethi', 'Ananya Roy', 'Kabir Sen', 'Meera Nair', 'Aditya Iyer'];
-    const cities = ['Bengaluru', 'Delhi', 'Hyderabad', 'Kolkata', 'Chennai'];
+    const names = ['Vikram Sethi', 'Ananya Roy', 'Kabir Sen', 'Meera Nair', 'Aditya Iyer', 'Pooja Hegde'];
+    const cities = ['Bengaluru', 'Delhi', 'Hyderabad', 'Kolkata', 'Chennai', 'Ahmedabad'];
     const randomName = names[Math.floor(Math.random() * names.length)];
     const randomCity = cities[Math.floor(Math.random() * cities.length)];
     const randomCount = Math.floor(1 + Math.random() * 3);
@@ -142,7 +168,7 @@ export default function App() {
       customerEmail: `${randomName.toLowerCase().replace(/\s+/g, '.')}@example.com`,
       customerPhone: `+91 ${Math.floor(90000 + Math.random() * 9999)} ${Math.floor(10000 + Math.random() * 90000)}`,
       customerCity: randomCity,
-      specialRequests: 'Simulated direct traveler request test via demo engine.',
+      specialRequests: 'Simulated direct traveler request via live aggregator engine.',
       paymentMethod: 'upi',
       paymentTransactionId: 'TXN-DEMO' + Math.floor(100000 + Math.random() * 900000),
       calculation: calculateBookingFees(randomTour.pricePerPerson, randomCount),
@@ -155,9 +181,47 @@ export default function App() {
     showToast(`New incoming booking ${newRecord.bookingCode} received for ${randomTour.agency.name}! ₹1,000 advance credited.`);
   };
 
-  const handleAgencyRegistered = (agencyName: string) => {
+  // Handlers for UGC & Agency Management
+  const handleAgencyRegistered = (newAgency: Agency) => {
+    setAgenciesList((prev) => [newAgency, ...prev]);
+    setActiveAgency(newAgency);
     setIsRegisterAgencyOpen(false);
-    showToast(`Agency "${agencyName}" successfully onboarded with verified credentials!`);
+    setIsAgencyPortalOpen(true);
+    showToast(`Agency "${newAgency.name}" onboarded! Opened your Vendor Portal to list packages.`);
+  };
+
+  const handleUpdateAgencyProfile = (updatedAgency: Agency) => {
+    setActiveAgency(updatedAgency);
+    setAgenciesList((prev) => prev.map((a) => (a.id === updatedAgency.id ? updatedAgency : a)));
+    // Sync across packages
+    setPackages((prev) =>
+      prev.map((p) => (p.agency.id === updatedAgency.id ? { ...p, agency: updatedAgency } : p))
+    );
+    // Sync across stories
+    setStories((prev) =>
+      prev.map((s) => (s.authorAgency.id === updatedAgency.id ? { ...s, authorAgency: updatedAgency } : s))
+    );
+    showToast(`Profile updated for ${updatedAgency.name}. All tours updated.`);
+  };
+
+  const handleAddTourPackage = (newPkg: TourPackage) => {
+    setPackages((prev) => [newPkg, ...prev]);
+    showToast(`Tour package "${newPkg.title}" published live on the marketplace!`);
+  };
+
+  const handleDeleteTourPackage = (pkgId: string) => {
+    setPackages((prev) => prev.filter((p) => p.id !== pkgId));
+    showToast('Tour package removed.');
+  };
+
+  const handleAddTravelStory = (newStory: TravelStory) => {
+    setStories((prev) => [newStory, ...prev]);
+    showToast(`Destination guide "${newStory.title}" published to Stories Hub!`);
+  };
+
+  const handleDeleteTravelStory = (storyId: string) => {
+    setStories((prev) => prev.filter((s) => s.id !== storyId));
+    showToast('Destination guide removed.');
   };
 
   const handleResetFilters = () => {
@@ -186,18 +250,19 @@ export default function App() {
           </div>
           <button
             onClick={() => setToastMessage(null)}
-            className="text-stone-400 hover:text-white"
+            className="text-stone-400 hover:text-white cursor-pointer"
           >
             ✕
           </button>
         </div>
       )}
 
-      {/* Top Bar Contract (1 row, 3 zones) */}
+      {/* Top Header */}
       <Header
         onOpenAgencyPortal={() => setIsAgencyPortalOpen(true)}
         onOpenBookings={() => setIsMyBookingsOpen(true)}
         onOpenRegisterAgency={() => setIsRegisterAgencyOpen(true)}
+        onOpenCodeGuidance={() => setIsCodeGuidanceOpen(true)}
         bookingsCount={bookings.length}
       />
 
@@ -205,6 +270,7 @@ export default function App() {
         {/* Hero Section */}
         <Hero
           onExploreClick={scrollToPackages}
+          onPartnerClick={() => setIsRegisterAgencyOpen(true)}
           onOpenCalculator={scrollToCalculator}
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
@@ -215,7 +281,7 @@ export default function App() {
         {/* 5% + ₹1,000 Pricing & Financial Model Explainer */}
         <FinancialExplainer />
 
-        {/* Curated Package Grid */}
+        {/* Curated Package Grid (Dynamically includes newly added vendor packages!) */}
         <PackageGrid
           packages={filteredPackages}
           selectedRegion={selectedRegion}
@@ -225,6 +291,15 @@ export default function App() {
           onSelectPackage={(tour) => setSelectedPackage(tour)}
           onBookPackage={(tour) => handleOpenBooking(tour, 1)}
           onResetFilters={handleResetFilters}
+        />
+
+        {/* User-Generated Content: Local Destination Stories & Travel Guides */}
+        <TravelStoriesSection
+          stories={stories}
+          packages={packages}
+          onSelectStory={(story) => setSelectedStory(story)}
+          onBookPackage={(pkg) => handleOpenBooking(pkg, 1)}
+          onOpenAgencyPortal={() => setIsAgencyPortalOpen(true)}
         />
 
         {/* How It Works (Ethical 4-Step Direct Connection) */}
@@ -241,6 +316,7 @@ export default function App() {
       <Footer
         onOpenAgencyPortal={() => setIsAgencyPortalOpen(true)}
         onOpenRegisterAgency={() => setIsRegisterAgencyOpen(true)}
+        onOpenCodeGuidance={() => setIsCodeGuidanceOpen(true)}
       />
 
       {/* MODALS */}
@@ -254,7 +330,18 @@ export default function App() {
         />
       )}
 
-      {/* 2. Booking & Digital Payment Modal */}
+      {/* 2. Destination Story / Field Journal Reader Modal */}
+      {selectedStory && (
+        <TravelStoryModal
+          story={selectedStory}
+          packages={packages}
+          onClose={() => setSelectedStory(null)}
+          onBookPackage={(pkg) => handleOpenBooking(pkg, 1)}
+          onSelectPackage={(pkg) => setSelectedPackage(pkg)}
+        />
+      )}
+
+      {/* 3. Booking & Digital Payment Modal */}
       {bookingTour && (
         <BookingModal
           tour={bookingTour}
@@ -264,7 +351,7 @@ export default function App() {
         />
       )}
 
-      {/* 3. Direct Contact Unlock & Voucher Confirmation Modal */}
+      {/* 4. Direct Contact Unlock & Voucher Confirmation Modal */}
       {confirmedBooking && (
         <BookingConfirmationModal
           booking={confirmedBooking}
@@ -276,16 +363,28 @@ export default function App() {
         />
       )}
 
-      {/* 4. Agency Operations & Dispatch Portal */}
+      {/* 5. Comprehensive Vendor/Agency Dashboard & UGC Portal */}
       {isAgencyPortalOpen && (
         <AgencyDashboardModal
           bookings={bookings}
+          packages={packages}
+          stories={stories}
+          activeAgency={activeAgency}
+          allAgencies={agenciesList}
+          onSwitchAgency={setActiveAgency}
+          onUpdateAgencyProfile={handleUpdateAgencyProfile}
+          onAddTourPackage={handleAddTourPackage}
+          onDeleteTourPackage={handleDeleteTourPackage}
+          onAddTravelStory={handleAddTravelStory}
+          onDeleteTravelStory={handleDeleteTravelStory}
           onClose={() => setIsAgencyPortalOpen(false)}
           onSimulateNewBooking={handleSimulateNewBooking}
+          onOpenRegisterModal={() => setIsRegisterAgencyOpen(true)}
+          onOpenCodeGuidance={() => setIsCodeGuidanceOpen(true)}
         />
       )}
 
-      {/* 5. Agency Partner Registration Modal */}
+      {/* 6. Agency Partner Registration Modal */}
       {isRegisterAgencyOpen && (
         <AgencyRegisterModal
           onClose={() => setIsRegisterAgencyOpen(false)}
@@ -293,7 +392,14 @@ export default function App() {
         />
       )}
 
-      {/* 6. Traveler My Bookings Modal */}
+      {/* 7. Engineering & Code Integration Blueprint Modal */}
+      {isCodeGuidanceOpen && (
+        <CodeIntegrationModal
+          onClose={() => setIsCodeGuidanceOpen(false)}
+        />
+      )}
+
+      {/* 8. Traveler My Bookings Modal */}
       {isMyBookingsOpen && (
         <MyBookingsModal
           bookings={bookings}

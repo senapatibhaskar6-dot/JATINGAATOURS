@@ -5,11 +5,13 @@ import jatingaaLogo from '../assets/images/jatingaa_tours_logo.jpg';
 interface FooterProps {
   onOpenAgencyPortal: () => void;
   onOpenRegisterAgency: () => void;
+  onOpenCodeGuidance?: () => void;
 }
 
 export const Footer: React.FC<FooterProps> = ({
   onOpenAgencyPortal,
   onOpenRegisterAgency,
+  onOpenCodeGuidance,
 }) => {
   const scrollTo = (id: string) => {
     const el = document.getElementById(id);
@@ -50,30 +52,35 @@ export const Footer: React.FC<FooterProps> = ({
             </div>
           </div>
 
-          {/* Nav Col 1: Expeditions */}
+          {/* Nav Col 1: Expeditions & UGC Stories */}
           <div className="md:col-span-3 space-y-3">
             <div className="font-semibold text-stone-900 uppercase tracking-wider text-[11px]">
-              Regions of India
+              Expeditions & Stories
             </div>
             <ul className="space-y-2 text-stone-600">
               <li>
                 <button onClick={() => scrollTo('packages-section')} className="hover:text-[#0b4619] cursor-pointer">
-                  Northeast (Meghalaya, Assam, Arunachal)
+                  All-India Tour Packages
+                </button>
+              </li>
+              <li>
+                <button onClick={() => scrollTo('travel-stories-section')} className="hover:text-[#0b4619] cursor-pointer font-medium text-[#0b4619]">
+                  Native Field Guides & Stories (UGC)
                 </button>
               </li>
               <li>
                 <button onClick={() => scrollTo('packages-section')} className="hover:text-[#0b4619] cursor-pointer">
-                  Himalayas (Ladakh, Spiti, Zanskar)
+                  Northeast (Meghalaya, Assam)
                 </button>
               </li>
               <li>
                 <button onClick={() => scrollTo('packages-section')} className="hover:text-[#0b4619] cursor-pointer">
-                  South (Kerala Backwaters & Wayanad)
+                  Himalayas (Ladakh & Spiti)
                 </button>
               </li>
               <li>
                 <button onClick={() => scrollTo('packages-section')} className="hover:text-[#0b4619] cursor-pointer">
-                  West (Rajasthan Thar & Jaisalmer Forts)
+                  South (Kerala Backwaters)
                 </button>
               </li>
             </ul>
@@ -105,6 +112,13 @@ export const Footer: React.FC<FooterProps> = ({
                   Compare vs 25% OTAs
                 </button>
               </li>
+              {onOpenCodeGuidance && (
+                <li>
+                  <button onClick={onOpenCodeGuidance} className="hover:text-[#0b4619] cursor-pointer font-mono text-[11px] text-emerald-800">
+                    Dev Blueprint (Supabase / RLS)
+                  </button>
+                </li>
+              )}
             </ul>
           </div>
 

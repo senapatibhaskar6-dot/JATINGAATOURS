@@ -32,6 +32,12 @@ export const PackageCard: React.FC<PackageCardProps> = ({ tour, onSelect, onBook
           <span>{tour.regionLabel}</span>
         </div>
 
+        {tour.isUserGenerated && (
+          <div className="absolute top-3.5 right-3.5 text-[10px] font-bold text-white bg-[#0b4619]/90 backdrop-blur-md px-2 py-0.5 rounded-full border border-emerald-400/30 shadow-xs uppercase tracking-wider">
+            Verified Guide UGC
+          </div>
+        )}
+
         {/* Duration & Group (Unboxed clean text) */}
         <div className="absolute bottom-3 left-3.5 right-3.5 text-white text-xs flex items-center justify-between">
           <div className="flex items-center gap-2 drop-shadow font-medium">

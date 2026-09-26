@@ -1,202 +1,242 @@
-import React from 'react';
-import { HERO_IMAGE } from '../data/packages';
-import heroBg from '../assets/images/scenic_nature_hero_1790322395376.jpg';
-import { Search, MapPin, ShieldCheck, PhoneCall, Sparkles, Compass } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Search, Compass, Users, Sparkles, MapPin, ShieldCheck, ChevronRight, ArrowRight } from 'lucide-react';
 
-interface HeroProps {
-  onExploreClick: () => void;
-  onOpenCalculator: () => void;
-  searchQuery: string;
-  onSearchChange: (q: string) => void;
-  selectedRegion: string;
-  onSelectRegion: (reg: string) => void;
+// Curated high-resolution imagery showcasing Assam tea gardens, Brahmaputra, Meghalaya hills & national heritage
+const BACKGROUND_DESTINATIONS = [
+  {
+    id: 'northeast-tea-hills',
+    title: 'Emerald Tea Gardens & Misty Hills',
+    region: 'Assam & Meghalaya, Northeast India',
+    tag: 'NORTHEAST UNTAMED',
+    // High-res Unsplash scenic lush green landscape & tea gardens of Northeast India
+    imageUrl: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=2071&auto=format&fit=crop',
+    alt: 'Lush green tea estate and mist covered hills of Assam and Meghalaya',
+  },
+  {
+    id: 'brahmaputra-valleys',
+    title: 'Brahmaputra River Valleys & Living Bridges',
+    region: 'Kaziranga & Cherrapunji',
+    tag: 'SACRED WATERS & FORESTS',
+    imageUrl: 'https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?q=80&w=2070&auto=format&fit=crop',
+    alt: 'Scenic Brahmaputra river canyon and pristine waterfall valleys',
+  },
+  {
+    id: 'himalayan-passes',
+    title: 'High-Altitude Peaks & Monasteries',
+    region: 'Arunachal, Sikkim & Ladakh',
+    tag: 'HIMALAYAN FRONTIER',
+    imageUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=2070&auto=format&fit=crop',
+    alt: 'Majestic mountain ranges and pristine valleys',
+  },
+  {
+    id: 'heritage-wonders',
+    title: 'Living Heritage & Ancient Architecture',
+    region: 'Heritage Citadels & Sacred Temples',
+    tag: 'INCREDIBLE INDIA HERITAGE',
+    imageUrl: 'https://images.unsplash.com/photo-1599661046289-e31897846e41?q=80&w=2070&auto=format&fit=crop',
+    alt: 'Iconic royal heritage and ancient stone craftsmanship across India',
+  },
+];
+
+export interface HeroProps {
+  onExploreClick?: () => void;
+  onPartnerClick?: () => void;
+  onOpenCalculator?: () => void;
+  searchQuery?: string;
+  onSearchChange?: (query: string) => void;
+  selectedRegion?: string;
+  onSelectRegion?: (region: string) => void;
 }
 
 export const Hero: React.FC<HeroProps> = ({
-  onExploreClick,
-  onOpenCalculator,
-  searchQuery,
+  onExploreClick = () => {
+    const el = document.getElementById('packages-section');
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  },
+  onPartnerClick = () => {
+    const el = document.getElementById('vendor-partner');
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  },
+  searchQuery = '',
   onSearchChange,
-  selectedRegion,
+  selectedRegion = 'all',
   onSelectRegion,
 }) => {
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [internalSearch, setInternalSearch] = useState(searchQuery);
+
+  // Auto-transition background imagery every 7 seconds
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveImageIndex((prevIndex) => (prevIndex + 1) % BACKGROUND_DESTINATIONS.length);
+    }, 7000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (onSearchChange) {
+      onSearchChange(internalSearch);
+    }
+    onExploreClick();
+  };
+
+  const currentDestination = BACKGROUND_DESTINATIONS[activeImageIndex];
+
   return (
-    <section className="relative w-full overflow-hidden bg-stone-950 text-white border-b border-stone-800">
-      {/* High-Resolution Scenic Nature Background with High Contrast Dark Overlay */}
+    <section className="relative w-full min-h-[90vh] lg:min-h-[88vh] flex items-center justify-center overflow-hidden bg-stone-950 text-white select-none">
+      
+      {/* ========================================================================= */}
+      {/* 1. VISUAL BACKGROUND LAYER (Lush Green Northeast & National Heritage)    */}
+      {/* ========================================================================= */}
       <div className="absolute inset-0 z-0">
-        <img
-          src={heroBg}
-          alt="Majestic scenic Indian hills, emerald river, and mist-covered forest canopy at sunrise"
-          className="w-full h-full object-cover object-center scale-105 transform motion-safe:animate-subtle-zoom"
-          loading="eager"
-        />
-        {/* Multi-Stop Gradient Scrim (Deep Forest Green #0b4619 to Dark Charcoal Stone-950) */}
-        <div className="absolute inset-0 bg-gradient-to-r from-stone-950/95 via-[#062b0f]/90 to-stone-950/75 backdrop-blur-[0.5px]" />
-        <div className="absolute inset-0 bg-radial-at-t from-transparent via-stone-950/40 to-stone-950/90" />
+        {BACKGROUND_DESTINATIONS.map((dest, index) => (
+          <div
+            key={dest.id}
+            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+              index === activeImageIndex ? 'opacity-100 scale-100' : 'opacity-0 scale-105 pointer-events-none'
+            }`}
+          >
+            <img
+              src={dest.imageUrl}
+              alt={dest.alt}
+              className="w-full h-full object-cover object-center transform transition-transform duration-[8000ms] ease-out scale-105"
+              loading={index === 0 ? 'eager' : 'lazy'}
+            />
+          </div>
+        ))}
+
+        {/* ========================================================================= */}
+        {/* 2. READABILITY OVERLAY (Subtle Dark Gradient & Vignette Scrim)            */}
+        {/* Deep Charcoal & Forest Green tint guarantees crisp white text contrast    */}
+        {/* ========================================================================= */}
+        {/* Central dark scrim for text clarity */}
+        <div className="absolute inset-0 bg-stone-950/75 sm:bg-stone-950/70 backdrop-blur-[0.5px]" />
+        
+        {/* Vertical gradient: darker on top and bottom for smooth blending */}
+        <div className="absolute inset-0 bg-gradient-to-b from-stone-950/90 via-transparent to-stone-950/95" />
+        
+        {/* Subtle radial forest green brand illumination */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(11,70,25,0.35)_0%,rgba(12,10,9,0.85)_100%)] pointer-events-none" />
       </div>
 
-      {/* Hero Foreground Content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-20 lg:pt-16 lg:pb-28">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-10 items-center">
-          {/* Left Column: Proposition & Copy */}
-          <div className="lg:col-span-7 flex flex-col justify-center">
-            {/* Glowing Brand Tagline */}
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs font-semibold text-amber-300 w-fit mb-5 shadow-sm">
-              <span className="inline-block w-2 h-2 rounded-full bg-[#f39c12] animate-pulse" />
-              <span className="tracking-wide">ALL-INDIA LOCAL TOURISM AGGREGATOR</span>
-              <span className="text-white/40" aria-hidden="true">·</span>
-              <span className="text-white font-medium">VERIFIED NATIVE GUIDES</span>
-            </div>
+      {/* ========================================================================= */}
+      {/* 3. CENTERED HERO CONTENT LAYOUT                                           */}
+      {/* ========================================================================= */}
+      <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 flex flex-col items-center text-center">
+        
+        {/* Top Tagline Pill */}
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs font-semibold text-amber-300 mb-6 shadow-sm">
+          <span className="w-2 h-2 rounded-full bg-[#f39c12] animate-ping" />
+          <span className="tracking-widest uppercase font-mono text-[11px]">Direct Native Tourism</span>
+          <span className="text-white/40">·</span>
+          <span className="text-white font-medium">0% Commission Deducted from Guides</span>
+        </div>
 
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.08] font-display [text-wrap:balance] drop-shadow-md">
-              Direct Travel With India’s{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-[#f39c12] to-amber-200">
-                Native Masters.
-              </span>
-            </h1>
+        {/* Main Headline (Centered) */}
+        <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white leading-[1.1] font-display max-w-4xl drop-shadow-md">
+          Explore the Untamed Beauty of{' '}
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-[#f39c12] to-emerald-300">
+            India.
+          </span>
+        </h1>
 
-            <p className="mt-5 text-base sm:text-lg text-stone-200 leading-relaxed max-w-2xl drop-shadow">
-              Skip predatory 30% online travel agent markups. Jatingaa Tours connects you directly
-              with state-registered local guides, homestays, and expedition collectives across India with an honest{' '}
-              <strong className="text-white font-semibold underline decoration-amber-400 decoration-2 underline-offset-2">
-                5% platform fee paid on top
-              </strong>,{' '}
-              <strong className="text-white font-semibold">0% agency deductions</strong>, and a{' '}
-              <strong className="text-white font-semibold">guaranteed ₹1,000 upfront advance</strong> directly for the local host.
-            </p>
+        {/* Sub-headline (Centered) */}
+        <p className="mt-6 text-base sm:text-xl text-stone-200 leading-relaxed max-w-2xl font-normal drop-shadow">
+          Discover curated eco-tours, ancient living root bridges, and tea valley sanctuaries directly from verified native guides in Northeast India.
+        </p>
 
-            {/* Quick Feature Highlights (Vibrant Glassmorphic Cards) */}
-            <div className="mt-7 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-              <div className="flex items-start gap-2.5 p-3 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 shadow-md hover:bg-white/15 transition-all">
-                <div className="p-1.5 rounded-lg bg-emerald-500/20 text-emerald-300 shrink-0">
-                  <ShieldCheck className="w-4 h-4" />
-                </div>
-                <div>
-                  <div className="font-bold text-white text-xs">0% Agency Deduction</div>
-                  <div className="text-stone-300 text-[11px] mt-0.5">100% of package price to host</div>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-2.5 p-3 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 shadow-md hover:bg-white/15 transition-all">
-                <div className="p-1.5 rounded-lg bg-amber-500/20 text-amber-300 shrink-0">
-                  <Sparkles className="w-4 h-4 text-[#f39c12]" />
-                </div>
-                <div>
-                  <div className="font-bold text-white text-xs">₹1,000 Agency Lock-in</div>
-                  <div className="text-stone-300 text-[11px] mt-0.5">Guaranteed upfront advance</div>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-2.5 p-3 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 shadow-md hover:bg-white/15 transition-all">
-                <div className="p-1.5 rounded-lg bg-emerald-500/20 text-emerald-300 shrink-0">
-                  <PhoneCall className="w-4 h-4" />
-                </div>
-                <div>
-                  <div className="font-bold text-white text-xs">Direct Contact Unlock</div>
-                  <div className="text-stone-300 text-[11px] mt-0.5">Instant phone & WhatsApp access</div>
-                </div>
-              </div>
-            </div>
-
-            {/* Interactive Search Bar (Crisp Elevated Light Card on Dark) */}
-            <div className="mt-8 p-2 bg-white rounded-2xl border border-white/40 shadow-2xl flex flex-col sm:flex-row gap-2">
-              <div className="relative flex-1 flex items-center">
-                <Search className="w-4 h-4 text-stone-400 absolute left-3.5 pointer-events-none" />
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => onSearchChange(e.target.value)}
-                  placeholder="Search by state, trek, monastery, backwaters (e.g. Meghalaya, Ladakh, Kerala)..."
-                  className="w-full pl-10 pr-3 py-2.5 text-sm text-stone-900 placeholder:text-stone-400 bg-transparent focus:outline-none"
-                />
-              </div>
-
-              <button
-                onClick={onExploreClick}
-                className="px-6 py-2.5 text-sm font-bold text-white bg-[#0b4619] hover:bg-[#062b0f] active:bg-[#041c09] rounded-xl shadow-md transition-all cursor-pointer flex items-center justify-center gap-2 whitespace-nowrap hover:shadow-lg"
-              >
-                <Compass className="w-4 h-4 text-[#f39c12]" />
-                <span>Browse Packages</span>
-              </button>
-            </div>
-
-            {/* Popular Region Quick Filters (Subtle Frosted Glass Pills) */}
-            <div className="mt-5 flex flex-wrap items-center gap-2 text-xs">
-              <span className="font-semibold text-stone-300">Popular:</span>
-              {[
-                { id: 'all', label: 'All Regions' },
-                { id: 'northeast', label: 'Northeast & Assam' },
-                { id: 'himalayas', label: 'Ladakh & Spiti' },
-                { id: 'south', label: 'Kerala Backwaters' },
-                { id: 'west', label: 'Rajasthan Deserts' },
-              ].map((r) => (
-                <button
-                  key={r.id}
-                  onClick={() => onSelectRegion(r.id)}
-                  className={`px-3 py-1 text-xs rounded-full transition-all cursor-pointer ${
-                    selectedRegion === r.id
-                      ? 'bg-[#f39c12] text-stone-950 font-bold shadow-md'
-                      : 'bg-white/15 hover:bg-white/25 text-stone-100 border border-white/20 backdrop-blur-sm'
-                  }`}
-                >
-                  {r.label}
-                </button>
-              ))}
-            </div>
+        {/* Prominent Search Bar (Interactive) */}
+        <form
+          onSubmit={handleSearchSubmit}
+          className="mt-8 w-full max-w-2xl p-2 bg-white/95 backdrop-blur-md rounded-2xl border border-white/40 shadow-2xl flex flex-col sm:flex-row items-center gap-2"
+        >
+          <div className="relative flex-1 w-full flex items-center">
+            <Search className="w-4 h-4 text-stone-400 absolute left-3.5 pointer-events-none" />
+            <input
+              type="text"
+              value={onSearchChange ? searchQuery : internalSearch}
+              onChange={(e) => {
+                setInternalSearch(e.target.value);
+                if (onSearchChange) onSearchChange(e.target.value);
+              }}
+              placeholder="Search destinations, waterfalls, homestays, or trekking trails..."
+              className="w-full pl-10 pr-3 py-2.5 text-sm text-stone-900 placeholder:text-stone-400 bg-transparent focus:outline-none"
+            />
           </div>
 
-          {/* Right Column: Featured Tour Glass Card */}
-          <div className="lg:col-span-5 relative">
-            <div className="p-2.5 rounded-3xl bg-white/10 backdrop-blur-md border border-white/25 shadow-2xl">
-              <div className="relative rounded-2xl overflow-hidden shadow-lg aspect-[4/3] sm:aspect-[16/10] lg:aspect-[4/3] bg-stone-900">
-                <img
-                  src={HERO_IMAGE}
-                  alt="Living root bridges and rolling mist-clad valleys of Meghalaya and Northeast India"
-                  className="w-full h-full object-cover"
-                  referrerPolicy="no-referrer"
-                />
+          <button
+            type="submit"
+            className="w-full sm:w-auto px-6 py-2.5 text-sm font-bold text-white bg-[#0b4619] hover:bg-[#073011] active:bg-[#041c09] rounded-xl shadow-md transition-all cursor-pointer flex items-center justify-center gap-2 whitespace-nowrap active:scale-95"
+          >
+            <Compass className="w-4 h-4 text-[#f39c12]" />
+            <span>Search Tours</span>
+          </button>
+        </form>
 
-                {/* High Legibility Scrim */}
-                <div className="absolute inset-0 bg-gradient-to-t from-stone-950/95 via-stone-950/40 to-transparent flex flex-col justify-end p-6 text-white">
-                  <div className="flex items-center gap-2 text-xs font-semibold text-amber-300 mb-1">
-                    <MapPin className="w-3.5 h-3.5 text-[#f39c12]" />
-                    <span>Jatinga Ridge & Sohra, Northeast India</span>
-                  </div>
-                  <h3 className="text-xl font-bold font-display text-white">
-                    Living Root Bridges & Mist Canopies
-                  </h3>
-                  <p className="text-xs text-stone-200 mt-1 line-clamp-2">
-                    Handled directly by indigenous Khasi mountain guides with zero corporate agency markup.
-                  </p>
+        {/* ========================================================================= */}
+        {/* TWO PROMINENT CALL-TO-ACTION (CTA) BUTTONS                                */}
+        {/* ========================================================================= */}
+        <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto">
+          
+          {/* Primary CTA: Search / Browse Tours */}
+          <button
+            type="button"
+            onClick={onExploreClick}
+            className="w-full sm:w-auto px-8 py-3.5 rounded-xl font-bold text-sm sm:text-base text-stone-950 bg-[#f39c12] hover:bg-amber-400 active:bg-amber-500 shadow-lg shadow-amber-900/30 transition-all flex items-center justify-center gap-2 cursor-pointer group active:scale-98"
+          >
+            <Compass className="w-5 h-5 text-stone-950" />
+            <span>Search Tours</span>
+            <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
+          </button>
 
-                  <div className="mt-3 pt-3 border-t border-white/20 flex items-center justify-between text-xs">
-                    <div>
-                      <span className="text-stone-300">Package Base: </span>
-                      <span className="font-bold text-white tabular-nums">₹18,500</span>
-                    </div>
-                    <div className="text-right">
-                      <span className="text-amber-300 font-medium">Advance to Lock: </span>
-                      <span className="font-bold text-white tabular-nums">₹1,925</span>
-                      <span className="text-[10px] text-stone-300 ml-1">(5% fee on top + ₹1k)</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+          {/* Secondary CTA: Become a Partner */}
+          <button
+            type="button"
+            onClick={onPartnerClick}
+            className="w-full sm:w-auto px-8 py-3.5 rounded-xl font-bold text-sm sm:text-base text-white bg-white/10 hover:bg-white/20 active:bg-white/25 border border-white/30 backdrop-blur-md shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer group active:scale-98"
+          >
+            <Users className="w-5 h-5 text-emerald-400" />
+            <span>Become a Partner</span>
+            <ChevronRight className="w-4 h-4 text-stone-300 transform group-hover:translate-x-1 transition-transform" />
+          </button>
 
-            {/* Floating verification badge */}
-            <div className="absolute -bottom-4 -left-3 sm:-bottom-5 sm:-left-5 bg-stone-900/95 backdrop-blur-md rounded-2xl p-3.5 shadow-2xl border border-white/20 flex items-center gap-3 max-w-xs text-white">
-              <div className="w-10 h-10 rounded-xl bg-[#0b4619] flex items-center justify-center text-[#f39c12] shadow-sm shrink-0">
-                <ShieldCheck className="w-5 h-5 text-emerald-400" />
-              </div>
-              <div className="text-xs">
-                <div className="font-bold text-white">100% Verified Govt Licenses</div>
-                <div className="text-stone-300 text-[11px] mt-0.5">Instant WhatsApp & Phone unlock upon booking</div>
-              </div>
-            </div>
+        </div>
+
+        {/* Trust Badges / Assurance Row */}
+        <div className="mt-12 flex flex-wrap items-center justify-center gap-4 sm:gap-8 text-xs text-stone-300">
+          <div className="flex items-center gap-2">
+            <ShieldCheck className="w-4 h-4 text-emerald-400" />
+            <span>100% Verified Local Hosts</span>
+          </div>
+          <span className="hidden sm:inline text-white/30">•</span>
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-[#f39c12]" />
+            <span>Transparent 5% Platform Fee</span>
+          </div>
+          <span className="hidden sm:inline text-white/30">•</span>
+          <div className="flex items-center gap-2">
+            <MapPin className="w-4 h-4 text-teal-400" />
+            <span>{currentDestination.region}</span>
           </div>
         </div>
+
       </div>
+
+      {/* Slide Indicator Bar at Bottom */}
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/40 backdrop-blur-md border border-white/10">
+        {BACKGROUND_DESTINATIONS.map((dest, i) => (
+          <button
+            key={dest.id}
+            onClick={() => setActiveImageIndex(i)}
+            className={`h-1.5 rounded-full transition-all cursor-pointer ${
+              i === activeImageIndex ? 'w-6 bg-[#f39c12]' : 'w-2 bg-white/40 hover:bg-white/70'
+            }`}
+            title={`Slide ${i + 1}: ${dest.title}`}
+          />
+        ))}
+      </div>
+
     </section>
   );
 };
