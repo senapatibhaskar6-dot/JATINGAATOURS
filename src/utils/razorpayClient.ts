@@ -176,7 +176,7 @@ export async function startRazorpayCheckout({
     currency: orderData.currency || 'INR',
     name: config.merchantName || 'Jatingaa Tours Pvt Ltd',
     description: `Booking Advance for ${tourTitle.substring(0, 35)} (${travelersCount} traveler${travelersCount > 1 ? 's' : ''})`,
-    image: '/jatingaa_tours_logo.jpg',
+    image: '/jatingaa_tours_logo.png',
     order_id: orderData.order_id, // Order ID from backend
     prefill: {
       name: customerName,

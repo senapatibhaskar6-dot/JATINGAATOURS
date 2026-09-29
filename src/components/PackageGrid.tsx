@@ -1,5 +1,5 @@
 import React from 'react';
-import { TourPackage } from '../types';
+import { TourPackage, B2BAgency } from '../types';
 import { REGIONS_FILTER } from '../data/packages';
 import { PackageCard } from './PackageCard';
 import { Compass, Filter, RefreshCw } from 'lucide-react';
@@ -13,6 +13,10 @@ interface PackageGridProps {
   onSelectPackage: (pkg: TourPackage) => void;
   onBookPackage: (pkg: TourPackage) => void;
   onResetFilters: () => void;
+  isB2BMode?: boolean;
+  b2bAgency?: B2BAgency;
+  onHoldSlot?: (tour: TourPackage) => void;
+  onGenerateQuote?: (tour: TourPackage) => void;
 }
 
 export const PackageGrid: React.FC<PackageGridProps> = ({
@@ -24,6 +28,10 @@ export const PackageGrid: React.FC<PackageGridProps> = ({
   onSelectPackage,
   onBookPackage,
   onResetFilters,
+  isB2BMode = false,
+  b2bAgency,
+  onHoldSlot,
+  onGenerateQuote,
 }) => {
   return (
     <section id="packages-section" className="w-full py-20 bg-[#fafaf8] border-b border-stone-200/90 relative">
@@ -91,6 +99,10 @@ export const PackageGrid: React.FC<PackageGridProps> = ({
                 tour={tour}
                 onSelect={onSelectPackage}
                 onBook={onBookPackage}
+                isB2BMode={isB2BMode}
+                b2bAgency={b2bAgency}
+                onHoldSlot={onHoldSlot}
+                onGenerateQuote={onGenerateQuote}
               />
             ))}
           </div>

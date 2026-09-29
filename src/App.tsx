@@ -1,5 +1,8 @@
 import React, { useState, useMemo } from 'react';
-import { TourPackage, BookingRecord, Agency, TravelStory } from './types';
+import {
+  TourPackage, BookingRecord, Agency, TravelStory,
+  B2BAgency, B2BHoldSlot, B2BQuotation, B2BLedgerEntry, B2BPartnerTier
+} from './types';
 import { TOUR_PACKAGES } from './data/packages';
 import { INITIAL_TRAVEL_STORIES } from './data/travelStories';
 import { calculateBookingFees } from './utils/pricing';
@@ -19,6 +22,17 @@ import { AgencyRegisterModal } from './components/AgencyRegisterModal';
 import { CodeIntegrationModal } from './components/CodeIntegrationModal';
 import { MyBookingsModal } from './components/MyBookingsModal';
 import { PaymentGatewayModal } from './components/PaymentGatewayModal';
+import { B2BHeaderBanner } from './components/B2BHeaderBanner';
+import { B2BOperatorHubModal } from './components/B2BOperatorHubModal';
+import { B2BQuotationVoucherModal } from './components/B2BQuotationVoucherModal';
+import { B2BHoldSlotModal } from './components/B2BHoldSlotModal';
+import {
+  getStoredB2BAgencies, saveStoredB2BAgencies,
+  getStoredB2BHolds, saveStoredB2BHolds,
+  getStoredB2BQuotes, saveStoredB2BQuotes,
+  getStoredB2BLedger, saveStoredB2BLedger,
+  getStoredActiveB2BAgencyId, saveStoredActiveB2BAgencyId,
+} from './data/b2bData';
 import { Footer } from './components/Footer';
 
 // Seed sample initial confirmed bookings
@@ -101,6 +115,121 @@ export default function App() {
   const [isCodeGuidanceOpen, setIsCodeGuidanceOpen] = useState(false);
   const [isMyBookingsOpen, setIsMyBookingsOpen] = useState(false);
   const [isPaymentSettingsOpen, setIsPaymentSettingsOpen] = useState(false);
+
+  // B2B Operator Network State
+  const [isB2BMode, setIsB2BMode] = useState<boolean>(true); // Active by default for operator access
+  const [b2bAgencies, setB2bAgencies] = useState<B2BAgency[]>(getStoredB2BAgencies);
+  const [activeB2BAgencyId, setActiveB2BAgencyId] = useState<string>(getStoredActiveB2BAgencyId);
+  const [b2bHolds, setB2bHolds] = useState<B2BHoldSlot[]>(getStoredB2BHolds);
+  const [b2bQuotes, setB2bQuotes] = useState<B2BQuotation[]>(getStoredB2BQuotes);
+  const [b2bLedger, setB2bLedger] = useState<B2BLedgerEntry[]>(getStoredB2BLedger);
+
+  const [isB2BHubOpen, setIsB2BHubOpen] = useState(false);
+  const [activeHoldPackage, setActiveHoldPackage] = useState<TourPackage | null>(null);
+  const [activeQuotePackage, setActiveQuotePackage] = useState<TourPackage | null>(null);
+  const [activeQuotationData, setActiveQuotationData] = useState<B2BQuotation | null>(null);
+
+  const activeB2BAgency = useMemo(() => {
+    return b2bAgencies.find(a => a.id === activeB2BAgencyId) || b2bAgencies[0];
+  }, [b2bAgencies, activeB2BAgencyId]);
+
+  const handleSwitchB2BAgency = (agency: B2BAgency) => {
+    setActiveB2BAgencyId(agency.id);
+    saveStoredActiveB2BAgencyId(agency.id);
+    showToast(`Switched active B2B session to: ${agency.agencyName} (${agency.tier} Tier)`);
+  };
+
+  const handleUpdateB2BAgencyStatus = (agencyId: string, status: 'verified' | 'pending' | 'suspended', tier?: B2BPartnerTier) => {
+    setB2bAgencies(prev => {
+      const updated = prev.map(a => {
+        if (a.id === agencyId) {
+          const newTier = tier || a.tier;
+          const newMargin = newTier === 'Platinum' ? 22 : newTier === 'Gold' ? 18 : 12;
+          return {
+            ...a,
+            status,
+            tier: newTier,
+            wholesaleMarginPercent: newMargin,
+            approvedAt: status === 'verified' ? new Date().toISOString() : a.approvedAt,
+          };
+        }
+        return a;
+      });
+      saveStoredB2BAgencies(updated);
+      return updated;
+    });
+    showToast(`Agency status updated to "${status}"!`);
+  };
+
+  const handleAddNewB2BAgency = (agency: B2BAgency) => {
+    setB2bAgencies(prev => {
+      const updated = [agency, ...prev];
+      saveStoredB2BAgencies(updated);
+      return updated;
+    });
+    showToast(`Registered new agency: ${agency.agencyName}`);
+  };
+
+  const handleConfirmHold = (hold: B2BHoldSlot) => {
+    setB2bHolds(prev => {
+      const updated = [hold, ...prev];
+      saveStoredB2BHolds(updated);
+      return updated;
+    });
+    // Record ledger entry if deposit paid
+    if (hold.depositPaid > 0) {
+      setB2bLedger(prev => {
+        const entry: B2BLedgerEntry = {
+          id: `ledg-${Date.now()}`,
+          agencyId: hold.agencyId,
+          timestamp: new Date().toISOString(),
+          type: 'slot_hold_deposit',
+          amount: hold.depositPaid,
+          direction: 'credit',
+          referenceId: hold.holdCode,
+          description: `Hold Deposit for ${hold.clientName} (${hold.packageTitle})`,
+          balanceAfter: activeB2BAgency.walletBalance + hold.depositPaid,
+        };
+        const updated = [entry, ...prev];
+        saveStoredB2BLedger(updated);
+        return updated;
+      });
+    }
+    setActiveHoldPackage(null);
+    showToast(`Blocked ${hold.slotsHeld} slots on ${hold.packageTitle} (Code: ${hold.holdCode})`);
+  };
+
+  const handleReleaseHold = (holdId: string) => {
+    setB2bHolds(prev => {
+      const updated = prev.filter(h => h.id !== holdId);
+      saveStoredB2BHolds(updated);
+      return updated;
+    });
+    showToast(`Released held slots back into inventory pool.`);
+  };
+
+  const handleConvertHoldToBooking = (hold: B2BHoldSlot) => {
+    const pkg = packages.find(p => p.id === hold.packageId) || packages[0];
+    setBookingTour(pkg);
+    setBookingTravelersCount(hold.slotsHeld);
+    setIsB2BHubOpen(false);
+  };
+
+  const handleSaveQuotation = (quote: B2BQuotation) => {
+    setB2bQuotes(prev => {
+      const existing = prev.findIndex(q => q.id === quote.id);
+      let updated: B2BQuotation[];
+      if (existing >= 0) {
+        updated = [...prev];
+        updated[existing] = quote;
+      } else {
+        updated = [quote, ...prev];
+      }
+      saveStoredB2BQuotes(updated);
+      return updated;
+    });
+    showToast(`Saved quotation ${quote.quotationCode} for ${quote.clientName}`);
+  };
 
   // Bookings state
   const [bookings, setBookings] = useState<BookingRecord[]>(INITIAL_BOOKINGS);
@@ -259,6 +388,16 @@ export default function App() {
         </div>
       )}
 
+      {/* Top B2B Operator Network Banner */}
+      <B2BHeaderBanner
+        activeAgency={activeB2BAgency}
+        isB2BMode={isB2BMode}
+        activeHoldsCount={b2bHolds.filter(h => h.status === 'active').length}
+        onToggleB2BMode={() => setIsB2BMode(!isB2BMode)}
+        onOpenB2BHub={() => setIsB2BHubOpen(true)}
+        onOpenHolds={() => setIsB2BHubOpen(true)}
+      />
+
       {/* Top Header */}
       <Header
         onOpenAgencyPortal={() => setIsAgencyPortalOpen(true)}
@@ -266,6 +405,9 @@ export default function App() {
         onOpenRegisterAgency={() => setIsRegisterAgencyOpen(true)}
         onOpenCodeGuidance={() => setIsCodeGuidanceOpen(true)}
         onOpenPaymentSettings={() => setIsPaymentSettingsOpen(true)}
+        onOpenB2BHub={() => setIsB2BHubOpen(true)}
+        isB2BMode={isB2BMode}
+        onToggleB2BMode={() => setIsB2BMode(!isB2BMode)}
         bookingsCount={bookings.length}
       />
 
@@ -284,7 +426,7 @@ export default function App() {
         {/* 5% + ₹1,000 Pricing & Financial Model Explainer */}
         <FinancialExplainer />
 
-        {/* Curated Package Grid (Dynamically includes newly added vendor packages!) */}
+        {/* Curated Package Grid (Dynamically includes B2B Wholesale Pricing and Actions) */}
         <PackageGrid
           packages={filteredPackages}
           selectedRegion={selectedRegion}
@@ -294,6 +436,10 @@ export default function App() {
           onSelectPackage={(tour) => setSelectedPackage(tour)}
           onBookPackage={(tour) => handleOpenBooking(tour, 1)}
           onResetFilters={handleResetFilters}
+          isB2BMode={isB2BMode}
+          b2bAgency={activeB2BAgency}
+          onHoldSlot={(pkg) => setActiveHoldPackage(pkg)}
+          onGenerateQuote={(pkg) => setActiveQuotePackage(pkg)}
         />
 
         {/* User-Generated Content: Local Destination Stories & Travel Guides */}
@@ -420,6 +566,72 @@ export default function App() {
       {isPaymentSettingsOpen && (
         <PaymentGatewayModal
           onClose={() => setIsPaymentSettingsOpen(false)}
+        />
+      )}
+
+      {/* 10. B2B Operator Console & Collaboration Hub Modal */}
+      {isB2BHubOpen && (
+        <B2BOperatorHubModal
+          packages={packages}
+          activeAgency={activeB2BAgency}
+          allAgencies={b2bAgencies}
+          holds={b2bHolds}
+          quotations={b2bQuotes}
+          ledger={b2bLedger}
+          onClose={() => setIsB2BHubOpen(false)}
+          onSwitchAgency={handleSwitchB2BAgency}
+          onUpdateAgencyStatus={handleUpdateB2BAgencyStatus}
+          onAddNewAgency={handleAddNewB2BAgency}
+          onOpenHoldModalForPackage={(pkg) => {
+            setIsB2BHubOpen(false);
+            setActiveHoldPackage(pkg);
+          }}
+          onOpenQuotationModalForPackage={(pkg) => {
+            setIsB2BHubOpen(false);
+            setActiveQuotePackage(pkg);
+            setActiveQuotationData(null);
+          }}
+          onOpenBookingModalForPackage={(pkg, isB2B) => {
+            setIsB2BHubOpen(false);
+            handleOpenBooking(pkg, 1);
+          }}
+          onReleaseHold={handleReleaseHold}
+          onConvertHoldToBooking={handleConvertHoldToBooking}
+        />
+      )}
+
+      {/* 11. Real-Time Slot Blocking & Hold Engine Modal */}
+      {activeHoldPackage && (
+        <B2BHoldSlotModal
+          packageData={activeHoldPackage}
+          activeAgency={activeB2BAgency}
+          onClose={() => setActiveHoldPackage(null)}
+          onConfirmHold={handleConfirmHold}
+          onPayHoldDepositWithRazorpay={(hold) => {
+            handleConfirmHold(hold);
+            handleConvertHoldToBooking(hold);
+          }}
+        />
+      )}
+
+      {/* 12. Instant Custom-Branded Quotation & Itinerary Voucher Modal */}
+      {activeQuotePackage && (
+        <B2BQuotationVoucherModal
+          packageData={activeQuotePackage}
+          activeAgency={activeB2BAgency}
+          initialQuotation={activeQuotationData}
+          onClose={() => {
+            setActiveQuotePackage(null);
+            setActiveQuotationData(null);
+          }}
+          onSaveQuotation={handleSaveQuotation}
+          onProceedToPayAdvance={(quote) => {
+            handleSaveQuotation(quote);
+            setActiveQuotePackage(null);
+            const pkg = packages.find(p => p.id === quote.packageId) || activeQuotePackage;
+            setBookingTour(pkg);
+            setBookingTravelersCount(quote.travelersCount);
+          }}
         />
       )}
     </div>

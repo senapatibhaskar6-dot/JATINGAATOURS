@@ -1,6 +1,6 @@
 import React from 'react';
 import { ShieldCheck, Heart, MapPin, Mail, Phone } from 'lucide-react';
-import jatingaaLogo from '../assets/images/jatingaa_tours_logo.jpg';
+import jatingaaLogo from '../assets/images/jatingaa_tours_logo.png';
 
 interface FooterProps {
   onOpenAgencyPortal: () => void;

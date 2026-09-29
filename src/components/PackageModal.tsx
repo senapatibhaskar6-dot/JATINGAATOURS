@@ -11,11 +11,13 @@ interface PackageModalProps {
 
 export const PackageModal: React.FC<PackageModalProps> = ({ tour, onClose, onBook }) => {
   const [travelersCount, setTravelersCount] = useState<number>(1);
-  const [activeTab, setActiveTab] = useState<'itinerary' | 'inclusions' | 'agency'>('itinerary');
+  const [activeTab, setActiveTab] = useState<'itinerary' | 'destination' | 'inclusions' | 'agency'>('itinerary');
+  const [activeGalleryIndex, setActiveGalleryIndex] = useState<number>(0);
 
   if (!tour) return null;
 
   const calc = calculateBookingFees(tour.pricePerPerson, travelersCount);
+  const photos = tour.gallery && tour.gallery.length > 0 ? tour.gallery : [tour.image];
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6">
@@ -61,10 +63,10 @@ export const PackageModal: React.FC<PackageModalProps> = ({ tour, onClose, onBoo
           </div>
 
           {/* Navigation Tabs */}
-          <div className="px-6 border-b border-stone-200 flex gap-4 pt-3 text-sm font-medium text-stone-600 bg-stone-50/50">
+          <div className="px-6 border-b border-stone-200 flex overflow-x-auto gap-4 pt-3 text-sm font-medium text-stone-600 bg-stone-50/50">
             <button
               onClick={() => setActiveTab('itinerary')}
-              className={`pb-3 border-b-2 transition-colors cursor-pointer ${
+              className={`pb-3 border-b-2 transition-colors cursor-pointer whitespace-nowrap ${
                 activeTab === 'itinerary'
                   ? 'border-[#0b4619] text-[#0b4619] font-semibold'
                   : 'border-transparent hover:text-stone-900'
@@ -73,8 +75,18 @@ export const PackageModal: React.FC<PackageModalProps> = ({ tour, onClose, onBoo
               Day-by-Day Itinerary ({tour.itinerary.length} Days)
             </button>
             <button
+              onClick={() => setActiveTab('destination')}
+              className={`pb-3 border-b-2 transition-colors cursor-pointer whitespace-nowrap ${
+                activeTab === 'destination'
+                  ? 'border-[#0b4619] text-[#0b4619] font-semibold'
+                  : 'border-transparent hover:text-stone-900'
+              }`}
+            >
+              Destination & Photos ({photos.length})
+            </button>
+            <button
               onClick={() => setActiveTab('inclusions')}
-              className={`pb-3 border-b-2 transition-colors cursor-pointer ${
+              className={`pb-3 border-b-2 transition-colors cursor-pointer whitespace-nowrap ${
                 activeTab === 'inclusions'
                   ? 'border-[#0b4619] text-[#0b4619] font-semibold'
                   : 'border-transparent hover:text-stone-900'
@@ -84,7 +96,7 @@ export const PackageModal: React.FC<PackageModalProps> = ({ tour, onClose, onBoo
             </button>
             <button
               onClick={() => setActiveTab('agency')}
-              className={`pb-3 border-b-2 transition-colors cursor-pointer ${
+              className={`pb-3 border-b-2 transition-colors cursor-pointer whitespace-nowrap ${
                 activeTab === 'agency'
                   ? 'border-[#0b4619] text-[#0b4619] font-semibold'
                   : 'border-transparent hover:text-stone-900'
@@ -134,6 +146,72 @@ export const PackageModal: React.FC<PackageModalProps> = ({ tour, onClose, onBoo
                       )}
                     </div>
                   ))}
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'destination' && (
+              <div className="space-y-6">
+                {/* Photo Gallery Grid */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-xs font-bold text-stone-800 uppercase tracking-wider">
+                      Verified Media Gallery ({photos.length} High-Resolution Photos)
+                    </h4>
+                    <span className="text-[11px] text-stone-500 font-mono">
+                      Captured by {tour.agency.name}
+                    </span>
+                  </div>
+
+                  {/* Active Selected Photo Preview */}
+                  <div className="relative aspect-[16/9] w-full rounded-2xl overflow-hidden border border-stone-200 bg-stone-900 shadow-sm">
+                    <img
+                      src={photos[activeGalleryIndex] || photos[0]}
+                      alt={`${tour.title} photo preview`}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute bottom-3 left-3 bg-stone-950/70 backdrop-blur-md px-3 py-1 rounded-full text-white text-xs font-medium border border-white/20">
+                      Photo {activeGalleryIndex + 1} of {photos.length}
+                    </div>
+                  </div>
+
+                  {/* Thumbnails row */}
+                  <div className="grid grid-cols-4 sm:grid-cols-6 gap-2 pt-1">
+                    {photos.map((imgUrl, i) => (
+                      <button
+                        key={i}
+                        type="button"
+                        onClick={() => setActiveGalleryIndex(i)}
+                        className={`relative aspect-[4/3] rounded-lg overflow-hidden border-2 transition-all cursor-pointer ${
+                          activeGalleryIndex === i
+                            ? 'border-[#0b4619] shadow-md scale-102'
+                            : 'border-transparent opacity-70 hover:opacity-100'
+                        }`}
+                      >
+                        <img src={imgUrl} alt={`Thumbnail ${i + 1}`} className="w-full h-full object-cover" />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Operator Destination Description (within 1,000 words limit) */}
+                <div className="p-5 rounded-2xl bg-stone-50 border border-stone-200 space-y-3">
+                  <div className="flex items-center justify-between pb-2 border-b border-stone-200">
+                    <div className="flex items-center gap-2 text-stone-900 font-bold text-sm font-display">
+                      <Sparkles className="w-4 h-4 text-[#f39c12]" />
+                      <span>Local Operator Destination Narrative & Ecological Context</span>
+                    </div>
+                    {tour.destinationWordCount && (
+                      <span className="text-[10px] font-mono font-semibold bg-emerald-100 text-emerald-900 px-2 py-0.5 rounded">
+                        {tour.destinationWordCount} words
+                      </span>
+                    )}
+                  </div>
+
+                  <p className="text-xs sm:text-sm text-stone-700 leading-relaxed whitespace-pre-line">
+                    {tour.destinationDescription ||
+                      `Located in ${tour.location}, this curated expedition is guided directly by native hosts and cultural elders. Travelers traverse pristine ecological biomes, learn ancient oral folklore, and directly uplift indigenous family homestays with radical pricing transparency.`}
+                  </p>
                 </div>
               </div>
             )}

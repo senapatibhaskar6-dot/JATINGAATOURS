@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { ShieldCheck, UserCheck, Menu, X, ReceiptText, CreditCard } from 'lucide-react';
-import jatingaaLogo from '../assets/images/jatingaa_tours_logo.jpg';
+import { ShieldCheck, UserCheck, Menu, X, ReceiptText, CreditCard, Building2 } from 'lucide-react';
+import jatingaaLogo from '../assets/images/jatingaa_tours_logo.png';
 
 interface HeaderProps {
   onOpenAgencyPortal: () => void;
@@ -8,6 +8,9 @@ interface HeaderProps {
   onOpenRegisterAgency: () => void;
   onOpenCodeGuidance?: () => void;
   onOpenPaymentSettings?: () => void;
+  onOpenB2BHub?: () => void;
+  isB2BMode?: boolean;
+  onToggleB2BMode?: () => void;
   bookingsCount: number;
 }
 
@@ -17,6 +20,9 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenRegisterAgency,
   onOpenCodeGuidance,
   onOpenPaymentSettings,
+  onOpenB2BHub,
+  isB2BMode = false,
+  onToggleB2BMode,
   bookingsCount,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -106,6 +112,21 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Zone 3: Primary Action Controls */}
         <div className="hidden sm:flex items-center gap-2">
+          {onOpenB2BHub && (
+            <button
+              onClick={onOpenB2BHub}
+              className={`flex items-center gap-1.5 px-3 py-2 text-xs font-bold rounded-lg transition-colors cursor-pointer whitespace-nowrap shadow-xs ${
+                isB2BMode
+                  ? 'bg-amber-400 text-stone-950 hover:bg-amber-300 border border-amber-500'
+                  : 'bg-emerald-900 text-emerald-100 hover:bg-emerald-800 border border-emerald-700'
+              }`}
+              title="B2B Wholesale Operator Network, Slot Holds & Branded Quotes"
+            >
+              <Building2 className="w-3.5 h-3.5" />
+              <span>{isB2BMode ? 'B2B Console' : 'B2B Partner Network'}</span>
+            </button>
+          )}
+
           {onOpenCodeGuidance && (
             <button
               onClick={onOpenCodeGuidance}
@@ -211,6 +232,22 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
 
           <div className="pt-3 border-t border-stone-200 flex flex-col gap-2">
+            {onOpenB2BHub && (
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  onOpenB2BHub();
+                }}
+                className={`w-full flex items-center justify-center gap-2 py-2.5 text-xs font-bold rounded-lg ${
+                  isB2BMode
+                    ? 'bg-amber-400 text-stone-950 border border-amber-500'
+                    : 'bg-emerald-900 text-emerald-100 border border-emerald-700'
+                }`}
+              >
+                <Building2 className="w-4 h-4" />
+                {isB2BMode ? 'Open B2B Operator Console' : 'Switch to B2B Partner Network'}
+              </button>
+            )}
             {onOpenPaymentSettings && (
               <button
                 onClick={() => {

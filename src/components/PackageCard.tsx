@@ -1,16 +1,29 @@
 import React from 'react';
-import { TourPackage } from '../types';
-import { calculateBookingFees, formatINR } from '../utils/pricing';
-import { ShieldCheck, MapPin, Calendar, Users, ArrowRight } from 'lucide-react';
+import { TourPackage, B2BAgency } from '../types';
+import { calculateBookingFees, calculateB2BWholesale, formatINR } from '../utils/pricing';
+import { ShieldCheck, MapPin, Calendar, Users, ArrowRight, Clock, FileText } from 'lucide-react';
 
 interface PackageCardProps {
   tour: TourPackage;
   onSelect: (tour: TourPackage) => void;
   onBook: (tour: TourPackage) => void;
+  isB2BMode?: boolean;
+  b2bAgency?: B2BAgency;
+  onHoldSlot?: (tour: TourPackage) => void;
+  onGenerateQuote?: (tour: TourPackage) => void;
 }
 
-export const PackageCard: React.FC<PackageCardProps> = ({ tour, onSelect, onBook }) => {
+export const PackageCard: React.FC<PackageCardProps> = ({
+  tour,
+  onSelect,
+  onBook,
+  isB2BMode = false,
+  b2bAgency,
+  onHoldSlot,
+  onGenerateQuote,
+}) => {
   const calc = calculateBookingFees(tour.pricePerPerson, 1);
+  const wholesale = calculateB2BWholesale(tour.pricePerPerson, 1, b2bAgency?.tier || 'Gold');
 
   return (
     <div className="group bg-white rounded-2xl border border-stone-200/90 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5 overflow-hidden flex flex-col justify-between hover:border-[#0b4619]/30">
@@ -32,7 +45,13 @@ export const PackageCard: React.FC<PackageCardProps> = ({ tour, onSelect, onBook
           <span>{tour.regionLabel}</span>
         </div>
 
-        {tour.isUserGenerated && (
+        {isB2BMode && (
+          <div className="absolute top-3.5 right-3.5 text-[10px] font-bold text-white bg-emerald-900/90 backdrop-blur-md px-2.5 py-1 rounded-full border border-emerald-400/40 shadow-xs uppercase tracking-wider">
+            {b2bAgency?.tier || 'Gold'} Tier • {b2bAgency?.wholesaleMarginPercent || 18}% Margin
+          </div>
+        )}
+
+        {!isB2BMode && tour.isUserGenerated && (
           <div className="absolute top-3.5 right-3.5 text-[10px] font-bold text-white bg-[#0b4619]/90 backdrop-blur-md px-2 py-0.5 rounded-full border border-emerald-400/30 shadow-xs uppercase tracking-wider">
             Verified Guide UGC
           </div>
@@ -89,45 +108,100 @@ export const PackageCard: React.FC<PackageCardProps> = ({ tour, onSelect, onBook
 
         {/* Pricing & Actions Section */}
         <div className="mt-5 pt-3.5 border-t border-stone-100">
-          <div className="flex items-baseline justify-between mb-2.5">
-            <div>
-              <span className="text-xs text-stone-500">Package Total: </span>
-              <span className="text-lg font-extrabold text-stone-900 font-display tabular-nums">
-                {formatINR(tour.pricePerPerson)}
-              </span>
-              <span className="text-[11px] text-stone-400"> / person</span>
+          {/* B2B Mode Pricing Display */}
+          {isB2BMode ? (
+            <div className="space-y-2 mb-3">
+              <div className="p-3 rounded-xl bg-emerald-50/80 border border-emerald-200/90 text-xs space-y-1.5">
+                <div className="flex items-baseline justify-between">
+                  <span className="text-[11px] text-stone-600">B2B Wholesale Net Cost:</span>
+                  <span className="text-base font-extrabold text-[#0b4619] font-mono tabular-nums">
+                    {formatINR(wholesale.wholesaleNetRatePerPerson)}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between text-[11px] text-stone-500 pt-1 border-t border-emerald-200/60">
+                  <span>Retail Price (RSP): <strong className="text-stone-700">{formatINR(wholesale.retailPricePerPerson)}</strong></span>
+                  <span className="font-bold text-emerald-800">Your Margin: +{formatINR(wholesale.agentTotalProfit)}</span>
+                </div>
+              </div>
+
+              {/* B2B Action Buttons */}
+              <div className="grid grid-cols-3 gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => onHoldSlot?.(tour)}
+                  className="px-2 py-2 text-[11px] font-semibold text-amber-900 bg-amber-50 hover:bg-amber-100 border border-amber-200/80 rounded-lg transition-colors cursor-pointer flex items-center justify-center gap-1"
+                  title="Hold slots for client (24h/48h)"
+                >
+                  <Clock className="w-3 h-3 text-amber-700" />
+                  <span>Hold Slot</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => onGenerateQuote?.(tour)}
+                  className="px-2 py-2 text-[11px] font-semibold text-stone-800 bg-stone-100 hover:bg-stone-200 rounded-lg transition-colors cursor-pointer flex items-center justify-center gap-1"
+                  title="Generate branded quotation for client"
+                >
+                  <FileText className="w-3 h-3 text-stone-600" />
+                  <span>Quote</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => onBook(tour)}
+                  className="px-2 py-2 text-[11px] font-semibold text-white bg-[#0b4619] hover:bg-[#073011] rounded-lg transition-colors cursor-pointer flex items-center justify-center gap-1 shadow-xs"
+                  title="Book at wholesale net rate with Razorpay Live"
+                >
+                  <span>Book Net</span>
+                  <ArrowRight className="w-3 h-3 text-amber-300" />
+                </button>
+              </div>
             </div>
-          </div>
+          ) : (
+            /* Retail (B2C) Mode Display */
+            <>
+              <div className="flex items-baseline justify-between mb-2.5">
+                <div>
+                  <span className="text-xs text-stone-500">Package Total: </span>
+                  <span className="text-lg font-extrabold text-stone-900 font-display tabular-nums">
+                    {formatINR(tour.pricePerPerson)}
+                  </span>
+                  <span className="text-[11px] text-stone-400"> / person</span>
+                </div>
+              </div>
 
-          {/* Core Formula Advance Badge */}
-          <div className="p-2.5 rounded-xl bg-emerald-50/70 border border-emerald-200/80 flex items-center justify-between mb-3 text-xs shadow-xs">
-            <span className="text-stone-700 font-medium">
-              Initial Advance to Lock:
-            </span>
-            <span className="font-bold text-[#0b4619] tabular-nums">
-              {formatINR(calc.totalAdvancePayable)}
-              <span className="text-[10px] font-normal text-stone-500 ml-1">(5% fee on top + ₹1k)</span>
-            </span>
-          </div>
+              {/* Core Formula Advance Badge */}
+              <div className="p-2.5 rounded-xl bg-emerald-50/70 border border-emerald-200/80 flex items-center justify-between mb-3 text-xs shadow-xs">
+                <span className="text-stone-700 font-medium">
+                  Initial Advance to Lock:
+                </span>
+                <span className="font-bold text-[#0b4619] tabular-nums">
+                  {formatINR(calc.totalAdvancePayable)}
+                  <span className="text-[10px] font-normal text-stone-500 ml-1">(5% fee on top + ₹1k)</span>
+                </span>
+              </div>
 
-          {/* Action Buttons */}
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              onClick={() => onSelect(tour)}
-              className="px-3 py-2 text-xs font-semibold text-stone-700 hover:text-stone-900 bg-stone-100 hover:bg-stone-200 rounded-xl transition-all cursor-pointer text-center active:scale-[0.98]"
-            >
-              View Itinerary
-            </button>
-            <button
-              onClick={() => onBook(tour)}
-              className="px-3 py-2 text-xs font-semibold text-white bg-[#0b4619] hover:bg-[#062b0f] active:bg-[#041c09] rounded-xl shadow-sm hover:shadow-md transition-all cursor-pointer flex items-center justify-center gap-1 active:scale-[0.98]"
-            >
-              <span>Book Now</span>
-              <ArrowRight className="w-3.5 h-3.5 text-[#f39c12]" />
-            </button>
-          </div>
+              {/* Action Buttons */}
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => onSelect(tour)}
+                  className="px-3 py-2 text-xs font-semibold text-stone-700 hover:text-stone-900 bg-stone-100 hover:bg-stone-200 rounded-xl transition-all cursor-pointer text-center active:scale-[0.98]"
+                >
+                  View Itinerary
+                </button>
+                <button
+                  onClick={() => onBook(tour)}
+                  className="px-3 py-2 text-xs font-semibold text-white bg-[#0b4619] hover:bg-[#062b0f] active:bg-[#041c09] rounded-xl shadow-sm hover:shadow-md transition-all cursor-pointer flex items-center justify-center gap-1 active:scale-[0.98]"
+                >
+                  <span>Book Now</span>
+                  <ArrowRight className="w-3.5 h-3.5 text-[#f39c12]" />
+                </button>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>
   );
 };
+

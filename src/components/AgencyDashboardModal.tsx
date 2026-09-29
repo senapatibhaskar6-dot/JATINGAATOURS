@@ -79,6 +79,12 @@ export const AgencyDashboardModal: React.FC<AgencyDashboardModalProps> = ({
   const [profileState, setProfileState] = useState(activeAgency.state);
   const [profileLicense, setProfileLicense] = useState(activeAgency.licenseNumber);
   const [profileBio, setProfileBio] = useState(activeAgency.bio);
+  // Bank Account & Instant Payout Settings
+  const [profileBankName, setProfileBankName] = useState(activeAgency.bankName || 'State Bank of India (Guwahati Branch)');
+  const [profileAccountHolder, setProfileAccountHolder] = useState(activeAgency.bankAccountName || activeAgency.name);
+  const [profileAccountNumber, setProfileAccountNumber] = useState(activeAgency.bankAccountNumber || '38920194821');
+  const [profileIfsc, setProfileIfsc] = useState(activeAgency.bankIfsc || 'SBIN0000078');
+  const [profileUpiId, setProfileUpiId] = useState(activeAgency.upiId || 'jatingaa.partner@okhdfcbank');
   const [profileSuccessMsg, setProfileSuccessMsg] = useState(false);
 
   // New Package Form State
@@ -92,6 +98,24 @@ export const AgencyDashboardModal: React.FC<AgencyDashboardModalProps> = ({
   const [newPkgDays, setNewPkgDays] = useState<number>(5);
   const [newPkgPrice, setNewPkgPrice] = useState<number>(18000);
   const [newPkgImage, setNewPkgImage] = useState<string>(heroImg);
+  // Minimum 4 high-quality photos requirement
+  const [newPkgGallery, setNewPkgGallery] = useState<string[]>([
+    heroImg,
+    scenicImg,
+    keralaImg,
+    ladakhImg,
+  ]);
+  // Destination Description (limit 1,000 words)
+  const [newPkgDestinationDescription, setNewPkgDestinationDescription] = useState(
+    'Cherrapunji (Sohra) and the East Khasi Hills represent one of the most culturally profound and ecological treasures on Earth. Renowned for its dramatic monsoon waterfalls, misty sandstone canyons, and bio-engineered living root bridges nurtured over centuries by indigenous Khasi clans, this landscape offers an unparalleled sanctuary for mindful travelers. Our community-guided journeys descend ancient stone staircases into the tropical valley of Nongriat, visiting sacred groves, crystal turquoise river pools, and tribal villages where community conservation and warm mountain hospitality remain a cherished way of life. Every traveler directly supports native guides, family homestays, and sustainable village forest stewardship.'
+  );
+
+  const countWords = (text: string) => {
+    const trimmed = text.trim();
+    return trimmed ? trimmed.split(/\s+/).length : 0;
+  };
+  const destinationWordCount = countWords(newPkgDestinationDescription);
+
   const [newPkgBestSeason, setNewPkgBestSeason] = useState('October – April');
   const [newPkgGroupType, setNewPkgGroupType] = useState<'Small Group (Max 8)' | 'Private Guided' | 'Community Homestay'>('Small Group (Max 8)');
   const [newPkgFitness, setNewPkgFitness] = useState<'Easy' | 'Moderate' | 'Challenging'>('Moderate');
@@ -159,6 +183,12 @@ export const AgencyDashboardModal: React.FC<AgencyDashboardModalProps> = ({
       state: profileState,
       licenseNumber: profileLicense,
       bio: profileBio,
+      bankName: profileBankName,
+      bankAccountName: profileAccountHolder,
+      bankAccountNumber: profileAccountNumber,
+      bankIfsc: profileIfsc,
+      upiId: profileUpiId,
+      payoutStatus: 'verified',
     };
     onUpdateAgencyProfile(updated);
     setProfileSuccessMsg(true);
@@ -192,6 +222,23 @@ export const AgencyDashboardModal: React.FC<AgencyDashboardModalProps> = ({
       return;
     }
 
+    // 1. Destination description validation (within 1,000 words limit)
+    const words = countWords(newPkgDestinationDescription);
+    if (words === 0) {
+      alert('Please provide a detailed destination description for travelers.');
+      return;
+    }
+    if (words > 1000) {
+      alert(`Destination description cannot exceed 1,000 words. (Current word count: ${words} words). Please condense your description.`);
+      return;
+    }
+
+    // 2. Minimum 4 high-quality photos validation
+    if (newPkgGallery.length < 4) {
+      alert(`Media Upload Requirement: You must upload a minimum of 4 high-quality photos for each tour package. (Currently uploaded: ${newPkgGallery.length}/4)`);
+      return;
+    }
+
     const regionLabels = {
       northeast: 'Northeast India',
       himalayas: 'Himalayan Frontier',
@@ -212,9 +259,18 @@ export const AgencyDashboardModal: React.FC<AgencyDashboardModalProps> = ({
       groupType: newPkgGroupType,
       fitnessLevel: newPkgFitness,
       pricePerPerson: newPkgPrice,
-      image: newPkgImage,
-      gallery: [newPkgImage],
-      agency: activeAgency,
+      image: newPkgGallery[0] || newPkgImage,
+      gallery: newPkgGallery,
+      destinationDescription: newPkgDestinationDescription,
+      destinationWordCount: words,
+      agency: {
+        ...activeAgency,
+        bankName: profileBankName,
+        bankAccountName: profileAccountHolder,
+        bankAccountNumber: profileAccountNumber,
+        bankIfsc: profileIfsc,
+        upiId: profileUpiId,
+      },
       itinerary: itineraryDays.map((d, idx) => ({
         day: idx + 1,
         title: d.title,
@@ -236,6 +292,7 @@ export const AgencyDashboardModal: React.FC<AgencyDashboardModalProps> = ({
     setNewPkgTitle('');
     setNewPkgTagline('');
     setNewPkgLocation('');
+    alert(`Tour Package "${newTour.title}" published successfully with ${newPkgGallery.length} verified photos and ${words}-word destination description!`);
   };
 
   // Submit New Travel Story
@@ -534,6 +591,31 @@ export const AgencyDashboardModal: React.FC<AgencyDashboardModalProps> = ({
                             </div>
                           </div>
 
+                          {/* 5% + ₹1,000 Fund Splitting & Instant Transfer Status */}
+                          <div className="p-3 rounded-lg bg-emerald-50/80 border border-emerald-200 text-xs flex flex-wrap items-center justify-between gap-3">
+                            <div>
+                              <span className="text-stone-500 text-[10px] uppercase font-semibold block">Customer Total Paid</span>
+                              <strong className="text-stone-900 font-mono">{formatINR(b.calculation.totalPackagePrice)}</strong>
+                            </div>
+                            <div>
+                              <span className="text-stone-500 text-[10px] uppercase font-semibold block">Platform Fee (5% + ₹1,000)</span>
+                              <span className="text-rose-700 font-mono font-semibold">-{formatINR(b.calculation.totalPlatformDeduction || (b.calculation.platformCommission + 1000))}</span>
+                            </div>
+                            <div>
+                              <span className="text-emerald-900 text-[10px] uppercase font-bold block">Net Operator Payout</span>
+                              <strong className="text-[#0b4619] font-mono text-sm">+{formatINR(b.calculation.netOperatorInstantTransfer || (b.calculation.totalPackagePrice - (b.calculation.platformCommission + 1000)))}</strong>
+                            </div>
+                            <div className="text-[11px] text-right">
+                              <span className="text-emerald-800 font-semibold flex items-center gap-1 justify-end">
+                                <CheckCircle2 className="w-3.5 h-3.5 text-[#0b4619]" />
+                                <span>Transferred Instantly (Razorpay Route / IMPS)</span>
+                              </span>
+                              <div className="text-[10px] text-stone-400 font-mono">
+                                A/C: {b.agency.bankName || 'Operator Bank Account'}
+                              </div>
+                            </div>
+                          </div>
+
                           <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center">
                             <div className="sm:col-span-8 space-y-1 text-xs">
                               <div className="text-stone-400 font-semibold uppercase tracking-wider text-[10px]">
@@ -737,35 +819,144 @@ export const AgencyDashboardModal: React.FC<AgencyDashboardModalProps> = ({
                     </div>
                   </div>
 
-                  {/* Financial Breakdown Card for this price */}
-                  <div className="p-3.5 rounded-xl bg-emerald-50/70 border border-emerald-200 text-xs text-stone-700 space-y-1">
-                    <div className="font-bold text-[#0b4619] flex items-center justify-between">
-                      <span>Transparent Financial Settlement:</span>
-                      <span className="text-[11px] bg-emerald-100 text-emerald-900 px-2 py-0.5 rounded font-mono">
-                        0% Commission Deducted from Agency
+                  {/* Pricing, 5% Commission & ₹1,000 Model Breakdown */}
+                  <div className="p-4 rounded-xl bg-emerald-50/80 border border-emerald-200 text-xs text-stone-700 space-y-2">
+                    <div className="font-bold text-[#0b4619] flex flex-wrap items-center justify-between gap-2">
+                      <span className="flex items-center gap-1.5">
+                        <Banknote className="w-4 h-4 text-[#0b4619]" />
+                        <span>Platform Pricing, 5% Commission & ₹1,000 Fund Splitting Model:</span>
+                      </span>
+                      <span className="text-[11px] bg-[#0b4619] text-white px-2 py-0.5 rounded font-mono font-bold">
+                        Automated Instant Operator Transfer
                       </span>
                     </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1 text-[11px]">
-                      <div>
-                        Traveler pays on checkout: <strong className="text-stone-900">₹1,000</strong> (Instant Advance) + <span className="text-stone-500">5% fee (₹{Math.round(newPkgPrice * 0.05)})</span>
+                    <p className="text-[11px] text-stone-600 leading-relaxed">
+                      When a booking is successfully made by a traveler, the platform automatically deducts a flat 5% commission plus an additional ₹1,000 fee. The remaining booking amount is instantly transferred to your registered bank/payment account the moment the customer completes payment.
+                    </p>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-2 border-t border-emerald-200/80 text-[11px]">
+                      <div className="p-2 rounded-lg bg-white border border-emerald-100">
+                        <span className="text-stone-500 block">Customer Paid (1 Pax):</span>
+                        <strong className="text-stone-900 font-mono text-xs">₹{newPkgPrice.toLocaleString('en-IN')}</strong>
                       </div>
-                      <div>
-                        Instant advance credited to you: <strong className="text-emerald-800">₹1,000 / booking</strong>
+                      <div className="p-2 rounded-lg bg-white border border-emerald-100">
+                        <span className="text-stone-500 block">Platform Fee (5% + ₹1,000):</span>
+                        <strong className="text-rose-700 font-mono text-xs">-₹{(Math.round(newPkgPrice * 0.05) + 1000).toLocaleString('en-IN')}</strong>
+                        <span className="text-[10px] text-stone-400 block">(₹{Math.round(newPkgPrice * 0.05)} + ₹1,000)</span>
                       </div>
-                      <div>
-                        Balance collected directly on arrival: <strong className="text-stone-900 font-mono">₹{(newPkgPrice - 1000).toLocaleString('en-IN')}</strong>
+                      <div className="p-2 rounded-lg bg-emerald-100/60 border border-emerald-200">
+                        <span className="text-emerald-900 font-semibold block">Net Instant Operator Transfer:</span>
+                        <strong className="text-[#0b4619] font-mono text-xs">₹{Math.max(0, newPkgPrice - (Math.round(newPkgPrice * 0.05) + 1000)).toLocaleString('en-IN')}</strong>
+                        <span className="text-[10px] text-emerald-800 block">Transferred to your bank</span>
                       </div>
                     </div>
                   </div>
 
-                  {/* Photo & Live Camera Uploader */}
-                  <PhotoCaptureUploader
-                    label="Destination Cover Photo & Live Camera Capture"
-                    helpText="Take a live photo using device camera (triggers browser camera permission prompt / কেমেৰা পাৰ্মিছন ল'ব), browse gallery, or pick a verified preset."
-                    currentImage={newPkgImage}
-                    onImageChange={setNewPkgImage}
-                    presets={DESTINATION_PRESETS}
-                  />
+                  {/* Destination Description with 1,000 words limit */}
+                  <div className="space-y-1.5 pt-2 border-t border-stone-200">
+                    <div className="flex items-center justify-between">
+                      <label className="block text-xs font-bold text-stone-800 uppercase tracking-wider">
+                        Destination Description (Limit: 1,000 Words) *
+                      </label>
+                      <span className={`text-[11px] font-mono font-semibold px-2 py-0.5 rounded ${
+                        destinationWordCount > 1000
+                          ? 'bg-rose-100 text-rose-800 border border-rose-300'
+                          : destinationWordCount >= 20
+                          ? 'bg-emerald-100 text-emerald-900 border border-emerald-300'
+                          : 'bg-amber-100 text-amber-900 border border-amber-300'
+                      }`}>
+                        {destinationWordCount} / 1,000 words {destinationWordCount > 1000 ? '(Exceeds Limit!)' : ''}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-stone-500">
+                      Provide a rich, authentic description of your destination, indigenous cultural significance, ecology, and what travelers will experience.
+                    </p>
+                    <textarea
+                      rows={5}
+                      required
+                      value={newPkgDestinationDescription}
+                      onChange={(e) => setNewPkgDestinationDescription(e.target.value)}
+                      placeholder="Describe the local trails, sacred groves, indigenous communities, weather patterns, and heritage of your destination..."
+                      className="w-full px-3 py-2 text-xs rounded-xl border border-stone-300 text-stone-900 bg-white leading-relaxed focus:outline-none focus:ring-1 focus:ring-[#0b4619]"
+                    />
+                  </div>
+
+                  {/* Media Upload: Minimum 4 High-Quality Photos */}
+                  <div className="space-y-3 pt-2 border-t border-stone-200">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                      <div>
+                        <label className="block text-xs font-bold text-stone-800 uppercase tracking-wider">
+                          Media Upload (Minimum 4 Photos Required) *
+                        </label>
+                        <p className="text-[11px] text-stone-500">
+                          Upload high-resolution images or capture live photos using device camera permissions.
+                        </p>
+                      </div>
+                      <div className={`px-2.5 py-1 rounded-full text-xs font-bold font-mono self-start sm:self-auto ${
+                        newPkgGallery.length >= 4
+                          ? 'bg-emerald-100 text-emerald-900 border border-emerald-300'
+                          : 'bg-amber-100 text-amber-900 border border-amber-300'
+                      }`}>
+                        {newPkgGallery.length >= 4 ? '✓ ' : '⚠ '}
+                        {newPkgGallery.length} / 4 Photos Uploaded
+                      </div>
+                    </div>
+
+                    {/* Gallery Thumbnails List */}
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                      {newPkgGallery.map((imgUrl, i) => (
+                        <div key={i} className="relative group rounded-xl overflow-hidden border border-stone-300 aspect-[4/3] bg-stone-100">
+                          <img src={imgUrl} alt={`Package photo ${i + 1}`} className="w-full h-full object-cover" />
+                          <div className="absolute top-1 left-1 bg-stone-900/80 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">
+                            {i === 0 ? 'Cover' : `#${i + 1}`}
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (newPkgGallery.length <= 4) {
+                                if (!window.confirm('Removing this photo will leave fewer than 4 photos. Be sure to add another photo before publishing. Remove anyway?')) return;
+                              }
+                              setNewPkgGallery(prev => prev.filter((_, idx) => idx !== i));
+                            }}
+                            className="absolute top-1 right-1 p-1 bg-rose-600 hover:bg-rose-700 text-white rounded shadow-sm opacity-90 group-hover:opacity-100 transition-opacity cursor-pointer"
+                            title="Delete Photo"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Camera Permission & Live Capture Uploader */}
+                    <PhotoCaptureUploader
+                      label="Capture Live Photo with Device Camera or Add From Storage"
+                      helpText="Click 'Capture with Live Camera' to trigger the browser camera permission prompt (কেমেৰা অনুমতি ল'ব). The captured photo will be added to your 4-photo package gallery."
+                      currentImage={newPkgImage}
+                      onImageChange={(capturedUrl) => {
+                        setNewPkgImage(capturedUrl);
+                        setNewPkgGallery(prev => [capturedUrl, ...prev]);
+                      }}
+                      presets={DESTINATION_PRESETS}
+                    />
+
+                    {/* Quick Preset Photo Adders */}
+                    <div className="flex flex-wrap items-center gap-2 pt-1">
+                      <span className="text-[11px] text-stone-500 font-semibold">Quick add high-res regional photo:</span>
+                      {DESTINATION_PRESETS.map((preset, idx) => (
+                        <button
+                          key={idx}
+                          type="button"
+                          onClick={() => {
+                            if (!newPkgGallery.includes(preset.img)) {
+                              setNewPkgGallery(prev => [...prev, preset.img]);
+                            }
+                          }}
+                          className="px-2 py-1 rounded bg-stone-100 hover:bg-stone-200 text-stone-700 text-[10px] font-medium border border-stone-200 transition-colors cursor-pointer"
+                        >
+                          + {preset.name}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
 
                   {/* Itinerary Builder */}
                   <div className="space-y-3 pt-2 border-t border-stone-200">
@@ -1308,6 +1499,82 @@ export const AgencyDashboardModal: React.FC<AgencyDashboardModalProps> = ({
                     onChange={(e) => setProfileBio(e.target.value)}
                     className="w-full px-3 py-2 rounded-lg border border-stone-300 text-stone-900 bg-white leading-relaxed"
                   />
+                </div>
+
+                {/* Registered Bank / Payment Account for Instant Fund Transfers */}
+                <div className="p-4 rounded-xl bg-stone-50 border border-stone-200 space-y-3">
+                  <div className="flex items-center justify-between pb-2 border-b border-stone-200">
+                    <div className="flex items-center gap-2">
+                      <Banknote className="w-4 h-4 text-[#0b4619]" />
+                      <span className="font-bold text-stone-900 uppercase tracking-wider text-[11px]">
+                        Registered Bank / Payment Account (Instant Razorpay Route Transfers)
+                      </span>
+                    </div>
+                    <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-900 text-[10px] font-bold">
+                      Automated Fund Transfer Active
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-stone-500">
+                    When bookings are confirmed, the platform deducts flat 5% commission + ₹1,000 fee and instantly transfers the remaining booking funds directly into this registered account.
+                  </p>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                    <div>
+                      <label className="block font-semibold text-stone-700 mb-1">Bank Name *</label>
+                      <input
+                        type="text"
+                        required
+                        value={profileBankName}
+                        onChange={(e) => setProfileBankName(e.target.value)}
+                        placeholder="e.g. State Bank of India / HDFC Bank"
+                        className="w-full px-3 py-2 rounded-lg border border-stone-300 text-stone-900 bg-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block font-semibold text-stone-700 mb-1">Account Holder Name *</label>
+                      <input
+                        type="text"
+                        required
+                        value={profileAccountHolder}
+                        onChange={(e) => setProfileAccountHolder(e.target.value)}
+                        placeholder="e.g. Khasi Hills Eco-Tourism Society"
+                        className="w-full px-3 py-2 rounded-lg border border-stone-300 text-stone-900 bg-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block font-semibold text-stone-700 mb-1">Bank Account Number *</label>
+                      <input
+                        type="text"
+                        required
+                        value={profileAccountNumber}
+                        onChange={(e) => setProfileAccountNumber(e.target.value)}
+                        placeholder="e.g. 38920194821"
+                        className="w-full px-3 py-2 rounded-lg border border-stone-300 text-stone-900 bg-white font-mono"
+                      />
+                    </div>
+                    <div>
+                      <label className="block font-semibold text-stone-700 mb-1">Bank IFSC Code *</label>
+                      <input
+                        type="text"
+                        required
+                        value={profileIfsc}
+                        onChange={(e) => setProfileIfsc(e.target.value)}
+                        placeholder="e.g. SBIN0000078"
+                        className="w-full px-3 py-2 rounded-lg border border-stone-300 text-stone-900 bg-white font-mono uppercase"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block font-semibold text-stone-700 mb-1">Direct UPI ID / VPA (Instant Settlement Alternative)</label>
+                    <input
+                      type="text"
+                      value={profileUpiId}
+                      onChange={(e) => setProfileUpiId(e.target.value)}
+                      placeholder="e.g. jatingaa.partner@okhdfcbank"
+                      className="w-full px-3 py-2 rounded-lg border border-stone-300 text-stone-900 bg-white font-mono"
+                    />
+                  </div>
                 </div>
 
                 <div className="pt-2 flex justify-end">
