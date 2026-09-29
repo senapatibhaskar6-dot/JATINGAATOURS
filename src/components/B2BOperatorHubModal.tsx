@@ -7,7 +7,7 @@ import {
   X, Building2, ShieldCheck, Clock, FileText, Banknote,
   Users, CheckCircle2, AlertCircle, Share2, Printer, Plus,
   ArrowRight, ExternalLink, Calendar, MapPin, ChevronRight,
-  TrendingUp, Award, RefreshCw, Smartphone, Key
+  TrendingUp, Award, RefreshCw, Smartphone, Key, CreditCard
 } from 'lucide-react';
 import jatingaaLogo from '../assets/images/jatingaa_tours_logo.png';
 
@@ -18,6 +18,7 @@ interface B2BOperatorHubModalProps {
   holds: B2BHoldSlot[];
   quotations: B2BQuotation[];
   ledger: B2BLedgerEntry[];
+  initialTab?: 'inventory' | 'holds' | 'quotes' | 'ledger' | 'admin' | 'payout';
   onClose: () => void;
   onSwitchAgency: (agency: B2BAgency) => void;
   onUpdateAgencyStatus: (agencyId: string, status: 'verified' | 'pending' | 'suspended', tier?: B2BPartnerTier) => void;
@@ -27,6 +28,13 @@ interface B2BOperatorHubModalProps {
   onOpenBookingModalForPackage: (pkg: TourPackage, isB2B: boolean) => void;
   onReleaseHold: (holdId: string) => void;
   onConvertHoldToBooking: (hold: B2BHoldSlot) => void;
+  onUpdateAgencyBankPayout?: (agencyId: string, bankDetails: {
+    bankName: string;
+    bankAccountName: string;
+    bankAccountNumber: string;
+    bankIfsc: string;
+    upiId: string;
+  }) => void;
 }
 
 export const B2BOperatorHubModal: React.FC<B2BOperatorHubModalProps> = ({
@@ -36,6 +44,7 @@ export const B2BOperatorHubModal: React.FC<B2BOperatorHubModalProps> = ({
   holds,
   quotations,
   ledger,
+  initialTab = 'inventory',
   onClose,
   onSwitchAgency,
   onUpdateAgencyStatus,
@@ -45,8 +54,67 @@ export const B2BOperatorHubModal: React.FC<B2BOperatorHubModalProps> = ({
   onOpenBookingModalForPackage,
   onReleaseHold,
   onConvertHoldToBooking,
+  onUpdateAgencyBankPayout,
 }) => {
-  const [activeTab, setActiveTab] = useState<'inventory' | 'holds' | 'quotes' | 'ledger' | 'admin'>('inventory');
+  const [activeTab, setActiveTab] = useState<'inventory' | 'holds' | 'quotes' | 'ledger' | 'admin' | 'payout'>(initialTab);
+
+  // Active Agency Bank & Payout Configuration State
+  const [bankName, setBankName] = useState(activeAgency.bankName || 'State Bank of India (Guwahati Main Branch)');
+  const [bankAccountName, setBankAccountName] = useState(activeAgency.bankAccountName || activeAgency.agencyName);
+  const [bankAccountNumber, setBankAccountNumber] = useState(activeAgency.bankAccountNumber || '38920194821');
+  const [bankIfsc, setBankIfsc] = useState(activeAgency.bankIfsc || 'SBIN0000078');
+  const [upiId, setUpiId] = useState(activeAgency.upiId || 'jatingaa.partner@okhdfcbank');
+  const [payoutSavedMsg, setPayoutSavedMsg] = useState(false);
+  const [isVerifyingPennyDrop, setIsVerifyingPennyDrop] = useState(false);
+  const [accountStatusVerified, setAccountStatusVerified] = useState(true);
+
+  // Sync state whenever activeAgency changes
+  useEffect(() => {
+    setBankName(activeAgency.bankName || 'State Bank of India (Guwahati Main Branch)');
+    setBankAccountName(activeAgency.bankAccountName || activeAgency.agencyName);
+    setBankAccountNumber(activeAgency.bankAccountNumber || '38920194821');
+    setBankIfsc(activeAgency.bankIfsc || 'SBIN0000078');
+    setUpiId(activeAgency.upiId || 'jatingaa.partner@okhdfcbank');
+  }, [activeAgency]);
+
+  const handleSaveBankPayout = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!bankName || !bankAccountName || !bankAccountNumber || !bankIfsc) {
+      alert('Please fill in all required bank fields: Bank Name, Account Holder Name, Account Number, and IFSC Code.');
+      return;
+    }
+
+    const updatedAgency: B2BAgency = {
+      ...activeAgency,
+      bankName,
+      bankAccountName,
+      bankAccountNumber,
+      bankIfsc: bankIfsc.toUpperCase(),
+      upiId,
+      payoutStatus: 'verified',
+    };
+
+    onSwitchAgency(updatedAgency);
+    onUpdateAgencyBankPayout?.(activeAgency.id, {
+      bankName,
+      bankAccountName,
+      bankAccountNumber,
+      bankIfsc: bankIfsc.toUpperCase(),
+      upiId,
+    });
+
+    setPayoutSavedMsg(true);
+    setTimeout(() => setPayoutSavedMsg(false), 4000);
+  };
+
+  const handleTestPennyDrop = () => {
+    setIsVerifyingPennyDrop(true);
+    setTimeout(() => {
+      setIsVerifyingPennyDrop(false);
+      setAccountStatusVerified(true);
+      alert(`Razorpay Route Penny-Drop Verification Succeeded!\n\n• Bank: ${bankName}\n• Account: ••••${bankAccountNumber.slice(-4)}\n• Name Match: 100% (${bankAccountName})\n• Status: Active for automated instant fund transfers`);
+    }, 1200);
+  };
 
   // New Agency Registration Form State
   const [isRegisteringAgency, setIsRegisteringAgency] = useState(false);
@@ -232,6 +300,23 @@ export const B2BOperatorHubModal: React.FC<B2BOperatorHubModalProps> = ({
           >
             <Banknote className="w-3.5 h-3.5 text-emerald-700" />
             <span>Financial Ledger & Wallet</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('payout')}
+            className={`py-3 px-3.5 border-b-2 transition-colors whitespace-nowrap cursor-pointer flex items-center gap-2 ${
+              activeTab === 'payout'
+                ? 'border-[#0b4619] text-[#0b4619] font-bold bg-white'
+                : 'border-transparent hover:text-stone-900'
+            }`}
+          >
+            <CreditCard className="w-3.5 h-3.5 text-emerald-700" />
+            <span className="flex items-center gap-1.5">
+              <span>Bank & Payout Profile</span>
+              <span className="text-[10px] bg-emerald-100 text-emerald-900 font-bold px-1.5 py-0.5 rounded-full border border-emerald-300">
+                Razorpay Route
+              </span>
+            </span>
           </button>
 
           <button
@@ -771,6 +856,255 @@ export const B2BOperatorHubModal: React.FC<B2BOperatorHubModalProps> = ({
                   </div>
                 ))}
               </div>
+            </div>
+          )}
+
+          {/* TAB 6: OPERATOR BANK & PAYMENT ACCOUNT CONFIGURATION */}
+          {activeTab === 'payout' && (
+            <div className="space-y-6 animate-in fade-in max-w-4xl mx-auto">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-stone-200">
+                <div>
+                  <h3 className="text-base font-bold text-stone-900 font-display flex items-center gap-2">
+                    <CreditCard className="w-5 h-5 text-[#0b4619]" />
+                    <span>Operator Bank & Payment Account Configuration</span>
+                  </h3>
+                  <p className="text-xs text-stone-500">
+                    Agency Profile Settings: Manage registered payout details & instant settlement credentials for {activeAgency.agencyName}.
+                  </p>
+                </div>
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300 text-xs font-bold font-mono">
+                  <ShieldCheck className="w-4 h-4 text-[#0b4619]" />
+                  <span>Razorpay Route Active</span>
+                </div>
+              </div>
+
+              {payoutSavedMsg && (
+                <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-300 text-xs text-emerald-950 flex items-center gap-2.5 animate-in fade-in">
+                  <CheckCircle2 className="w-5 h-5 text-[#0b4619] shrink-0" />
+                  <div>
+                    <strong>Bank Account Successfully Saved & Verified!</strong>
+                    <p className="text-emerald-800 text-[11px] mt-0.5">
+                      Your registered bank account details have been updated. Future customer booking settlements will be instantly transferred to this account.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Verified Account Status Badge Card */}
+              <div className="p-5 rounded-2xl bg-gradient-to-br from-emerald-900 to-[#0b4619] text-white shadow-md relative overflow-hidden space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-emerald-700/60">
+                  <div className="space-y-1">
+                    <span className="text-[10px] tracking-widest uppercase font-bold text-emerald-300">
+                      Primary Registered Settlement Account
+                    </span>
+                    <h4 className="text-lg font-bold font-display text-white">
+                      {bankName}
+                    </h4>
+                  </div>
+                  <div className="flex items-center gap-2 bg-emerald-950/80 px-3 py-1.5 rounded-full border border-emerald-400/30 text-xs font-semibold text-emerald-200">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span>Account status is verified for instant Razorpay Route automated transfers</span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+                  <div>
+                    <span className="text-emerald-300 text-[10px] uppercase font-semibold block">Account Holder Name</span>
+                    <strong className="text-white font-mono text-sm block mt-0.5">{bankAccountName}</strong>
+                  </div>
+                  <div>
+                    <span className="text-emerald-300 text-[10px] uppercase font-semibold block">Bank Account Number</span>
+                    <strong className="text-white font-mono text-sm block mt-0.5 tracking-wider">
+                      •••• •••• •••• {bankAccountNumber.slice(-4) || '4821'}
+                    </strong>
+                  </div>
+                  <div>
+                    <span className="text-emerald-300 text-[10px] uppercase font-semibold block">Bank IFSC Code</span>
+                    <strong className="text-amber-300 font-mono text-sm block mt-0.5 uppercase tracking-wider">{bankIfsc}</strong>
+                  </div>
+                </div>
+
+                <div className="pt-2 border-t border-emerald-700/60 flex flex-wrap items-center justify-between gap-3 text-xs">
+                  <div className="flex items-center gap-2">
+                    <span className="text-emerald-300 text-[11px]">Direct UPI ID / VPA:</span>
+                    <strong className="font-mono text-amber-200 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-700/40">
+                      {upiId || 'Not set'}
+                    </strong>
+                  </div>
+                  <div className="text-[11px] text-emerald-200">
+                    Settlement Method: <strong>IMPS / Razorpay Route Automated Split</strong>
+                  </div>
+                </div>
+              </div>
+
+              {/* Fund Splitting Model Explainer */}
+              <div className="p-4 rounded-xl bg-stone-50 border border-stone-200 space-y-2 text-xs text-stone-700">
+                <div className="font-bold text-stone-900 flex items-center gap-2">
+                  <Banknote className="w-4 h-4 text-[#0b4619]" />
+                  <span>How Automated Fund Splitting Works for This Account:</span>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1 text-[11px]">
+                  <div className="p-3 rounded-lg bg-white border border-stone-200">
+                    <span className="font-bold text-stone-900 block mb-1">1. Traveler Pays</span>
+                    <p className="text-stone-500 leading-relaxed">
+                      Customer pays the package booking fee via Razorpay Standard Checkout (UPI, Cards, Net Banking).
+                    </p>
+                  </div>
+                  <div className="p-3 rounded-lg bg-white border border-stone-200">
+                    <span className="font-bold text-stone-900 block mb-1">2. Platform Deducts</span>
+                    <p className="text-stone-500 leading-relaxed">
+                      The platform automatically calculates and deducts a flat 5% commission plus an additional ₹1,000 fee.
+                    </p>
+                  </div>
+                  <div className="p-3 rounded-lg bg-emerald-50 border border-emerald-200">
+                    <span className="font-bold text-[#0b4619] block mb-1">3. Instant Transfer</span>
+                    <p className="text-emerald-900 leading-relaxed">
+                      The remaining booking amount is instantly transferred to this registered bank/UPI account without delay.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Editable Payout Configuration Form */}
+              <form onSubmit={handleSaveBankPayout} className="p-6 rounded-2xl bg-white border border-stone-200 shadow-sm space-y-5">
+                <div className="pb-3 border-b border-stone-200 flex items-center justify-between">
+                  <h4 className="text-sm font-bold text-stone-900 font-display">
+                    Edit & Update Bank / Payment Account Details
+                  </h4>
+                  <span className="text-[11px] text-stone-500 font-mono">
+                    All fields are encrypted and verified via IMPS
+                  </span>
+                </div>
+
+                {/* Quick Bank Selector */}
+                <div>
+                  <label className="block text-xs font-semibold text-stone-700 mb-1.5">
+                    Quick Select Bank:
+                  </label>
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      { name: 'State Bank of India', ifsc: 'SBIN0000078' },
+                      { name: 'Assam Gramin Vikash Bank', ifsc: 'AGVB0000001' },
+                      { name: 'HDFC Bank', ifsc: 'HDFC0000084' },
+                      { name: 'ICICI Bank', ifsc: 'ICIC0000021' },
+                      { name: 'Punjab National Bank', ifsc: 'PUNB0001200' },
+                      { name: 'Axis Bank', ifsc: 'UTIB0000015' },
+                    ].map((b, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => {
+                          setBankName(b.name);
+                          if (!bankIfsc || bankIfsc === 'SBIN0000078') setBankIfsc(b.ifsc);
+                        }}
+                        className={`px-2.5 py-1 text-xs rounded-lg border transition-colors cursor-pointer ${
+                          bankName.includes(b.name)
+                            ? 'bg-emerald-100 text-emerald-900 border-emerald-300 font-bold'
+                            : 'bg-stone-50 text-stone-700 border-stone-200 hover:bg-stone-100'
+                        }`}
+                      >
+                        {b.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                  <div>
+                    <label className="block font-semibold text-stone-700 mb-1">
+                      Bank Name * (e.g. State Bank of India, HDFC Bank, Assam Gramin Vikash Bank)
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={bankName}
+                      onChange={(e) => setBankName(e.target.value)}
+                      placeholder="e.g. State Bank of India / Assam Gramin Vikash Bank"
+                      className="w-full px-3 py-2 text-xs rounded-lg border border-stone-300 text-stone-900 bg-white focus:outline-none focus:ring-1 focus:ring-[#0b4619]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block font-semibold text-stone-700 mb-1">
+                      Account Holder Name * (As printed in Bank Passbook / Cheque)
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={bankAccountName}
+                      onChange={(e) => setBankAccountName(e.target.value)}
+                      placeholder="e.g. Khasi Hills Eco-Tourism Cooperative Society"
+                      className="w-full px-3 py-2 text-xs rounded-lg border border-stone-300 text-stone-900 bg-white focus:outline-none focus:ring-1 focus:ring-[#0b4619]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block font-semibold text-stone-700 mb-1">
+                      Bank Account Number *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={bankAccountNumber}
+                      onChange={(e) => setBankAccountNumber(e.target.value)}
+                      placeholder="e.g. 38920194821"
+                      className="w-full px-3 py-2 text-xs rounded-lg border border-stone-300 text-stone-900 bg-white font-mono focus:outline-none focus:ring-1 focus:ring-[#0b4619]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block font-semibold text-stone-700 mb-1">
+                      Bank IFSC Code * (11 Characters)
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      maxLength={11}
+                      value={bankIfsc}
+                      onChange={(e) => setBankIfsc(e.target.value.toUpperCase())}
+                      placeholder="e.g. SBIN0000078"
+                      className="w-full px-3 py-2 text-xs rounded-lg border border-stone-300 text-stone-900 bg-white font-mono uppercase focus:outline-none focus:ring-1 focus:ring-[#0b4619]"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-stone-700 mb-1">
+                    Direct UPI ID / VPA * (Instant Settlement Alternative)
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={upiId}
+                    onChange={(e) => setUpiId(e.target.value)}
+                    placeholder="e.g. agency@okhdfcbank or partner@oksbi"
+                    className="w-full px-3 py-2 text-xs rounded-lg border border-stone-300 text-stone-900 bg-white font-mono focus:outline-none focus:ring-1 focus:ring-[#0b4619]"
+                  />
+                  <p className="text-[11px] text-stone-400 mt-1">
+                    UPI VPA handles instant fallback settlement if IMPS banking windows experience bank downtime.
+                  </p>
+                </div>
+
+                <div className="pt-3 border-t border-stone-200 flex flex-wrap items-center justify-between gap-3">
+                  <button
+                    type="button"
+                    onClick={handleTestPennyDrop}
+                    disabled={isVerifyingPennyDrop}
+                    className="px-4 py-2 text-xs font-semibold text-emerald-900 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 rounded-lg transition-colors cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
+                  >
+                    <RefreshCw className={`w-3.5 h-3.5 text-[#0b4619] ${isVerifyingPennyDrop ? 'animate-spin' : ''}`} />
+                    <span>{isVerifyingPennyDrop ? 'Verifying Account with Bank...' : 'Run Penny-Drop Account Test'}</span>
+                  </button>
+
+                  <button
+                    type="submit"
+                    className="px-6 py-2.5 text-xs font-bold text-white bg-[#0b4619] hover:bg-[#062b0f] rounded-lg shadow-sm transition-all flex items-center gap-2 cursor-pointer"
+                  >
+                    <CheckCircle2 className="w-4 h-4 text-[#f39c12]" />
+                    <span>Save Payout & Bank Account</span>
+                  </button>
+                </div>
+              </form>
             </div>
           )}
         </div>

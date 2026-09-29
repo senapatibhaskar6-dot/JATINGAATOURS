@@ -125,9 +125,57 @@ export default function App() {
   const [b2bLedger, setB2bLedger] = useState<B2BLedgerEntry[]>(getStoredB2BLedger);
 
   const [isB2BHubOpen, setIsB2BHubOpen] = useState(false);
+  const [b2bHubInitialTab, setB2bHubInitialTab] = useState<'inventory' | 'holds' | 'quotes' | 'ledger' | 'admin' | 'payout'>('inventory');
   const [activeHoldPackage, setActiveHoldPackage] = useState<TourPackage | null>(null);
   const [activeQuotePackage, setActiveQuotePackage] = useState<TourPackage | null>(null);
   const [activeQuotationData, setActiveQuotationData] = useState<B2BQuotation | null>(null);
+
+  const handleOpenB2BHubWithTab = (tab: 'inventory' | 'holds' | 'quotes' | 'ledger' | 'admin' | 'payout' = 'inventory') => {
+    setB2bHubInitialTab(tab);
+    setIsB2BHubOpen(true);
+  };
+
+  const handleUpdateAgencyBankPayout = (agencyId: string, bankDetails: {
+    bankName: string;
+    bankAccountName: string;
+    bankAccountNumber: string;
+    bankIfsc: string;
+    upiId: string;
+  }) => {
+    setB2bAgencies(prev => {
+      const updated = prev.map(a => {
+        if (a.id === agencyId) {
+          return {
+            ...a,
+            ...bankDetails,
+            payoutStatus: 'verified' as const,
+          };
+        }
+        return a;
+      });
+      saveStoredB2BAgencies(updated);
+      return updated;
+    });
+
+    setAgenciesList(prev => prev.map(ag => {
+      if (ag.id === agencyId || ag.name === activeB2BAgency.agencyName) {
+        return {
+          ...ag,
+          ...bankDetails,
+          payoutStatus: 'verified' as const,
+        };
+      }
+      return ag;
+    }));
+
+    setActiveAgency(prev => ({
+      ...prev,
+      ...bankDetails,
+      payoutStatus: 'verified' as const,
+    }));
+
+    showToast(`Bank & Payout Account updated and verified for ${bankDetails.bankName}!`);
+  };
 
   const activeB2BAgency = useMemo(() => {
     return b2bAgencies.find(a => a.id === activeB2BAgencyId) || b2bAgencies[0];
@@ -394,8 +442,9 @@ export default function App() {
         isB2BMode={isB2BMode}
         activeHoldsCount={b2bHolds.filter(h => h.status === 'active').length}
         onToggleB2BMode={() => setIsB2BMode(!isB2BMode)}
-        onOpenB2BHub={() => setIsB2BHubOpen(true)}
-        onOpenHolds={() => setIsB2BHubOpen(true)}
+        onOpenB2BHub={() => handleOpenB2BHubWithTab('inventory')}
+        onOpenHolds={() => handleOpenB2BHubWithTab('holds')}
+        onOpenBankPayout={() => handleOpenB2BHubWithTab('payout')}
       />
 
       {/* Top Header */}
@@ -578,10 +627,12 @@ export default function App() {
           holds={b2bHolds}
           quotations={b2bQuotes}
           ledger={b2bLedger}
+          initialTab={b2bHubInitialTab}
           onClose={() => setIsB2BHubOpen(false)}
           onSwitchAgency={handleSwitchB2BAgency}
           onUpdateAgencyStatus={handleUpdateB2BAgencyStatus}
           onAddNewAgency={handleAddNewB2BAgency}
+          onUpdateAgencyBankPayout={handleUpdateAgencyBankPayout}
           onOpenHoldModalForPackage={(pkg) => {
             setIsB2BHubOpen(false);
             setActiveHoldPackage(pkg);

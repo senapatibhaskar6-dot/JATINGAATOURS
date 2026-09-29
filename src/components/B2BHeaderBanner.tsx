@@ -1,6 +1,6 @@
 import React from 'react';
 import { B2BAgency } from '../types';
-import { Building2, Clock, FileText, ArrowRight, ShieldCheck, RefreshCw } from 'lucide-react';
+import { Building2, Clock, FileText, ArrowRight, ShieldCheck, RefreshCw, Banknote } from 'lucide-react';
 import { formatINR } from '../utils/pricing';
 
 interface B2BHeaderBannerProps {
@@ -10,6 +10,7 @@ interface B2BHeaderBannerProps {
   onToggleB2BMode: () => void;
   onOpenB2BHub: () => void;
   onOpenHolds: () => void;
+  onOpenBankPayout?: () => void;
 }
 
 export const B2BHeaderBanner: React.FC<B2BHeaderBannerProps> = ({
@@ -19,6 +20,7 @@ export const B2BHeaderBanner: React.FC<B2BHeaderBannerProps> = ({
   onToggleB2BMode,
   onOpenB2BHub,
   onOpenHolds,
+  onOpenBankPayout,
 }) => {
   if (!isB2BMode) {
     return (
@@ -74,6 +76,15 @@ export const B2BHeaderBanner: React.FC<B2BHeaderBannerProps> = ({
               <span>{activeHoldsCount} Active Hold{activeHoldsCount > 1 ? 's' : ''}</span>
             </button>
           )}
+
+          <button
+            onClick={onOpenBankPayout || onOpenB2BHub}
+            className="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-800 hover:bg-emerald-700 text-amber-300 rounded text-[11px] font-bold transition-colors cursor-pointer border border-emerald-600 shadow-xs"
+            title="Configure registered Bank Account, IFSC, & UPI for Instant Razorpay Transfers"
+          >
+            <Banknote className="w-3.5 h-3.5" />
+            <span>Bank & Payout A/C</span>
+          </button>
 
           <button
             onClick={onOpenB2BHub}

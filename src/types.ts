@@ -55,6 +55,13 @@ export interface B2BAgency {
   activeHoldsCount: number;
   totalWholesaleBookings: number;
   customLogoUrl?: string;
+  // Operator Bank & Payout Configuration (Instant Razorpay Route Transfers)
+  bankName?: string;
+  bankAccountName?: string;
+  bankAccountNumber?: string;
+  bankIfsc?: string;
+  upiId?: string;
+  payoutStatus?: 'verified' | 'pending';
 }
 
 export interface B2BHoldSlot {

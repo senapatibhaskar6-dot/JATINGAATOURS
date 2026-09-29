@@ -474,8 +474,11 @@ export const AgencyDashboardModal: React.FC<AgencyDashboardModalProps> = ({
                   : 'text-stone-700 hover:bg-stone-200'
               }`}
             >
-              <Edit3 className="w-3.5 h-3.5" />
-              <span>Manage Profile & Credentials</span>
+              <Banknote className="w-3.5 h-3.5" />
+              <span>Operator Profile & Bank Payout</span>
+              <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-emerald-100 text-emerald-900 font-bold border border-emerald-300">
+                Bank A/C
+              </span>
             </button>
           </div>
 
