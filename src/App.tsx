@@ -18,6 +18,7 @@ import { AgencyDashboardModal } from './components/AgencyDashboardModal';
 import { AgencyRegisterModal } from './components/AgencyRegisterModal';
 import { CodeIntegrationModal } from './components/CodeIntegrationModal';
 import { MyBookingsModal } from './components/MyBookingsModal';
+import { PaymentGatewayModal } from './components/PaymentGatewayModal';
 import { Footer } from './components/Footer';
 
 // Seed sample initial confirmed bookings
@@ -99,6 +100,7 @@ export default function App() {
   const [isRegisterAgencyOpen, setIsRegisterAgencyOpen] = useState(false);
   const [isCodeGuidanceOpen, setIsCodeGuidanceOpen] = useState(false);
   const [isMyBookingsOpen, setIsMyBookingsOpen] = useState(false);
+  const [isPaymentSettingsOpen, setIsPaymentSettingsOpen] = useState(false);
 
   // Bookings state
   const [bookings, setBookings] = useState<BookingRecord[]>(INITIAL_BOOKINGS);
@@ -263,6 +265,7 @@ export default function App() {
         onOpenBookings={() => setIsMyBookingsOpen(true)}
         onOpenRegisterAgency={() => setIsRegisterAgencyOpen(true)}
         onOpenCodeGuidance={() => setIsCodeGuidanceOpen(true)}
+        onOpenPaymentSettings={() => setIsPaymentSettingsOpen(true)}
         bookingsCount={bookings.length}
       />
 
@@ -317,6 +320,7 @@ export default function App() {
         onOpenAgencyPortal={() => setIsAgencyPortalOpen(true)}
         onOpenRegisterAgency={() => setIsRegisterAgencyOpen(true)}
         onOpenCodeGuidance={() => setIsCodeGuidanceOpen(true)}
+        onOpenPaymentSettings={() => setIsPaymentSettingsOpen(true)}
       />
 
       {/* MODALS */}
@@ -348,6 +352,7 @@ export default function App() {
           initialTravelersCount={bookingTravelersCount}
           onClose={() => setBookingTour(null)}
           onBookingSuccess={handleBookingSuccess}
+          onOpenPaymentSettings={() => setIsPaymentSettingsOpen(true)}
         />
       )}
 
@@ -408,6 +413,13 @@ export default function App() {
             setIsMyBookingsOpen(false);
             setConfirmedBooking(b);
           }}
+        />
+      )}
+
+      {/* 9. Payment Gateway & UPI Settings Modal */}
+      {isPaymentSettingsOpen && (
+        <PaymentGatewayModal
+          onClose={() => setIsPaymentSettingsOpen(false)}
         />
       )}
     </div>

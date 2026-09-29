@@ -6,12 +6,14 @@ interface FooterProps {
   onOpenAgencyPortal: () => void;
   onOpenRegisterAgency: () => void;
   onOpenCodeGuidance?: () => void;
+  onOpenPaymentSettings?: () => void;
 }
 
 export const Footer: React.FC<FooterProps> = ({
   onOpenAgencyPortal,
   onOpenRegisterAgency,
   onOpenCodeGuidance,
+  onOpenPaymentSettings,
 }) => {
   const scrollTo = (id: string) => {
     const el = document.getElementById(id);
@@ -97,6 +99,13 @@ export const Footer: React.FC<FooterProps> = ({
                   Agency Operations Portal
                 </button>
               </li>
+              {onOpenPaymentSettings && (
+                <li>
+                  <button onClick={onOpenPaymentSettings} className="hover:text-[#0b4619] cursor-pointer font-medium text-amber-800">
+                    💳 Payment Gateway & UPI Settings
+                  </button>
+                </li>
+              )}
               <li>
                 <button onClick={onOpenRegisterAgency} className="hover:text-[#0b4619] cursor-pointer">
                   List Your Agency (Zero Upfront Fee)

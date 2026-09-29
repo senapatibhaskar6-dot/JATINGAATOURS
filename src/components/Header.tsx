@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ShieldCheck, UserCheck, Menu, X, ReceiptText } from 'lucide-react';
+import { ShieldCheck, UserCheck, Menu, X, ReceiptText, CreditCard } from 'lucide-react';
 import jatingaaLogo from '../assets/images/jatingaa_tours_logo.jpg';
 
 interface HeaderProps {
@@ -7,6 +7,7 @@ interface HeaderProps {
   onOpenBookings: () => void;
   onOpenRegisterAgency: () => void;
   onOpenCodeGuidance?: () => void;
+  onOpenPaymentSettings?: () => void;
   bookingsCount: number;
 }
 
@@ -15,6 +16,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenBookings,
   onOpenRegisterAgency,
   onOpenCodeGuidance,
+  onOpenPaymentSettings,
   bookingsCount,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -114,6 +116,17 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
           )}
 
+          {onOpenPaymentSettings && (
+            <button
+              onClick={onOpenPaymentSettings}
+              className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-stone-700 hover:text-stone-900 bg-amber-50/80 hover:bg-amber-100 border border-amber-200/90 rounded-lg transition-colors cursor-pointer whitespace-nowrap"
+              title="Configure Razorpay Keys, UPI ID & Payment Gateway"
+            >
+              <CreditCard className="w-3.5 h-3.5 text-amber-700" />
+              <span>Payment Gateway</span>
+            </button>
+          )}
+
           <button
             onClick={onOpenAgencyPortal}
             className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-stone-700 hover:text-stone-900 bg-stone-100 hover:bg-stone-200 rounded-lg transition-colors cursor-pointer whitespace-nowrap"
@@ -198,6 +211,18 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
 
           <div className="pt-3 border-t border-stone-200 flex flex-col gap-2">
+            {onOpenPaymentSettings && (
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  onOpenPaymentSettings();
+                }}
+                className="w-full flex items-center justify-center gap-2 py-2.5 text-xs font-semibold text-amber-900 bg-amber-50 border border-amber-200 rounded-lg"
+              >
+                <CreditCard className="w-4 h-4 text-amber-700" />
+                Payment Gateway & UPI Setup
+              </button>
+            )}
             <button
               onClick={() => {
                 setMobileMenuOpen(false);
