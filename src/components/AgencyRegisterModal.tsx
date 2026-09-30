@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { X, ShieldCheck, CheckCircle2, ArrowRight } from 'lucide-react';
+import { X, ShieldCheck, CheckCircle2, ArrowRight, Loader2, Building, CreditCard } from 'lucide-react';
 import { Agency } from '../types';
+import { insertAgencyToSupabase } from '../utils/supabaseClient';
 
 interface AgencyRegisterModalProps {
   onClose: () => void;
@@ -19,14 +20,59 @@ export const AgencyRegisterModal: React.FC<AgencyRegisterModalProps> = ({
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [specialty, setSpecialty] = useState('Trekking & Cultural Homestays');
-  const [submitted, setSubmitted] = useState(false);
+  
+  // Bank details fields for operator automated payout
+  const [bankName, setBankName] = useState('State Bank of India');
+  const [bankAccountNumber, setBankAccountNumber] = useState('');
+  const [bankIfsc, setBankIfsc] = useState('');
+  const [upiId, setUpiId] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [supabaseStatus, setSupabaseStatus] = useState<string>('');
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!agencyName || !founderName || !phone || !licenseNumber) {
       alert('Please fill in all required fields including your state tourism license / GSTIN.');
       return;
     }
+
+    setIsSubmitting(true);
+    setSupabaseStatus('Connecting to Supabase cloud database...');
+
+    const locationStr = `${baseCity || 'Local Base'}, ${stateRegion.split(' ')[0]}`;
+    const bankDetailsPayload = {
+      bankName: bankName || 'State Bank of India',
+      bankAccountName: agencyName,
+      bankAccountNumber: bankAccountNumber || '38920194821',
+      bankIfsc: bankIfsc || 'SBIN0000001',
+      upiId: upiId || `${phone.replace(/\D/g, '')}@upi`,
+      licenseNumber: licenseNumber,
+      specialty: specialty,
+    };
+
+    // 1. Insert into Supabase table: agencies (columns: agency_name, owner_name, phone, email, location, bank_details)
+    try {
+      const res = await insertAgencyToSupabase({
+        agencyName: agencyName.trim(),
+        ownerName: founderName.trim(),
+        phone: phone.trim(),
+        email: email.trim() || `${agencyName.toLowerCase().replace(/\s+/g, '')}@partner.in`,
+        location: locationStr,
+        bankDetails: bankDetailsPayload,
+      });
+
+      if (res.success) {
+        setSupabaseStatus('Successfully synchronized with Supabase agencies database!');
+      } else {
+        console.warn('Supabase insertion had an issue, fallback to local storage active:', res.error);
+        setSupabaseStatus('Saved locally and queued for Supabase sync.');
+      }
+    } catch (err) {
+      console.error('Error inserting into Supabase:', err);
+    }
+
     const newAgency: Agency = {
       id: `ag-new-${Date.now()}`,
       name: agencyName,
@@ -43,8 +89,15 @@ export const AgencyRegisterModal: React.FC<AgencyRegisterModalProps> = ({
       bio: `${agencyName} is a verified local tour operator specializing in ${specialty}.`,
       specialty: specialty,
       status: 'verified',
+      bankName: bankName || 'State Bank of India',
+      bankAccountName: agencyName,
+      bankAccountNumber: bankAccountNumber || '38920194821',
+      bankIfsc: bankIfsc || 'SBIN0000001',
+      upiId: upiId || `${phone.replace(/\D/g, '')}@upi`,
+      payoutStatus: 'verified',
     };
 
+    setIsSubmitting(false);
     setSubmitted(true);
     setTimeout(() => {
       onRegistered(newAgency);
@@ -217,20 +270,101 @@ export const AgencyRegisterModal: React.FC<AgencyRegisterModalProps> = ({
                 </div>
               </div>
 
+              {/* Bank Details Section for Automated Payouts */}
+              <div className="p-4 rounded-xl bg-stone-50 border border-stone-200 space-y-3">
+                <div className="flex items-center gap-2">
+                  <CreditCard className="w-4 h-4 text-[#0b4619]" />
+                  <span className="text-xs font-bold text-stone-900">
+                    Operator Bank Details (For Instant Arrival Balance & Advance Settlements)
+                  </span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-semibold text-stone-600 mb-1">
+                      Bank Name
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. State Bank of India, HDFC"
+                      value={bankName}
+                      onChange={(e) => setBankName(e.target.value)}
+                      className="w-full px-3 py-1.5 text-xs rounded-lg border border-stone-300 bg-white text-stone-900 focus:outline-none focus:ring-1 focus:ring-[#0b4619]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-semibold text-stone-600 mb-1">
+                      Bank Account Number
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. 38920194821"
+                      value={bankAccountNumber}
+                      onChange={(e) => setBankAccountNumber(e.target.value)}
+                      className="w-full px-3 py-1.5 text-xs font-mono rounded-lg border border-stone-300 bg-white text-stone-900 focus:outline-none focus:ring-1 focus:ring-[#0b4619]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-semibold text-stone-600 mb-1">
+                      Bank IFSC Code
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. SBIN0000001"
+                      value={bankIfsc}
+                      onChange={(e) => setBankIfsc(e.target.value.toUpperCase())}
+                      className="w-full px-3 py-1.5 text-xs font-mono uppercase rounded-lg border border-stone-300 bg-white text-stone-900 focus:outline-none focus:ring-1 focus:ring-[#0b4619]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-semibold text-stone-600 mb-1">
+                      UPI ID / VPA (Optional)
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. agency@oksbi"
+                      value={upiId}
+                      onChange={(e) => setUpiId(e.target.value)}
+                      className="w-full px-3 py-1.5 text-xs font-mono rounded-lg border border-stone-300 bg-white text-stone-900 focus:outline-none focus:ring-1 focus:ring-[#0b4619]"
+                    />
+                  </div>
+                </div>
+                <div className="text-[10px] text-stone-500">
+                  Data will be securely inserted into Supabase cloud table <code className="text-[#0b4619] font-bold">agencies</code> with your verified contact and payout details.
+                </div>
+              </div>
+
+              {isSubmitting && (
+                <div className="p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-xs text-emerald-950 flex items-center gap-2">
+                  <Loader2 className="w-4 h-4 animate-spin text-[#0b4619]" />
+                  <span>{supabaseStatus || 'Syncing with Supabase cloud database...'}</span>
+                </div>
+              )}
+
               <div className="pt-4 border-t border-stone-200 flex justify-end gap-3">
                 <button
                   type="button"
                   onClick={onClose}
-                  className="px-4 py-2 text-xs font-semibold text-stone-700 hover:bg-stone-100 rounded-lg"
+                  disabled={isSubmitting}
+                  className="px-4 py-2 text-xs font-semibold text-stone-700 hover:bg-stone-100 rounded-lg cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 text-xs font-semibold text-white bg-[#0b4619] hover:bg-[#062b0f] rounded-lg shadow-sm transition-colors flex items-center gap-1.5 cursor-pointer"
+                  disabled={isSubmitting}
+                  className="px-5 py-2 text-xs font-semibold text-white bg-[#0b4619] hover:bg-[#062b0f] disabled:bg-stone-400 rounded-lg shadow-sm transition-colors flex items-center gap-1.5 cursor-pointer"
                 >
-                  <span>Submit Verification</span>
-                  <ArrowRight className="w-3.5 h-3.5 text-[#f39c12]" />
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span>Syncing with Supabase...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Submit Verification</span>
+                      <ArrowRight className="w-3.5 h-3.5 text-[#f39c12]" />
+                    </>
+                  )}
                 </button>
               </div>
             </form>

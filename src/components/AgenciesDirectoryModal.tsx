@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
   X, Users, ShieldCheck, CheckCircle2, Clock, AlertTriangle,
   Search, Download, Phone, MessageSquare, Mail, MapPin,
-  ExternalLink, Building2, UserCheck, Plus, Filter, Award
+  ExternalLink, Building2, UserCheck, Plus, Filter, Award, Database, RefreshCw
 } from 'lucide-react';
 import { B2BAgency, B2BPartnerTier } from '../types';
 
@@ -14,6 +14,7 @@ interface AgenciesDirectoryModalProps {
   onUpdateAgencyStatus: (agencyId: string, status: 'verified' | 'pending' | 'suspended', tier?: B2BPartnerTier) => void;
   onOpenRegisterAgency: () => void;
   onOpenAgencyPortalFor: (agency: B2BAgency) => void;
+  onRefreshFromSupabase?: () => void;
 }
 
 export const AgenciesDirectoryModal: React.FC<AgenciesDirectoryModalProps> = ({
@@ -24,10 +25,20 @@ export const AgenciesDirectoryModal: React.FC<AgenciesDirectoryModalProps> = ({
   onUpdateAgencyStatus,
   onOpenRegisterAgency,
   onOpenAgencyPortalFor,
+  onRefreshFromSupabase,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'verified' | 'pending' | 'suspended'>('all');
   const [selectedState, setSelectedState] = useState<string>('all');
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const handleRefresh = async () => {
+    if (onRefreshFromSupabase) {
+      setIsRefreshing(true);
+      await onRefreshFromSupabase();
+      setTimeout(() => setIsRefreshing(false), 600);
+    }
+  };
 
   // Compute metrics
   const totalCount = agencies.length;
@@ -130,6 +141,10 @@ export const AgenciesDirectoryModal: React.FC<AgenciesDirectoryModalProps> = ({
                 <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-xs font-bold font-mono">
                   {totalCount} Registered
                 </span>
+                <span className="hidden md:inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-950/80 text-emerald-300 border border-emerald-600/40 text-[10px] font-mono">
+                  <Database className="w-3 h-3 text-emerald-400" />
+                  <span>Supabase Live</span>
+                </span>
               </div>
               <p className="text-xs text-stone-300 hidden sm:block">
                 Complete directory of all tourism operators, cooperatives, and DMCs registered on Jatingaa Tours.
@@ -138,6 +153,18 @@ export const AgenciesDirectoryModal: React.FC<AgenciesDirectoryModalProps> = ({
           </div>
 
           <div className="flex items-center gap-2">
+            {onRefreshFromSupabase && (
+              <button
+                onClick={handleRefresh}
+                disabled={isRefreshing}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-800/60 hover:bg-emerald-800 border border-emerald-500/30 text-emerald-200 hover:text-white rounded-lg text-xs font-semibold transition-colors cursor-pointer"
+                title="Sync and fetch latest agencies directly from Supabase cloud database"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin text-amber-300' : 'text-emerald-300'}`} />
+                <span className="hidden sm:inline">Sync Supabase</span>
+              </button>
+            )}
+
             <button
               onClick={handleExportCSV}
               className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-lg text-xs font-semibold transition-colors cursor-pointer"

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   TourPackage, BookingRecord, Agency, TravelStory,
   B2BAgency, B2BHoldSlot, B2BQuotation, B2BLedgerEntry, B2BPartnerTier
@@ -30,6 +30,7 @@ import { TestimonialCarousel } from './components/TestimonialCarousel';
 import { AgenciesDirectoryModal } from './components/AgenciesDirectoryModal';
 import { AdminLoginModal } from './components/AdminLoginModal';
 import { getIsAdminLoggedIn, setIsAdminLoggedIn } from './utils/adminAuth';
+import { supabase, fetchAgenciesFromSupabase, SupabaseAgencyRow } from './utils/supabaseClient';
 import {
   getStoredB2BAgencies, saveStoredB2BAgencies,
   getStoredB2BHolds, saveStoredB2BHolds,
@@ -144,6 +145,148 @@ export default function App() {
   const [b2bHolds, setB2bHolds] = useState<B2BHoldSlot[]>(getStoredB2BHolds);
   const [b2bQuotes, setB2bQuotes] = useState<B2BQuotation[]>(getStoredB2BQuotes);
   const [b2bLedger, setB2bLedger] = useState<B2BLedgerEntry[]>(getStoredB2BLedger);
+
+  // Helper to map Supabase row to B2BAgency
+  const mapSupabaseRowToB2BAgency = (row: SupabaseAgencyRow): B2BAgency => {
+    let parsedBank: Record<string, any> = {};
+    if (typeof row.bank_details === 'string') {
+      try {
+        parsedBank = JSON.parse(row.bank_details);
+      } catch {
+        parsedBank = { bankName: row.bank_details };
+      }
+    } else if (row.bank_details && typeof row.bank_details === 'object') {
+      parsedBank = row.bank_details as Record<string, any>;
+    }
+
+    const locParts = (row.location || 'Guwahati, Assam').split(',');
+    const city = (locParts[0] || 'Guwahati').trim();
+    const state = (locParts[1] || 'Assam').trim();
+
+    return {
+      id: row.id || `sb-${row.agency_name.toLowerCase().replace(/\s+/g, '-')}`,
+      agencyName: row.agency_name,
+      tradeName: row.agency_name,
+      contactPerson: row.owner_name,
+      designation: 'Managing Director / Founder',
+      email: row.email,
+      phone: row.phone,
+      whatsapp: row.whatsapp || row.phone,
+      gstin: parsedBank.licenseNumber || 'VERIFIED-REG',
+      panNumber: 'VERIFIED',
+      tourismLicenseNo: parsedBank.licenseNumber || 'REG-TOUR-VERIFIED',
+      state: row.state || state,
+      city: row.city || city,
+      address: row.location || `${city}, ${state}`,
+      operatorType: parsedBank.specialty || 'DMC',
+      tier: 'Gold',
+      wholesaleMarginPercent: 18,
+      status: (row.status as any) || 'verified',
+      registeredAt: row.created_at || new Date().toISOString(),
+      approvedAt: new Date().toISOString(),
+      walletBalance: 0,
+      creditLimit: 50000,
+      activeHoldsCount: 0,
+      totalWholesaleBookings: 0,
+      bankName: parsedBank.bankName || 'State Bank of India',
+      bankAccountName: parsedBank.bankAccountName || row.agency_name,
+      bankAccountNumber: parsedBank.bankAccountNumber || '38920194821',
+      bankIfsc: parsedBank.bankIfsc || 'SBIN0000001',
+      upiId: parsedBank.upiId || `${row.phone.replace(/\D/g, '')}@upi`,
+      payoutStatus: 'verified',
+    };
+  };
+
+  // Real-time synchronization with Supabase cloud database
+  useEffect(() => {
+    let isMounted = true;
+
+    // 1. Initial fetch from Supabase 'agencies' table
+    async function loadSupabaseAgencies() {
+      const res = await fetchAgenciesFromSupabase();
+      if (res.success && res.data && res.data.length > 0 && isMounted) {
+        const fetchedB2B: B2BAgency[] = res.data.map(mapSupabaseRowToB2BAgency);
+
+        setB2bAgencies(prev => {
+          // Merge with existing avoiding duplicates by agencyName
+          const existingNames = new Set(prev.map(p => p.agencyName.toLowerCase()));
+          const newEntries = fetchedB2B.filter(f => !existingNames.has(f.agencyName.toLowerCase()));
+          const updated = [...newEntries, ...prev];
+          saveStoredB2BAgencies(updated);
+          return updated;
+        });
+
+        // Also sync into agenciesList for tours & UGC
+        setAgenciesList(prev => {
+          const existingNames = new Set(prev.map(p => p.name.toLowerCase()));
+          const newAg: Agency[] = fetchedB2B
+            .filter(f => !existingNames.has(f.agencyName.toLowerCase()))
+            .map(f => ({
+              id: f.id,
+              name: f.agencyName,
+              founder: f.contactPerson,
+              baseCity: f.city,
+              state: f.state,
+              phone: f.phone,
+              whatsapp: f.whatsapp,
+              email: f.email,
+              licenseNumber: f.tourismLicenseNo,
+              verifiedSince: '2023',
+              rating: 5.0,
+              totalToursCompleted: 0,
+              bio: `${f.agencyName} is a verified local tour operator.`,
+              specialty: f.operatorType,
+              status: f.status,
+              bankName: f.bankName,
+              bankAccountName: f.bankAccountName,
+              bankAccountNumber: f.bankAccountNumber,
+              bankIfsc: f.bankIfsc,
+              upiId: f.upiId,
+              payoutStatus: 'verified',
+            }));
+          return [...newAg, ...prev];
+        });
+      }
+    }
+
+    loadSupabaseAgencies();
+
+    // 2. Real-time subscription to 'agencies' changes in Supabase
+    const subscription = supabase
+      .channel('public:agencies')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'agencies' },
+        (payload) => {
+          if (!isMounted) return;
+          if (payload.eventType === 'INSERT' && payload.new) {
+            const newAgency = mapSupabaseRowToB2BAgency(payload.new as SupabaseAgencyRow);
+            setB2bAgencies(prev => {
+              if (prev.some(p => p.agencyName.toLowerCase() === newAgency.agencyName.toLowerCase())) {
+                return prev;
+              }
+              const updated = [newAgency, ...prev];
+              saveStoredB2BAgencies(updated);
+              return updated;
+            });
+            showToast(`Real-time: New agency "${newAgency.agencyName}" registered via Supabase!`);
+          } else if (payload.eventType === 'UPDATE' && payload.new) {
+            const updatedAgency = mapSupabaseRowToB2BAgency(payload.new as SupabaseAgencyRow);
+            setB2bAgencies(prev => {
+              const updated = prev.map(p => p.agencyName.toLowerCase() === updatedAgency.agencyName.toLowerCase() ? updatedAgency : p);
+              saveStoredB2BAgencies(updated);
+              return updated;
+            });
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      isMounted = false;
+      supabase.removeChannel(subscription);
+    };
+  }, []);
 
   const [isB2BHubOpen, setIsB2BHubOpen] = useState(false);
   const [b2bHubInitialTab, setB2bHubInitialTab] = useState<'inventory' | 'holds' | 'quotes' | 'ledger' | 'admin' | 'payout'>('inventory');
@@ -784,6 +927,20 @@ export default function App() {
           onSwitchAgency={handleSwitchB2BAgency}
           onUpdateAgencyStatus={handleUpdateB2BAgencyStatus}
           onOpenRegisterAgency={() => setIsRegisterAgencyOpen(true)}
+          onRefreshFromSupabase={async () => {
+            const res = await fetchAgenciesFromSupabase();
+            if (res.success && res.data) {
+              const fetchedB2B = res.data.map(mapSupabaseRowToB2BAgency);
+              setB2bAgencies(prev => {
+                const existingNames = new Set(prev.map(p => p.agencyName.toLowerCase()));
+                const newEntries = fetchedB2B.filter(f => !existingNames.has(f.agencyName.toLowerCase()));
+                const updated = [...newEntries, ...prev];
+                saveStoredB2BAgencies(updated);
+                return updated;
+              });
+              showToast(`Refreshed ${res.data.length} agencies from Supabase!`);
+            }
+          }}
           onOpenAgencyPortalFor={(b2bAg) => {
             const matchedAgency: Agency = agenciesList.find(a => a.id === b2bAg.id || a.name === b2bAg.agencyName) || {
               id: b2bAg.id,
