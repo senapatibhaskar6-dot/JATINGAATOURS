@@ -240,3 +240,11 @@ export interface BookingRecord {
   status: 'confirmed';
   agency: Agency;
 }
+
+declare global {
+  interface Window {
+    Razorpay?: any;
+    dataLayer?: any[];
+    gtag?: (...args: any[]) => void;
+  }
+}

@@ -26,6 +26,7 @@ import { B2BHeaderBanner } from './components/B2BHeaderBanner';
 import { B2BOperatorHubModal } from './components/B2BOperatorHubModal';
 import { B2BQuotationVoucherModal } from './components/B2BQuotationVoucherModal';
 import { B2BHoldSlotModal } from './components/B2BHoldSlotModal';
+import { TestimonialCarousel } from './components/TestimonialCarousel';
 import {
   getStoredB2BAgencies, saveStoredB2BAgencies,
   getStoredB2BHolds, saveStoredB2BHolds,
@@ -325,6 +326,20 @@ export default function App() {
     setBookingTour(null);
     setConfirmedBooking(record);
     showToast(`Booking ${record.bookingCode} confirmed! Unlocked direct contact for ${record.agency.name}.`);
+
+    // Fire Google Ads conversion tracking event
+    if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
+      try {
+        window.gtag('event', 'conversion', {
+          send_to: 'AW-18477707405',
+          value: record.calculation.totalAdvancePayable,
+          currency: 'INR',
+          transaction_id: record.bookingCode,
+        });
+      } catch (e) {
+        // Silently ignore if blocked by ad-blocker
+      }
+    }
   };
 
   const handleSimulateNewBooking = () => {
@@ -508,6 +523,9 @@ export default function App() {
           onOpenAgencyPortal={() => setIsAgencyPortalOpen(true)}
           onOpenRegisterAgency={() => setIsRegisterAgencyOpen(true)}
         />
+
+        {/* Verified Traveler Testimonials Carousel */}
+        <TestimonialCarousel onExploreTours={scrollToPackages} />
       </main>
 
       {/* Footer */}

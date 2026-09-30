@@ -55,9 +55,6 @@ export const B2BHeaderBanner: React.FC<B2BHeaderBannerProps> = ({
 
           <div className="flex items-center gap-1.5 font-medium">
             <span className="text-white font-bold">{activeAgency.agencyName}</span>
-            <span className="text-emerald-300 font-mono text-[11px]">
-              ({activeAgency.tier} Tier • {activeAgency.wholesaleMarginPercent}% Margin)
-            </span>
             <span className="text-emerald-400 hidden sm:inline">•</span>
             <span className="text-emerald-200 text-[11px] hidden sm:inline font-mono">
               Lic: {activeAgency.tourismLicenseNo}
