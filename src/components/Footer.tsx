@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShieldCheck, Heart, MapPin, Mail, Phone } from 'lucide-react';
+import { ShieldCheck, Heart, MapPin, Mail, Phone, Lock } from 'lucide-react';
 import jatingaaLogo from '../assets/images/jatingaa_tours_logo.png';
 
 interface FooterProps {
@@ -7,6 +7,9 @@ interface FooterProps {
   onOpenRegisterAgency: () => void;
   onOpenCodeGuidance?: () => void;
   onOpenPaymentSettings?: () => void;
+  isAdminLoggedIn?: boolean;
+  onOpenAdminLogin?: () => void;
+  onOpenAgenciesDirectory?: () => void;
 }
 
 export const Footer: React.FC<FooterProps> = ({
@@ -14,6 +17,9 @@ export const Footer: React.FC<FooterProps> = ({
   onOpenRegisterAgency,
   onOpenCodeGuidance,
   onOpenPaymentSettings,
+  isAdminLoggedIn = false,
+  onOpenAdminLogin,
+  onOpenAgenciesDirectory,
 }) => {
   const scrollTo = (id: string) => {
     const el = document.getElementById(id);
@@ -121,7 +127,21 @@ export const Footer: React.FC<FooterProps> = ({
                   Compare vs 25% OTAs
                 </button>
               </li>
-              {onOpenCodeGuidance && (
+              {isAdminLoggedIn && onOpenAgenciesDirectory && (
+                <li>
+                  <button onClick={onOpenAgenciesDirectory} className="hover:text-[#0b4619] cursor-pointer text-[#0b4619] font-bold">
+                    👑 Registered Agencies (Admin)
+                  </button>
+                </li>
+              )}
+              {isAdminLoggedIn && onOpenPaymentSettings && (
+                <li>
+                  <button onClick={onOpenPaymentSettings} className="hover:text-[#0b4619] cursor-pointer text-amber-800 font-bold">
+                    🔑 Payment Gateway Setup
+                  </button>
+                </li>
+              )}
+              {isAdminLoggedIn && onOpenCodeGuidance && (
                 <li>
                   <button onClick={onOpenCodeGuidance} className="hover:text-[#0b4619] cursor-pointer font-mono text-[11px] text-emerald-800">
                     Dev Blueprint (Supabase / RLS)
@@ -157,7 +177,16 @@ export const Footer: React.FC<FooterProps> = ({
             <span aria-hidden="true">·</span>
             <span>Direct WhatsApp Unlock</span>
             <span aria-hidden="true">·</span>
-            <span>Made for India&apos;s Local Guides</span>
+            {onOpenAdminLogin && (
+              <button
+                onClick={onOpenAdminLogin}
+                className="hover:text-stone-900 transition-colors cursor-pointer flex items-center gap-1 font-semibold text-stone-500 hover:text-stone-800"
+                title="Owner / Administrator Access"
+              >
+                <Lock className="w-3 h-3 text-stone-400" />
+                <span>{isAdminLoggedIn ? '👑 Admin Mode (Logout)' : 'Admin Login'}</span>
+              </button>
+            )}
           </div>
         </div>
       </div>

@@ -119,9 +119,9 @@ export const B2BHoldSlotModal: React.FC<B2BHoldSlotModalProps> = ({
               <p className="text-stone-500">{packageData.location} • {packageData.duration}</p>
             </div>
             <div className="text-left sm:text-right">
-              <span className="text-[10px] text-emerald-800 uppercase tracking-wider font-semibold">Your B2B Tier</span>
-              <div className="font-bold text-[#0b4619] text-sm">{activeAgency.tier} Partner ({activeAgency.wholesaleMarginPercent}% Margin)</div>
-              <div className="text-[11px] text-stone-500">Credit Limit: {formatINR(activeAgency.creditLimit)}</div>
+              <span className="text-[10px] text-emerald-800 uppercase tracking-wider font-semibold">Commission Model</span>
+              <div className="font-bold text-[#0b4619] text-sm">5% Platform Commission</div>
+              <div className="text-[11px] text-stone-500">100% Host Net Value on Arrival</div>
             </div>
           </div>
 
@@ -234,7 +234,7 @@ export const B2BHoldSlotModal: React.FC<B2BHoldSlotModalProps> = ({
               <span className="font-semibold text-stone-900">{formatINR(wholesale.totalRetailPrice)}</span>
             </div>
             <div className="flex justify-between items-center text-stone-700">
-              <span>Your B2B Wholesale Net Cost ({activeAgency.wholesaleMarginPercent}% {activeAgency.tier} Margin):</span>
+              <span>Agency Direct Net Cost (5% Platform Commission Model):</span>
               <strong className="text-emerald-950 font-bold">{formatINR(wholesale.totalWholesaleNetCost)}</strong>
             </div>
             <div className="flex justify-between items-center text-[#0b4619] font-bold pt-1 border-t border-emerald-200">

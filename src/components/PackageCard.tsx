@@ -101,14 +101,14 @@ export const PackageCard: React.FC<PackageCardProps> = ({
             <div className="space-y-2 mb-3">
               <div className="p-3 rounded-xl bg-emerald-50/80 border border-emerald-200/90 text-xs space-y-1.5">
                 <div className="flex items-baseline justify-between">
-                  <span className="text-[11px] text-stone-600">B2B Wholesale Net Cost:</span>
+                  <span className="text-[11px] text-stone-600">Listed Agency Rate:</span>
                   <span className="text-base font-extrabold text-[#0b4619] font-mono tabular-nums">
-                    {formatINR(wholesale.wholesaleNetRatePerPerson)}
+                    {formatINR(tour.pricePerPerson)}
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-[11px] text-stone-500 pt-1 border-t border-emerald-200/60">
-                  <span>Retail Price (RSP): <strong className="text-stone-700">{formatINR(wholesale.retailPricePerPerson)}</strong></span>
-                  <span className="font-bold text-emerald-800">Your Margin: +{formatINR(wholesale.agentTotalProfit)}</span>
+                  <span>Fee Model: <strong className="text-emerald-800 font-bold">5% Platform Commission</strong></span>
+                  <span className="font-semibold text-stone-700">100% Direct to Host</span>
                 </div>
               </div>
 

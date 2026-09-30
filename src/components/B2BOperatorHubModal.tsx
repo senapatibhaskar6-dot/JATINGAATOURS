@@ -19,6 +19,7 @@ interface B2BOperatorHubModalProps {
   quotations: B2BQuotation[];
   ledger: B2BLedgerEntry[];
   initialTab?: 'inventory' | 'holds' | 'quotes' | 'ledger' | 'admin' | 'payout';
+  isAdmin?: boolean;
   onClose: () => void;
   onSwitchAgency: (agency: B2BAgency) => void;
   onUpdateAgencyStatus: (agencyId: string, status: 'verified' | 'pending' | 'suspended', tier?: B2BPartnerTier) => void;
@@ -45,6 +46,7 @@ export const B2BOperatorHubModal: React.FC<B2BOperatorHubModalProps> = ({
   quotations,
   ledger,
   initialTab = 'inventory',
+  isAdmin = false,
   onClose,
   onSwitchAgency,
   onUpdateAgencyStatus,
@@ -217,7 +219,7 @@ export const B2BOperatorHubModal: React.FC<B2BOperatorHubModalProps> = ({
               <h2 className="text-base sm:text-lg font-bold font-display flex items-center gap-2">
                 <span>{activeAgency.agencyName}</span>
                 <span className="text-xs font-normal text-amber-300">
-                  ({activeAgency.tier} Partner • {activeAgency.wholesaleMarginPercent}% Margin)
+                  (5% Transparent Platform Commission)
                 </span>
               </h2>
             </div>
@@ -225,23 +227,25 @@ export const B2BOperatorHubModal: React.FC<B2BOperatorHubModalProps> = ({
 
           {/* Quick Agency Switcher & Close */}
           <div className="flex items-center gap-3">
-            <div className="hidden sm:flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-lg text-xs">
-              <span className="text-white/70">Partner:</span>
-              <select
-                value={activeAgency.id}
-                onChange={(e) => {
-                  const found = allAgencies.find(a => a.id === e.target.value);
-                  if (found) onSwitchAgency(found);
-                }}
-                className="bg-transparent text-white font-semibold focus:outline-none cursor-pointer"
-              >
-                {allAgencies.map((a) => (
-                  <option key={a.id} value={a.id} className="text-stone-900">
-                    {a.agencyName} ({a.tier} - {a.status})
-                  </option>
-                ))}
-              </select>
-            </div>
+            {isAdmin && (
+              <div className="hidden sm:flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-lg text-xs">
+                <span className="text-white/70">Partner:</span>
+                <select
+                  value={activeAgency.id}
+                  onChange={(e) => {
+                    const found = allAgencies.find(a => a.id === e.target.value);
+                    if (found) onSwitchAgency(found);
+                  }}
+                  className="bg-transparent text-white font-semibold focus:outline-none cursor-pointer"
+                >
+                  {allAgencies.map((a) => (
+                    <option key={a.id} value={a.id} className="text-stone-900">
+                      {a.agencyName} ({a.status})
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
 
             <button
               onClick={onClose}
@@ -319,17 +323,19 @@ export const B2BOperatorHubModal: React.FC<B2BOperatorHubModalProps> = ({
             </span>
           </button>
 
-          <button
-            onClick={() => setActiveTab('admin')}
-            className={`py-3 px-3.5 border-b-2 transition-colors whitespace-nowrap cursor-pointer flex items-center gap-2 ${
-              activeTab === 'admin'
-                ? 'border-[#0b4619] text-[#0b4619] font-bold bg-white'
-                : 'border-transparent hover:text-stone-900'
-            }`}
-          >
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-700" />
-            <span>Agency Verification & Network ({allAgencies.length})</span>
-          </button>
+          {isAdmin && (
+            <button
+              onClick={() => setActiveTab('admin')}
+              className={`py-3 px-3.5 border-b-2 transition-colors whitespace-nowrap cursor-pointer flex items-center gap-2 ${
+                activeTab === 'admin'
+                  ? 'border-[#0b4619] text-[#0b4619] font-bold bg-white'
+                  : 'border-transparent hover:text-stone-900'
+              }`}
+            >
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-700" />
+              <span>Agency Verification & Network ({allAgencies.length})</span>
+            </button>
+          )}
         </div>
 
         {/* Tab Body */}
@@ -340,7 +346,7 @@ export const B2BOperatorHubModal: React.FC<B2BOperatorHubModalProps> = ({
               <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-950 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                 <div className="space-y-0.5">
                   <strong className="block font-bold text-sm text-[#0b4619]">
-                    Active Commercial Agreement: {activeAgency.tier} Partner Tier ({activeAgency.wholesaleMarginPercent}% Net Margin)
+                    Standard Platform Agreement: Fair 5% Platform Commission Model (100% Host Net Earnings)
                   </strong>
                   <p className="text-emerald-800 text-[11px]">
                     All net rates below are contractually guaranteed with verified local hosts and cooperative societies across Northeast India.
@@ -750,16 +756,11 @@ export const B2BOperatorHubModal: React.FC<B2BOperatorHubModalProps> = ({
                       />
                     </div>
                     <div>
-                      <label className="block text-stone-700 font-semibold mb-1">Partner Commercial Tier</label>
-                      <select
-                        value={newTier}
-                        onChange={(e) => setNewTier(e.target.value as B2BPartnerTier)}
-                        className="w-full px-3 py-1.5 rounded-lg border border-stone-300 bg-white"
-                      >
-                        <option value="Silver">Silver (12% Margin)</option>
-                        <option value="Gold">Gold (18% Margin)</option>
-                        <option value="Platinum">Platinum (22% Margin)</option>
-                      </select>
+                      <label className="block text-stone-700 font-semibold mb-1">Commercial Fee Agreement</label>
+                      <div className="w-full px-3 py-1.5 rounded-lg border border-emerald-300 bg-emerald-50/50 text-xs text-emerald-950 font-semibold flex items-center gap-1.5">
+                        <ShieldCheck className="w-3.5 h-3.5 text-[#0b4619]" />
+                        <span>Standard 5% Transparent Platform Commission</span>
+                      </div>
                     </div>
                   </div>
 
@@ -800,8 +801,8 @@ export const B2BOperatorHubModal: React.FC<B2BOperatorHubModalProps> = ({
                         }`}>
                           {agency.status}
                         </span>
-                        <span className="text-[11px] font-bold text-[#0b4619] bg-emerald-50 px-2 py-0.2 rounded">
-                          {agency.tier} Tier ({agency.wholesaleMarginPercent}%)
+                        <span className="text-[11px] font-bold text-[#0b4619] bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                          5% Commission Model
                         </span>
                       </div>
                       <p className="text-xs text-stone-600">
@@ -812,18 +813,11 @@ export const B2BOperatorHubModal: React.FC<B2BOperatorHubModalProps> = ({
                       </div>
                     </div>
 
-                    {/* Admin Verification & Tier Controls */}
+                    {/* Admin Verification & Status Controls */}
                     <div className="flex items-center gap-2 self-end sm:self-center">
-                      <select
-                        value={agency.tier}
-                        onChange={(e) => onUpdateAgencyStatus(agency.id, agency.status, e.target.value as B2BPartnerTier)}
-                        className="px-2.5 py-1.5 rounded-lg border border-stone-300 text-xs font-semibold bg-white cursor-pointer"
-                        title="Change commercial tier"
-                      >
-                        <option value="Silver">Silver (12%)</option>
-                        <option value="Gold">Gold (18%)</option>
-                        <option value="Platinum">Platinum (22%)</option>
-                      </select>
+                      <span className="px-2.5 py-1.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs font-semibold">
+                        5% Commission
+                      </span>
 
                       {agency.status !== 'verified' ? (
                         <button

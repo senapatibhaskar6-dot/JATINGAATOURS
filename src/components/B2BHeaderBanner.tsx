@@ -1,26 +1,32 @@
 import React from 'react';
 import { B2BAgency } from '../types';
-import { Building2, Clock, FileText, ArrowRight, ShieldCheck, RefreshCw, Banknote } from 'lucide-react';
+import { Building2, Clock, FileText, ArrowRight, ShieldCheck, RefreshCw, Banknote, Users } from 'lucide-react';
 import { formatINR } from '../utils/pricing';
 
 interface B2BHeaderBannerProps {
   activeAgency: B2BAgency;
   isB2BMode: boolean;
   activeHoldsCount: number;
+  totalAgenciesCount?: number;
+  isAdminLoggedIn?: boolean;
   onToggleB2BMode: () => void;
   onOpenB2BHub: () => void;
   onOpenHolds: () => void;
   onOpenBankPayout?: () => void;
+  onOpenAgenciesDirectory?: () => void;
 }
 
 export const B2BHeaderBanner: React.FC<B2BHeaderBannerProps> = ({
   activeAgency,
   isB2BMode,
   activeHoldsCount,
+  totalAgenciesCount,
+  isAdminLoggedIn = false,
   onToggleB2BMode,
   onOpenB2BHub,
   onOpenHolds,
   onOpenBankPayout,
+  onOpenAgenciesDirectory,
 }) => {
   if (!isB2BMode) {
     return (
@@ -60,6 +66,17 @@ export const B2BHeaderBanner: React.FC<B2BHeaderBannerProps> = ({
               Lic: {activeAgency.tourismLicenseNo}
             </span>
           </div>
+
+          {isAdminLoggedIn && onOpenAgenciesDirectory && totalAgenciesCount !== undefined && (
+            <button
+              onClick={onOpenAgenciesDirectory}
+              className="hidden md:flex items-center gap-1 text-[11px] bg-emerald-950/70 hover:bg-emerald-950 px-2 py-0.5 rounded text-emerald-200 hover:text-white border border-emerald-700/60 cursor-pointer transition-colors"
+              title="Admin: Click to view all registered agencies and verification details"
+            >
+              <Users className="w-3 h-3 text-amber-300" />
+              <span>{totalAgenciesCount} Registered Agencies</span>
+            </button>
+          )}
         </div>
 
         <div className="flex items-center gap-2">

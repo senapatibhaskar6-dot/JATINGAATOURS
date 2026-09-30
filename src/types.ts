@@ -14,7 +14,7 @@ export interface Agency {
   bio: string;
   avatar?: string;
   specialty?: string;
-  status?: 'verified' | 'pending';
+  status?: 'verified' | 'pending' | 'suspended';
   // Registered Bank / Payment Account for Instant Razorpay Route Transfers
   bankAccountName?: string;
   bankAccountNumber?: string;

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ShieldCheck, UserCheck, Menu, X, ReceiptText, CreditCard, Building2 } from 'lucide-react';
+import { ShieldCheck, UserCheck, Menu, X, ReceiptText, CreditCard, Building2, Users, Lock } from 'lucide-react';
 import jatingaaLogo from '../assets/images/jatingaa_tours_logo.png';
 
 interface HeaderProps {
@@ -12,6 +12,10 @@ interface HeaderProps {
   isB2BMode?: boolean;
   onToggleB2BMode?: () => void;
   bookingsCount: number;
+  agenciesCount?: number;
+  onOpenAgenciesDirectory?: () => void;
+  isAdminLoggedIn?: boolean;
+  onOpenAdminLogin?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -24,6 +28,10 @@ export const Header: React.FC<HeaderProps> = ({
   isB2BMode = false,
   onToggleB2BMode,
   bookingsCount,
+  agenciesCount = 0,
+  onOpenAgenciesDirectory,
+  isAdminLoggedIn = false,
+  onOpenAdminLogin,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -97,6 +105,20 @@ export const Header: React.FC<HeaderProps> = ({
           >
             For Local Agencies
           </button>
+          {isAdminLoggedIn && onOpenAgenciesDirectory && (
+            <button
+              onClick={onOpenAgenciesDirectory}
+              className="hover:text-[#0b4619] transition-colors cursor-pointer flex items-center gap-1.5 py-1 text-emerald-800 font-semibold"
+              title="Admin: View all registered agencies directory and verification status"
+            >
+              <span>Agencies</span>
+              {agenciesCount > 0 && (
+                <span className="inline-flex items-center justify-center px-1.5 py-0.5 text-[11px] font-bold text-white bg-emerald-800 rounded-full">
+                  {agenciesCount}
+                </span>
+              )}
+            </button>
+          )}
           <button
             onClick={onOpenBookings}
             className="hover:text-[#0b4619] transition-colors cursor-pointer flex items-center gap-1.5 py-1"
@@ -112,6 +134,43 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Zone 3: Primary Action Controls */}
         <div className="hidden sm:flex items-center gap-2">
+          {isAdminLoggedIn && onOpenAgenciesDirectory && (
+            <button
+              onClick={onOpenAgenciesDirectory}
+              className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-emerald-950 hover:text-emerald-900 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200/90 rounded-lg transition-colors cursor-pointer whitespace-nowrap"
+              title="Admin: View all registered tourism operators, licenses, and status"
+            >
+              <Users className="w-3.5 h-3.5 text-[#0b4619]" />
+              <span>Agencies</span>
+              {agenciesCount > 0 && (
+                <span className="inline-flex items-center justify-center px-1.5 py-0.2 text-[10px] font-bold text-white bg-[#0b4619] rounded-full">
+                  {agenciesCount}
+                </span>
+              )}
+            </button>
+          )}
+
+          {isAdminLoggedIn && onOpenPaymentSettings && (
+            <button
+              onClick={onOpenPaymentSettings}
+              className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-stone-700 hover:text-stone-900 bg-amber-50/80 hover:bg-amber-100 border border-amber-200/90 rounded-lg transition-colors cursor-pointer whitespace-nowrap"
+              title="Admin: Configure Razorpay Keys, UPI ID & Payment Gateway"
+            >
+              <CreditCard className="w-3.5 h-3.5 text-amber-700" />
+              <span>Payment Gateway</span>
+            </button>
+          )}
+
+          {isAdminLoggedIn && onOpenCodeGuidance && (
+            <button
+              onClick={onOpenCodeGuidance}
+              className="px-2.5 py-2 text-xs font-semibold text-stone-600 hover:text-stone-900 hover:bg-stone-100 rounded-lg transition-colors cursor-pointer whitespace-nowrap"
+              title="Admin: View System Architecture & Blueprint"
+            >
+              Dev Blueprint
+            </button>
+          )}
+
           {onOpenB2BHub && (
             <button
               onClick={onOpenB2BHub}
@@ -124,27 +183,6 @@ export const Header: React.FC<HeaderProps> = ({
             >
               <Building2 className="w-3.5 h-3.5" />
               <span>{isB2BMode ? 'B2B Console' : 'B2B Partner Network'}</span>
-            </button>
-          )}
-
-          {onOpenCodeGuidance && (
-            <button
-              onClick={onOpenCodeGuidance}
-              className="px-2.5 py-2 text-xs font-semibold text-stone-600 hover:text-stone-900 hover:bg-stone-100 rounded-lg transition-colors cursor-pointer whitespace-nowrap"
-              title="View Supabase, S3/Storage, Auth & Moderation Architecture"
-            >
-              Dev Blueprint
-            </button>
-          )}
-
-          {onOpenPaymentSettings && (
-            <button
-              onClick={onOpenPaymentSettings}
-              className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-stone-700 hover:text-stone-900 bg-amber-50/80 hover:bg-amber-100 border border-amber-200/90 rounded-lg transition-colors cursor-pointer whitespace-nowrap"
-              title="Configure Razorpay Keys, UPI ID & Payment Gateway"
-            >
-              <CreditCard className="w-3.5 h-3.5 text-amber-700" />
-              <span>Payment Gateway</span>
             </button>
           )}
 
@@ -163,6 +201,29 @@ export const Header: React.FC<HeaderProps> = ({
             <UserCheck className="w-4 h-4 text-[#f39c12]" />
             <span>Register Agency</span>
           </button>
+
+          {/* Admin Mode Badge & Login Trigger */}
+          {isAdminLoggedIn ? (
+            <button
+              onClick={onOpenAdminLogin}
+              className="flex items-center gap-1.5 px-2.5 py-2 text-xs font-bold text-amber-300 bg-stone-900 hover:bg-stone-800 border border-amber-400/40 rounded-lg transition-colors cursor-pointer shadow-xs"
+              title="Admin Security & Settings (Click to Manage/Lock)"
+            >
+              <Lock className="w-3.5 h-3.5 text-amber-400" />
+              <span className="hidden md:inline">Admin</span>
+            </button>
+          ) : (
+            onOpenAdminLogin && (
+              <button
+                onClick={onOpenAdminLogin}
+                className="p-2 text-stone-400 hover:text-stone-700 rounded-lg hover:bg-stone-100 transition-colors cursor-pointer"
+                title="Admin Login (Site Owner Only)"
+                aria-label="Admin Login"
+              >
+                <Lock className="w-3.5 h-3.5" />
+              </button>
+            )
+          )}
         </div>
 
         {/* Mobile menu trigger */}
@@ -215,6 +276,25 @@ export const Header: React.FC<HeaderProps> = ({
             >
               For Local Travel Agencies
             </button>
+            {isAdminLoggedIn && onOpenAgenciesDirectory && (
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  onOpenAgenciesDirectory();
+                }}
+                className="text-left py-2 px-2 hover:bg-stone-50 rounded flex items-center justify-between text-emerald-900 font-semibold"
+              >
+                <span className="flex items-center gap-2">
+                  <Users className="w-4 h-4 text-[#0b4619]" />
+                  <span>Agencies Directory (Admin)</span>
+                </span>
+                {agenciesCount > 0 && (
+                  <span className="px-2 py-0.5 text-xs font-bold text-white bg-emerald-800 rounded-full">
+                    {agenciesCount}
+                  </span>
+                )}
+              </button>
+            )}
             <button
               onClick={() => {
                 setMobileMenuOpen(false);
@@ -248,7 +328,7 @@ export const Header: React.FC<HeaderProps> = ({
                 {isB2BMode ? 'Open B2B Operator Console' : 'Switch to B2B Partner Network'}
               </button>
             )}
-            {onOpenPaymentSettings && (
+            {isAdminLoggedIn && onOpenPaymentSettings && (
               <button
                 onClick={() => {
                   setMobileMenuOpen(false);
@@ -257,7 +337,7 @@ export const Header: React.FC<HeaderProps> = ({
                 className="w-full flex items-center justify-center gap-2 py-2.5 text-xs font-semibold text-amber-900 bg-amber-50 border border-amber-200 rounded-lg"
               >
                 <CreditCard className="w-4 h-4 text-amber-700" />
-                Payment Gateway & UPI Setup
+                Payment Gateway & UPI Setup (Admin)
               </button>
             )}
             <button
@@ -280,6 +360,19 @@ export const Header: React.FC<HeaderProps> = ({
               <UserCheck className="w-4 h-4 text-[#f39c12]" />
               List Your Agency (Zero Listing Fee)
             </button>
+
+            {onOpenAdminLogin && (
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  onOpenAdminLogin();
+                }}
+                className="w-full mt-1 flex items-center justify-center gap-2 py-2 text-xs font-semibold text-stone-500 hover:text-stone-900 border border-dashed border-stone-300 rounded-lg"
+              >
+                <Lock className="w-3.5 h-3.5 text-stone-500" />
+                <span>{isAdminLoggedIn ? '👑 Admin Mode Active (Manage / Lock)' : 'Owner / Admin Login 🔒'}</span>
+              </button>
+            )}
           </div>
         </div>
       )}

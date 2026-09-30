@@ -27,6 +27,9 @@ import { B2BOperatorHubModal } from './components/B2BOperatorHubModal';
 import { B2BQuotationVoucherModal } from './components/B2BQuotationVoucherModal';
 import { B2BHoldSlotModal } from './components/B2BHoldSlotModal';
 import { TestimonialCarousel } from './components/TestimonialCarousel';
+import { AgenciesDirectoryModal } from './components/AgenciesDirectoryModal';
+import { AdminLoginModal } from './components/AdminLoginModal';
+import { getIsAdminLoggedIn, setIsAdminLoggedIn } from './utils/adminAuth';
 import {
   getStoredB2BAgencies, saveStoredB2BAgencies,
   getStoredB2BHolds, saveStoredB2BHolds,
@@ -113,9 +116,26 @@ export default function App() {
 
   const [isAgencyPortalOpen, setIsAgencyPortalOpen] = useState(false);
   const [isRegisterAgencyOpen, setIsRegisterAgencyOpen] = useState(false);
+  const [isAgenciesDirectoryOpen, setIsAgenciesDirectoryOpen] = useState(false);
   const [isCodeGuidanceOpen, setIsCodeGuidanceOpen] = useState(false);
   const [isMyBookingsOpen, setIsMyBookingsOpen] = useState(false);
   const [isPaymentSettingsOpen, setIsPaymentSettingsOpen] = useState(false);
+  const [isAdminLoginModalOpen, setIsAdminLoginModalOpen] = useState(false);
+  const [isAdminLoggedIn, setIsAdminLoggedInState] = useState<boolean>(getIsAdminLoggedIn);
+
+  const handleAdminLoginSuccess = () => {
+    setIsAdminLoggedIn(true);
+    setIsAdminLoggedInState(true);
+    setIsAdminLoginModalOpen(false);
+    showToast('👑 Admin Mode unlocked! All administrative tools are now active.');
+  };
+
+  const handleAdminLogout = () => {
+    setIsAdminLoggedIn(false);
+    setIsAdminLoggedInState(false);
+    setIsAdminLoginModalOpen(false);
+    showToast('Admin Mode locked. Confidential agency & payment tools are now protected.');
+  };
 
   // B2B Operator Network State
   const [isB2BMode, setIsB2BMode] = useState<boolean>(true); // Active by default for operator access
@@ -379,9 +399,49 @@ export default function App() {
   const handleAgencyRegistered = (newAgency: Agency) => {
     setAgenciesList((prev) => [newAgency, ...prev]);
     setActiveAgency(newAgency);
+
+    // Also register into B2B Agencies network and persist to localStorage
+    const newB2BAgency: B2BAgency = {
+      id: newAgency.id,
+      agencyName: newAgency.name,
+      tradeName: newAgency.name,
+      contactPerson: newAgency.founder,
+      designation: 'Managing Director / Founder',
+      email: newAgency.email,
+      phone: newAgency.phone,
+      whatsapp: newAgency.whatsapp,
+      gstin: newAgency.licenseNumber,
+      panNumber: 'VERIF_PENDING',
+      tourismLicenseNo: newAgency.licenseNumber,
+      state: newAgency.state,
+      city: newAgency.baseCity,
+      address: `${newAgency.baseCity}, ${newAgency.state}`,
+      operatorType: 'DMC',
+      tier: 'Gold',
+      wholesaleMarginPercent: 18,
+      status: 'verified',
+      registeredAt: new Date().toISOString(),
+      approvedAt: new Date().toISOString(),
+      walletBalance: 0,
+      creditLimit: 50000,
+      activeHoldsCount: 0,
+      totalWholesaleBookings: 0,
+      bankName: 'State Bank of India',
+      bankAccountName: newAgency.name,
+      bankAccountNumber: '38920194821',
+      bankIfsc: 'SBIN0000001',
+      payoutStatus: 'verified',
+    };
+
+    setB2bAgencies((prev) => {
+      const updated = [newB2BAgency, ...prev];
+      saveStoredB2BAgencies(updated);
+      return updated;
+    });
+
     setIsRegisterAgencyOpen(false);
     setIsAgencyPortalOpen(true);
-    showToast(`Agency "${newAgency.name}" onboarded! Opened your Vendor Portal to list packages.`);
+    showToast(`Agency "${newAgency.name}" onboarded! Total registered agencies: ${b2bAgencies.length + 1}`);
   };
 
   const handleUpdateAgencyProfile = (updatedAgency: Agency) => {
@@ -456,10 +516,13 @@ export default function App() {
         activeAgency={activeB2BAgency}
         isB2BMode={isB2BMode}
         activeHoldsCount={b2bHolds.filter(h => h.status === 'active').length}
+        totalAgenciesCount={b2bAgencies.length}
+        isAdminLoggedIn={isAdminLoggedIn}
         onToggleB2BMode={() => setIsB2BMode(!isB2BMode)}
         onOpenB2BHub={() => handleOpenB2BHubWithTab('inventory')}
         onOpenHolds={() => handleOpenB2BHubWithTab('holds')}
         onOpenBankPayout={() => handleOpenB2BHubWithTab('payout')}
+        onOpenAgenciesDirectory={() => setIsAgenciesDirectoryOpen(true)}
       />
 
       {/* Top Header */}
@@ -473,6 +536,10 @@ export default function App() {
         isB2BMode={isB2BMode}
         onToggleB2BMode={() => setIsB2BMode(!isB2BMode)}
         bookingsCount={bookings.length}
+        agenciesCount={b2bAgencies.length}
+        onOpenAgenciesDirectory={() => setIsAgenciesDirectoryOpen(true)}
+        isAdminLoggedIn={isAdminLoggedIn}
+        onOpenAdminLogin={() => setIsAdminLoginModalOpen(true)}
       />
 
       <main className="flex-1">
@@ -534,6 +601,9 @@ export default function App() {
         onOpenRegisterAgency={() => setIsRegisterAgencyOpen(true)}
         onOpenCodeGuidance={() => setIsCodeGuidanceOpen(true)}
         onOpenPaymentSettings={() => setIsPaymentSettingsOpen(true)}
+        isAdminLoggedIn={isAdminLoggedIn}
+        onOpenAdminLogin={() => setIsAdminLoginModalOpen(true)}
+        onOpenAgenciesDirectory={() => setIsAgenciesDirectoryOpen(true)}
       />
 
       {/* MODALS */}
@@ -646,6 +716,7 @@ export default function App() {
           quotations={b2bQuotes}
           ledger={b2bLedger}
           initialTab={b2bHubInitialTab}
+          isAdmin={isAdminLoggedIn}
           onClose={() => setIsB2BHubOpen(false)}
           onSwitchAgency={handleSwitchB2BAgency}
           onUpdateAgencyStatus={handleUpdateB2BAgencyStatus}
@@ -701,6 +772,54 @@ export default function App() {
             setBookingTour(pkg);
             setBookingTravelersCount(quote.travelersCount);
           }}
+        />
+      )}
+
+      {/* 13. Registered Agencies & Operators Directory Modal */}
+      {isAgenciesDirectoryOpen && (
+        <AgenciesDirectoryModal
+          agencies={b2bAgencies}
+          activeAgencyId={activeB2BAgencyId}
+          onClose={() => setIsAgenciesDirectoryOpen(false)}
+          onSwitchAgency={handleSwitchB2BAgency}
+          onUpdateAgencyStatus={handleUpdateB2BAgencyStatus}
+          onOpenRegisterAgency={() => setIsRegisterAgencyOpen(true)}
+          onOpenAgencyPortalFor={(b2bAg) => {
+            const matchedAgency: Agency = agenciesList.find(a => a.id === b2bAg.id || a.name === b2bAg.agencyName) || {
+              id: b2bAg.id,
+              name: b2bAg.agencyName,
+              founder: b2bAg.contactPerson,
+              baseCity: b2bAg.city,
+              state: b2bAg.state,
+              phone: b2bAg.phone,
+              whatsapp: b2bAg.whatsapp,
+              email: b2bAg.email,
+              licenseNumber: b2bAg.tourismLicenseNo,
+              verifiedSince: '2023',
+              rating: 5.0,
+              totalToursCompleted: b2bAg.totalWholesaleBookings || 12,
+              bio: `${b2bAg.agencyName} is an authorized local travel operator.`,
+              specialty: b2bAg.operatorType,
+              status: b2bAg.status,
+              bankName: b2bAg.bankName,
+              bankAccountNumber: b2bAg.bankAccountNumber,
+              bankIfsc: b2bAg.bankIfsc,
+              upiId: b2bAg.upiId,
+              payoutStatus: b2bAg.payoutStatus,
+            };
+            setActiveAgency(matchedAgency);
+            setIsAgencyPortalOpen(true);
+          }}
+        />
+      )}
+
+      {/* 14. Platform Admin Security & Login Modal */}
+      {isAdminLoginModalOpen && (
+        <AdminLoginModal
+          isAdminLoggedIn={isAdminLoggedIn}
+          onClose={() => setIsAdminLoginModalOpen(false)}
+          onLoginSuccess={handleAdminLoginSuccess}
+          onLogout={handleAdminLogout}
         />
       )}
     </div>

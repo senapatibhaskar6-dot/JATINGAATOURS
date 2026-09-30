@@ -273,7 +273,7 @@ export const B2BQuotationVoucherModal: React.FC<B2BQuotationVoucherModalProps> =
               {/* Live Commercial Profit Breakdown */}
               <div className="p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-xs text-emerald-950 flex flex-wrap items-center justify-between gap-3">
                 <div>
-                  <span className="font-semibold text-emerald-900">Your B2B Wholesale Net Cost ({activeAgency.tier} Tier):</span>{' '}
+                  <span className="font-semibold text-emerald-900">Agency Direct Net Cost (5% Platform Fee Model):</span>{' '}
                   <strong className="text-stone-900 font-mono">{formatINR(wholesale.totalWholesaleNetCost)}</strong>
                 </div>
                 <div>
@@ -304,7 +304,7 @@ export const B2BQuotationVoucherModal: React.FC<B2BQuotationVoucherModalProps> =
               <div className="space-y-1">
                 <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-900 text-[10px] font-bold uppercase tracking-wider">
                   <Award className="w-3 h-3 text-emerald-700" />
-                  <span>Verified B2B Tourism Operator • {activeAgency.tier} Tier</span>
+                  <span>Verified Tourism Operator • 5% Platform Fee Model</span>
                 </div>
                 <h1 className="text-xl sm:text-2xl font-bold font-display text-stone-950">
                   {activeAgency.agencyName}
