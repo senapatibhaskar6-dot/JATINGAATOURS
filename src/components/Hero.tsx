@@ -107,10 +107,10 @@ export const Hero: React.FC<HeroProps> = ({
   const [isCustomizing, setIsCustomizing] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   
-  // 'bright' = open & very clear image (low dark overlay)
+  // 'bright' = open & very clear image (low dark overlay, vibrant brightness)
   // 'balanced' = moderate overlay
   // 'high-contrast' = dark overlay for maximum reading comfort
-  const [overlayIntensity, setOverlayIntensity] = useState<'bright' | 'balanced' | 'high-contrast'>('balanced');
+  const [overlayIntensity, setOverlayIntensity] = useState<'bright' | 'balanced' | 'high-contrast'>('bright');
   
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -179,7 +179,7 @@ export const Hero: React.FC<HeroProps> = ({
             <img
               src={customImage}
               alt="Custom uploaded background"
-              className="w-full h-full object-cover object-center transform transition-transform duration-[8000ms] ease-out scale-105"
+              className="w-full h-full object-cover object-center transform transition-transform duration-[8000ms] ease-out scale-105 brightness-110 contrast-[1.03] saturate-110"
             />
           </div>
         ) : (
@@ -193,7 +193,7 @@ export const Hero: React.FC<HeroProps> = ({
               <img
                 src={dest.imageUrl}
                 alt={dest.alt}
-                className="w-full h-full object-cover object-center transform transition-transform duration-[8000ms] ease-out scale-105"
+                className="w-full h-full object-cover object-center transform transition-transform duration-[8000ms] ease-out scale-105 brightness-110 contrast-[1.03] saturate-110"
                 loading={index === 0 ? 'eager' : 'lazy'}
                 onError={(e) => {
                   (e.currentTarget as HTMLImageElement).src = northeastTeaImg;
@@ -207,8 +207,11 @@ export const Hero: React.FC<HeroProps> = ({
         {/* 2. READABILITY OVERLAY (Adjustable brightness & openness)                 */}
         {/* ========================================================================= */}
         {overlayIntensity === 'bright' && (
-          // Bright / Open mode: Image is vivid and very open
-          <div className="absolute inset-0 bg-stone-950/40 backdrop-blur-[0px] transition-all duration-500" />
+          // Bright & Vibrant mode: Image is vivid, bright, and completely open
+          <>
+            <div className="absolute inset-0 bg-stone-950/20 backdrop-blur-none transition-all duration-500" />
+            <div className="absolute inset-0 bg-gradient-to-t from-stone-950/60 via-transparent to-stone-950/20 pointer-events-none" />
+          </>
         )}
 
         {overlayIntensity === 'balanced' && (
