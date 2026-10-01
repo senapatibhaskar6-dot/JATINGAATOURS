@@ -171,7 +171,7 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
           )}
 
-          {onOpenB2BHub && (
+          {isAdminLoggedIn && onOpenB2BHub && (
             <button
               onClick={onOpenB2BHub}
               className={`flex items-center gap-1.5 px-3 py-2 text-xs font-bold rounded-lg transition-colors cursor-pointer whitespace-nowrap shadow-xs ${
@@ -312,7 +312,7 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
 
           <div className="pt-3 border-t border-stone-200 flex flex-col gap-2">
-            {onOpenB2BHub && (
+            {isAdminLoggedIn && onOpenB2BHub && (
               <button
                 onClick={() => {
                   setMobileMenuOpen(false);

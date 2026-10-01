@@ -28,6 +28,11 @@ export const B2BHeaderBanner: React.FC<B2BHeaderBannerProps> = ({
   onOpenBankPayout,
   onOpenAgenciesDirectory,
 }) => {
+  // Hide B2B Operator & Bank Payout bar completely from general travelers/visitors. Only visible to Admin!
+  if (!isAdminLoggedIn) {
+    return null;
+  }
+
   if (!isB2BMode) {
     return (
       <div className="bg-stone-900 text-stone-200 text-xs py-2 px-4 border-b border-stone-800">
@@ -35,7 +40,7 @@ export const B2BHeaderBanner: React.FC<B2BHeaderBannerProps> = ({
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
             <span className="text-[11px] text-stone-300">
-              Are you a licensed tour operator or cooperative society?
+              Admin / Operator Network Mode
             </span>
           </div>
           <button
@@ -91,14 +96,17 @@ export const B2BHeaderBanner: React.FC<B2BHeaderBannerProps> = ({
             </button>
           )}
 
-          <button
-            onClick={onOpenBankPayout || onOpenB2BHub}
-            className="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-800 hover:bg-emerald-700 text-amber-300 rounded text-[11px] font-bold transition-colors cursor-pointer border border-emerald-600 shadow-xs"
-            title="Configure registered Bank Account, IFSC, & UPI for Instant Razorpay Transfers"
-          >
-            <Banknote className="w-3.5 h-3.5" />
-            <span>Bank & Payout A/C</span>
-          </button>
+          {/* Bank & Payout A/C - Strictly Admin Only */}
+          {isAdminLoggedIn && (
+            <button
+              onClick={onOpenBankPayout || onOpenB2BHub}
+              className="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-800 hover:bg-emerald-700 text-amber-300 rounded text-[11px] font-bold transition-colors cursor-pointer border border-emerald-600 shadow-xs"
+              title="Admin Only: Configure registered Bank Account, IFSC, & UPI for Instant Razorpay Transfers"
+            >
+              <Banknote className="w-3.5 h-3.5" />
+              <span>Bank & Payout A/C</span>
+            </button>
+          )}
 
           <button
             onClick={onOpenB2BHub}

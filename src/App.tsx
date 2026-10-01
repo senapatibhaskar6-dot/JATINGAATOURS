@@ -127,6 +127,7 @@ export default function App() {
   const handleAdminLoginSuccess = () => {
     setIsAdminLoggedIn(true);
     setIsAdminLoggedInState(true);
+    setIsB2BMode(true);
     setIsAdminLoginModalOpen(false);
     showToast('👑 Admin Mode unlocked! All administrative tools are now active.');
   };
@@ -134,12 +135,13 @@ export default function App() {
   const handleAdminLogout = () => {
     setIsAdminLoggedIn(false);
     setIsAdminLoggedInState(false);
+    setIsB2BMode(false);
     setIsAdminLoginModalOpen(false);
     showToast('Admin Mode locked. Confidential agency & payment tools are now protected.');
   };
 
-  // B2B Operator Network State
-  const [isB2BMode, setIsB2BMode] = useState<boolean>(true); // Active by default for operator access
+  // B2B Operator Network State - Only active when Admin is logged in
+  const [isB2BMode, setIsB2BMode] = useState<boolean>(() => getIsAdminLoggedIn());
   const [b2bAgencies, setB2bAgencies] = useState<B2BAgency[]>(getStoredB2BAgencies);
   const [activeB2BAgencyId, setActiveB2BAgencyId] = useState<string>(getStoredActiveB2BAgencyId);
   const [b2bHolds, setB2bHolds] = useState<B2BHoldSlot[]>(getStoredB2BHolds);
