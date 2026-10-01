@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { X, ShieldCheck, CheckCircle2, ArrowRight, Loader2, Building, CreditCard } from 'lucide-react';
 import { Agency } from '../types';
-import { insertAgencyToSupabase } from '../utils/supabaseClient';
+import { insertAgencyToSupabase, triggerAgencyWelcomeEmail } from '../utils/supabaseClient';
 
 interface AgencyRegisterModalProps {
   onClose: () => void;
@@ -72,6 +72,13 @@ export const AgencyRegisterModal: React.FC<AgencyRegisterModalProps> = ({
     } catch (err) {
       console.error('Error inserting into Supabase:', err);
     }
+
+    // Trigger automated welcome email via Supabase Edge Function (using Resend API)
+    triggerAgencyWelcomeEmail({
+      agencyName: agencyName.trim(),
+      email: email.trim() || `${agencyName.toLowerCase().replace(/\s+/g, '')}@partner.in`,
+      phone: phone.trim(),
+    }).catch(err => console.log('Edge function trigger note:', err));
 
     const newAgency: Agency = {
       id: `ag-new-${Date.now()}`,

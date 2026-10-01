@@ -110,3 +110,66 @@ export async function fetchAgenciesFromSupabase() {
     return { success: false, error: err, data: [] };
   }
 }
+
+/**
+ * Invokes the 'send-email-notification' Supabase Edge Function to send
+ * the Welcome Email (via Resend API) and generate WhatsApp links.
+ */
+export async function triggerAgencyWelcomeEmail(agencyData: {
+  agencyName: string;
+  email: string;
+  phone: string;
+}) {
+  try {
+    const { data, error } = await supabase.functions.invoke('send-email-notification', {
+      body: {
+        type: 'agency',
+        agencyName: agencyData.agencyName,
+        agencyEmail: agencyData.email,
+        agencyPhone: agencyData.phone,
+      },
+    });
+
+    if (error) {
+      console.warn('Supabase Edge Function invocation note:', error);
+      return { success: false, error: error.message };
+    }
+    return { success: true, data };
+  } catch (err: any) {
+    console.warn('Edge Function trigger caught error:', err);
+    return { success: false, error: err.message };
+  }
+}
+
+/**
+ * Invokes the 'send-email-notification' Supabase Edge Function to send
+ * the Booking Confirmation Email (via Resend API) to a traveler.
+ */
+export async function triggerBookingConfirmationEmail(bookingData: {
+  travelerName: string;
+  email: string;
+  phone: string;
+  bookingCode?: string;
+}) {
+  try {
+    const { data, error } = await supabase.functions.invoke('send-email-notification', {
+      body: {
+        type: 'booking',
+        travelerName: bookingData.travelerName,
+        travelerEmail: bookingData.email,
+        travelerPhone: bookingData.phone,
+        bookingCode: bookingData.bookingCode,
+      },
+    });
+
+    if (error) {
+      console.warn('Supabase Edge Function invocation note:', error);
+      return { success: false, error: error.message };
+    }
+    return { success: true, data };
+  } catch (err: any) {
+    console.warn('Edge Function trigger caught error:', err);
+    return { success: false, error: err.message };
+  }
+}
+

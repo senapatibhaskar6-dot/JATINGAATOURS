@@ -3,6 +3,7 @@ import { TourPackage, BookingRecord } from '../types';
 import { calculateBookingFees, formatINR } from '../utils/pricing';
 import { getPaymentConfig, PaymentConfig } from '../utils/paymentConfig';
 import { startRazorpayCheckout } from '../utils/razorpayClient';
+import { triggerBookingConfirmationEmail } from '../utils/supabaseClient';
 import { X, ShieldCheck, QrCode, CreditCard, Landmark, CheckCircle2, Lock, ArrowRight, Loader2, Sparkles, Smartphone, Copy, ExternalLink, AlertCircle } from 'lucide-react';
 
 interface BookingModalProps {
@@ -82,6 +83,15 @@ export const BookingModal: React.FC<BookingModalProps> = ({
       status: 'confirmed',
       agency: tour.agency,
     };
+
+    // Trigger automated booking confirmation email via Supabase Edge Function (Resend API)
+    triggerBookingConfirmationEmail({
+      travelerName: customerName,
+      email: customerEmail,
+      phone: customerPhone,
+      bookingCode,
+    }).catch(err => console.log('Edge Function trigger note:', err));
+
     onBookingSuccess(newRecord);
   };
 
