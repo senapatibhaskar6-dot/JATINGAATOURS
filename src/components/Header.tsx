@@ -16,6 +16,7 @@ interface HeaderProps {
   onOpenAgenciesDirectory?: () => void;
   isAdminLoggedIn?: boolean;
   onOpenAdminLogin?: () => void;
+  onOpenAboutUs?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -32,6 +33,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenAgenciesDirectory,
   isAdminLoggedIn = false,
   onOpenAdminLogin,
+  onOpenAboutUs,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -104,6 +106,12 @@ export const Header: React.FC<HeaderProps> = ({
             className="hover:text-[#0b4619] transition-colors cursor-pointer py-1"
           >
             For Local Agencies
+          </button>
+          <button
+            onClick={() => onOpenAboutUs ? onOpenAboutUs() : scrollToSection('about-us')}
+            className="hover:text-[#0b4619] transition-colors cursor-pointer py-1 font-semibold text-[#0b4619]"
+          >
+            About Us
           </button>
           {isAdminLoggedIn && onOpenAgenciesDirectory && (
             <button
@@ -275,6 +283,16 @@ export const Header: React.FC<HeaderProps> = ({
               className="text-left py-2 px-2 hover:bg-stone-50 rounded"
             >
               For Local Travel Agencies
+            </button>
+            <button
+              onClick={() => {
+                setMobileMenuOpen(false);
+                if (onOpenAboutUs) onOpenAboutUs();
+                else scrollToSection('about-us');
+              }}
+              className="text-left py-2 px-2 hover:bg-stone-50 rounded font-semibold text-[#0b4619]"
+            >
+              About Us (Global & Local Mission)
             </button>
             {isAdminLoggedIn && onOpenAgenciesDirectory && (
               <button

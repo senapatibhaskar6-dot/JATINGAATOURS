@@ -10,6 +10,7 @@ interface FooterProps {
   isAdminLoggedIn?: boolean;
   onOpenAdminLogin?: () => void;
   onOpenAgenciesDirectory?: () => void;
+  onOpenAboutUs?: () => void;
 }
 
 export const Footer: React.FC<FooterProps> = ({
@@ -20,6 +21,7 @@ export const Footer: React.FC<FooterProps> = ({
   isAdminLoggedIn = false,
   onOpenAdminLogin,
   onOpenAgenciesDirectory,
+  onOpenAboutUs,
 }) => {
   const scrollTo = (id: string) => {
     const el = document.getElementById(id);
@@ -66,6 +68,14 @@ export const Footer: React.FC<FooterProps> = ({
               Expeditions & Stories
             </div>
             <ul className="space-y-2 text-stone-600">
+              <li>
+                <button
+                  onClick={() => onOpenAboutUs ? onOpenAboutUs() : scrollTo('about-us')}
+                  className="hover:text-[#0b4619] cursor-pointer font-semibold text-[#0b4619] flex items-center gap-1"
+                >
+                  <span>About Us (Global & Local Mission)</span>
+                </button>
+              </li>
               <li>
                 <button onClick={() => scrollTo('packages-section')} className="hover:text-[#0b4619] cursor-pointer">
                   All-India Tour Packages

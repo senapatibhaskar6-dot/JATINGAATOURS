@@ -29,6 +29,8 @@ import { B2BHoldSlotModal } from './components/B2BHoldSlotModal';
 import { TestimonialCarousel } from './components/TestimonialCarousel';
 import { AgenciesDirectoryModal } from './components/AgenciesDirectoryModal';
 import { AdminLoginModal } from './components/AdminLoginModal';
+import { AboutUsModal } from './components/AboutUsModal';
+import { AboutUsSection } from './components/AboutUsSection';
 import { getIsAdminLoggedIn, setIsAdminLoggedIn } from './utils/adminAuth';
 import { supabase, fetchAgenciesFromSupabase, SupabaseAgencyRow } from './utils/supabaseClient';
 import {
@@ -121,6 +123,7 @@ export default function App() {
   const [isCodeGuidanceOpen, setIsCodeGuidanceOpen] = useState(false);
   const [isMyBookingsOpen, setIsMyBookingsOpen] = useState(false);
   const [isPaymentSettingsOpen, setIsPaymentSettingsOpen] = useState(false);
+  const [isAboutUsOpen, setIsAboutUsOpen] = useState(false);
   const [isAdminLoginModalOpen, setIsAdminLoginModalOpen] = useState(false);
   const [isAdminLoggedIn, setIsAdminLoggedInState] = useState<boolean>(getIsAdminLoggedIn);
 
@@ -685,6 +688,7 @@ export default function App() {
         onOpenAgenciesDirectory={() => setIsAgenciesDirectoryOpen(true)}
         isAdminLoggedIn={isAdminLoggedIn}
         onOpenAdminLogin={() => setIsAdminLoginModalOpen(true)}
+        onOpenAboutUs={() => setIsAboutUsOpen(true)}
       />
 
       <main className="flex-1">
@@ -738,6 +742,13 @@ export default function App() {
 
         {/* Verified Traveler Testimonials Carousel */}
         <TestimonialCarousel onExploreTours={scrollToPackages} />
+
+        {/* About Us: Global Reach for Local Agencies & Direct Cost-Effective Travel */}
+        <AboutUsSection
+          onOpenRegisterAgency={() => setIsRegisterAgencyOpen(true)}
+          onExploreTours={scrollToPackages}
+          onOpenFullAboutModal={() => setIsAboutUsOpen(true)}
+        />
       </main>
 
       {/* Footer */}
@@ -749,6 +760,7 @@ export default function App() {
         isAdminLoggedIn={isAdminLoggedIn}
         onOpenAdminLogin={() => setIsAdminLoginModalOpen(true)}
         onOpenAgenciesDirectory={() => setIsAgenciesDirectoryOpen(true)}
+        onOpenAboutUs={() => setIsAboutUsOpen(true)}
       />
 
       {/* MODALS */}
@@ -979,6 +991,21 @@ export default function App() {
           onClose={() => setIsAdminLoginModalOpen(false)}
           onLoginSuccess={handleAdminLoginSuccess}
           onLogout={handleAdminLogout}
+        />
+      )}
+
+      {/* 15. About Us Modal */}
+      {isAboutUsOpen && (
+        <AboutUsModal
+          onClose={() => setIsAboutUsOpen(false)}
+          onOpenRegisterAgency={() => {
+            setIsAboutUsOpen(false);
+            setIsRegisterAgencyOpen(true);
+          }}
+          onExploreTours={() => {
+            setIsAboutUsOpen(false);
+            scrollToPackages();
+          }}
         />
       )}
     </div>
