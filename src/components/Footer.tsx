@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShieldCheck, Heart, MapPin, Mail, Phone, Lock } from 'lucide-react';
+import { ShieldCheck, Heart, MapPin, Mail, Phone, Lock, MessageCircle } from 'lucide-react';
 import jatingaaLogo from '../assets/images/jatingaa_tours_logo.png';
 
 interface FooterProps {
@@ -168,7 +168,16 @@ export const Footer: React.FC<FooterProps> = ({
             </div>
             <div className="space-y-2 text-stone-500 text-[11px]">
               <div>Email: partners@jatingaatours.in</div>
-              <div>Direct: +91 94361 88204</div>
+              <a
+                href="https://wa.me/916913514367?text=Hello%20Jatingaa%20Tours%2C%20I%20would%20like%20to%20inquire%20about%20tours%20and%20partnerships."
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 text-emerald-800 hover:text-emerald-700 font-semibold transition-colors"
+                title="Open WhatsApp Chat with Jatingaa Tours (+91 6913514367)"
+              >
+                <MessageCircle className="w-3.5 h-3.5 text-[#25D366] fill-[#25D366]" />
+                <span>WhatsApp: +91 6913514367</span>
+              </a>
               <div>Guwahati & Shillong, India</div>
               <div className="pt-2 text-[10px] text-stone-400">
                 All listed tour agencies are verified under State Tourism Department Acts.

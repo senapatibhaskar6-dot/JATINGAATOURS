@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ShieldCheck, UserCheck, Menu, X, ReceiptText, CreditCard, Building2, Users, Lock } from 'lucide-react';
+import { ShieldCheck, UserCheck, Menu, X, ReceiptText, CreditCard, Building2, Users, Lock, MessageCircle } from 'lucide-react';
 import jatingaaLogo from '../assets/images/jatingaa_tours_logo.png';
 
 interface HeaderProps {
@@ -194,6 +194,17 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
           )}
 
+          <a
+            href="https://wa.me/916913514367?text=Hello%20Jatingaa%20Tours%2C%20I%20would%20like%20to%20inquire%20about%20tours%20and%20partnerships."
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hidden md:flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition-colors cursor-pointer whitespace-nowrap shadow-2xs"
+            title="Chat with Official Jatingaa Tours WhatsApp (+91 6913514367)"
+          >
+            <MessageCircle className="w-3.5 h-3.5 text-[#25D366] fill-[#25D366]" />
+            <span>WhatsApp</span>
+          </a>
+
           <button
             onClick={onOpenAgencyPortal}
             className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-stone-700 hover:text-stone-900 bg-stone-100 hover:bg-stone-200 rounded-lg transition-colors cursor-pointer whitespace-nowrap"
@@ -330,6 +341,17 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
 
           <div className="pt-3 border-t border-stone-200 flex flex-col gap-2">
+            <a
+              href="https://wa.me/916913514367?text=Hello%20Jatingaa%20Tours%2C%20I%20would%20like%20to%20inquire%20about%20tours%20and%20partnerships."
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setMobileMenuOpen(false)}
+              className="w-full flex items-center justify-center gap-2 py-2.5 text-xs font-bold text-white bg-[#25D366] hover:bg-[#20ba59] rounded-lg shadow-xs"
+            >
+              <MessageCircle className="w-4 h-4 fill-white" />
+              <span>Chat on WhatsApp (+91 6913514367)</span>
+            </a>
+
             {isAdminLoggedIn && onOpenB2BHub && (
               <button
                 onClick={() => {

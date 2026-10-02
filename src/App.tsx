@@ -31,6 +31,7 @@ import { AgenciesDirectoryModal } from './components/AgenciesDirectoryModal';
 import { AdminLoginModal } from './components/AdminLoginModal';
 import { AboutUsModal } from './components/AboutUsModal';
 import { AboutUsSection } from './components/AboutUsSection';
+import { FloatingWhatsAppButton } from './components/FloatingWhatsAppButton';
 import { getIsAdminLoggedIn, setIsAdminLoggedIn } from './utils/adminAuth';
 import { supabase, fetchAgenciesFromSupabase, SupabaseAgencyRow } from './utils/supabaseClient';
 import {
@@ -1008,6 +1009,9 @@ export default function App() {
           }}
         />
       )}
+
+      {/* Official Floating WhatsApp Chat Widget */}
+      <FloatingWhatsAppButton phoneNumber="6913514367" />
     </div>
   );
 }
