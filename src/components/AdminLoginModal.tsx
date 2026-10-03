@@ -189,12 +189,8 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-1">
                 <p className="text-xs text-stone-600">
-                  Enter your owner passcode to unlock Admin privileges. When locked, other agencies cannot view the admin account or confidential details.
+                  Enter your owner passcode to unlock Admin privileges. When locked, other agencies and visitors cannot view confidential details.
                 </p>
-                <div className="p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-[11px] text-amber-900 flex items-center gap-1.5">
-                  <ShieldCheck className="w-3.5 h-3.5 text-amber-700 shrink-0" />
-                  <span>Default Passcode is <strong>2026</strong> (You can change it once logged in).</span>
-                </div>
               </div>
 
               {errorMsg && (
