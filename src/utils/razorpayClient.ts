@@ -5,6 +5,7 @@ export interface RazorpayOrderResponse {
   amount: number; // in paise
   currency: string;
   receipt?: string;
+  key_id?: string;
 }
 
 export interface RazorpaySuccessResponse {
@@ -170,8 +171,9 @@ export async function startRazorpayCheckout({
   }
 
   // 3. Configure Razorpay Standard Checkout options
+  const resolvedKeyId = orderData.key_id || keyId;
   const options = {
-    key: keyId,
+    key: resolvedKeyId,
     amount: orderData.amount, // in paise
     currency: orderData.currency || 'INR',
     name: config.merchantName || 'Jatingaa Tours Pvt Ltd',

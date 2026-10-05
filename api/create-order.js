@@ -1,6 +1,6 @@
 import Razorpay from 'razorpay';
 
-export default async function handler(req: any, res: any) {
+export default async function handler(req, res) {
   // CORS configuration for Vercel deployments
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -73,7 +73,7 @@ export default async function handler(req: any, res: any) {
       receipt: order.receipt,
       key_id: key_id,
     });
-  } catch (err: any) {
+  } catch (err) {
     console.error('Error in /api/create-order:', err);
     const isAuthError =
       err.statusCode === 401 ||

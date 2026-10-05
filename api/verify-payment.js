@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 
-export default async function handler(req: any, res: any) {
+export default async function handler(req, res) {
   // CORS configuration for Vercel deployments
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -74,7 +74,7 @@ export default async function handler(req: any, res: any) {
       order_id: resolvedOrderId,
       payment_id: resolvedPaymentId,
     });
-  } catch (err: any) {
+  } catch (err) {
     console.error('Error in /api/verify-payment handler:', err);
     return res.status(400).json({
       success: false,
