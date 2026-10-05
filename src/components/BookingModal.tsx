@@ -117,6 +117,16 @@ export const BookingModal: React.FC<BookingModalProps> = ({
           customerName,
           customerEmail,
           customerPhone,
+          notes: {
+            agencyId: tour.agency.id,
+            agencyName: tour.agency.name.substring(0, 30),
+            agencyAdvancePayable: 'INR 1000',
+            platformCommission5Pct: `INR ${calc.platformCommission}`,
+            totalAdvancePaid: `INR ${calc.totalAdvancePayable}`,
+            remainingDueToAgencyOnArrival: `INR ${calc.remainingBalanceDueOnArrival}`,
+            agencyBankAccount: tour.agency.bankAccountNumber || 'Payout Registered',
+            agencyUpi: tour.agency.upiId || 'Payout Registered',
+          },
           onOrderCreated: (order) => {
             setProcessingStep(`Razorpay order created (${order.order_id}). Launching Checkout modal...`);
           },

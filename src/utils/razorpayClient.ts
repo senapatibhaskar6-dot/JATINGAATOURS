@@ -120,6 +120,7 @@ export async function startRazorpayCheckout({
   customerName,
   customerEmail,
   customerPhone,
+  notes: customNotes,
   onOrderCreated,
   onVerifying,
   onSuccess,
@@ -132,6 +133,7 @@ export async function startRazorpayCheckout({
   customerName: string;
   customerEmail: string;
   customerPhone: string;
+  notes?: Record<string, string>;
   onOrderCreated?: (order: RazorpayOrderResponse) => void;
   onVerifying?: () => void;
   onSuccess: (result: { payment_id: string; order_id: string; signature: string }) => void;
@@ -159,6 +161,7 @@ export async function startRazorpayCheckout({
         tourTitle: tourTitle.substring(0, 30),
         travelers: String(travelersCount),
         customerName,
+        ...(customNotes || {}),
       },
     });
     if (onOrderCreated) {
