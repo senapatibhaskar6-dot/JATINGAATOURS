@@ -88,7 +88,7 @@ export const PaymentGatewayModal: React.FC<PaymentGatewayModalProps> = ({ onClos
                     <Key className="w-4 h-4 text-stone-400 absolute left-3 top-3" />
                     <input
                       type="text"
-                      placeholder="rzp_live_xxxxxxxxxxxxxxxx বা rzp_test_xxxxxxxxxxxxxxxx"
+                      placeholder="rzp_live_xxxxxxxxxxxxxxxx"
                       value={config.razorpayKeyId}
                       onChange={(e) => setConfig({ ...config, razorpayKeyId: e.target.value.trim() })}
                       className="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-stone-300 focus:outline-none focus:ring-2 focus:ring-[#0b4619]/20 focus:border-[#0b4619] font-mono"
@@ -98,10 +98,12 @@ export const PaymentGatewayModal: React.FC<PaymentGatewayModalProps> = ({ onClos
                     <span>
                       {config.razorpayKeyId ? (
                         <span className="text-emerald-700 font-semibold flex items-center gap-1">
-                          <CheckCircle2 className="w-3.5 h-3.5" /> Razorpay Key Configured
+                          <CheckCircle2 className="w-3.5 h-3.5" /> Razorpay Live Key Active
                         </span>
                       ) : (
-                        <span className="text-stone-500">Leave blank to use demo sandbox mode</span>
+                        <span className="text-emerald-700 font-semibold flex items-center gap-1">
+                          <CheckCircle2 className="w-3.5 h-3.5" /> Live Production Mode
+                        </span>
                       )}
                     </span>
                     <a

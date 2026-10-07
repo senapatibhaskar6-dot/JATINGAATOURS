@@ -141,7 +141,7 @@ export async function startRazorpayCheckout({
   onDismiss?: () => void;
 }) {
   const config = getPaymentConfig();
-  const keyId = config.razorpayKeyId || (import.meta as any).env?.VITE_RAZORPAY_KEY_ID || 'rzp_test_Thh9BABeByVffa';
+  const keyId = config.razorpayKeyId || (import.meta as any).env?.VITE_RAZORPAY_KEY_ID || 'rzp_live_ThljE1Bf73fysn';
 
   // 1. Ensure Razorpay script loaded
   const isLoaded = await loadRazorpayScript();

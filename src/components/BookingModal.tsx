@@ -37,11 +37,11 @@ export const BookingModal: React.FC<BookingModalProps> = ({
 
   // Payment states
   const [paymentMethod, setPaymentMethod] = useState<'upi' | 'card' | 'netbanking'>('upi');
-  const [upiId, setUpiId] = useState('traveler@okhdfcbank');
+  const [upiId, setUpiId] = useState('');
   const [utrNumber, setUtrNumber] = useState('');
-  const [cardNumber, setCardNumber] = useState('4532 8901 2345 6789');
-  const [cardExpiry, setCardExpiry] = useState('08/29');
-  const [cardCvv, setCardCvv] = useState('842');
+  const [cardNumber, setCardNumber] = useState('');
+  const [cardExpiry, setCardExpiry] = useState('');
+  const [cardCvv, setCardCvv] = useState('');
   const [selectedBank, setSelectedBank] = useState('HDFC Bank');
   const [copiedUpi, setCopiedUpi] = useState(false);
 

@@ -23,7 +23,7 @@ export default async function handler(req: any, res: any) {
       process.env.RAZORPAY_KEY_ID ||
       process.env.VITE_RAZORPAY_KEY_ID ||
       process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID ||
-      '';
+      'rzp_live_ThljE1Bf73fysn';
     const rawKeySecret = process.env.RAZORPAY_KEY_SECRET || '';
 
     // Sanitize: strip whitespace and accidental surrounding quotes

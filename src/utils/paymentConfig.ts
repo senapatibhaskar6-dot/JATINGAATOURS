@@ -9,13 +9,13 @@ export interface PaymentConfig {
 }
 
 export const DEFAULT_PAYMENT_CONFIG: PaymentConfig = {
-  razorpayKeyId: (typeof import.meta !== 'undefined' && import.meta.env?.VITE_RAZORPAY_KEY_ID) || 'rzp_test_Thh9BABeByVffa',
+  razorpayKeyId: (typeof import.meta !== 'undefined' && import.meta.env?.VITE_RAZORPAY_KEY_ID) || 'rzp_live_ThljE1Bf73fysn',
   upiId: 'jatingaatours@upi',
   merchantName: 'Jatingaa Tours Pvt Ltd',
   enableRazorpay: true,
   enableDirectUpi: true,
-  supportPhone: '+91 94350 12345',
-  supportEmail: 'contact@jatingaatours.com',
+  supportPhone: '+91 69135 14367',
+  supportEmail: 'senapatibhaskar6@gmail.com',
 };
 
 const STORAGE_KEY = 'jatingaa_payment_config_v1';
