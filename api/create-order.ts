@@ -19,33 +19,13 @@ export default async function handler(req: any, res: any) {
   }
 
   try {
-    const rawKeyId =
-      process.env.RAZORPAY_KEY_ID ||
-      process.env.VITE_RAZORPAY_KEY_ID ||
-      process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID ||
-      'rzp_live_TkACHzLu5HND2q';
+    // পোনপটীয়াকৈ কোডত নতুন লাইভ কী কেইটা বহুৱাই দিয়া হ’ল
+    const key_id = 'rzp_live_TkACHzLu5HND2q';
+    const key_secret = '***********************'; // ইয়াত আপোনাৰ আচল লাইভ Key Secret টো বহুৱাই দিব
 
-    const rawKeySecret =
-      process.env.RAZORPAY_KEY_SECRET ||
-      process.env.VITE_RAZORPAY_KEY_SECRET ||
-      process.env.NEXT_PUBLIC_RAZORPAY_KEY_SECRET ||
-      '';
-
-    // Sanitize: strip whitespace and accidental surrounding quotes
-    const key_id = rawKeyId.trim().replace(/^["']|["']$/g, '');
-    const key_secret = rawKeySecret.trim().replace(/^["']|["']$/g, '');
-
-    if (!key_id) {
+    if (!key_id || !key_secret) {
       return res.status(401).json({
-        error: 'Razorpay RAZORPAY_KEY_ID is missing.',
-        help: 'Please set RAZORPAY_KEY_ID in your Vercel Project Settings -> Environment Variables.',
-      });
-    }
-
-    if (!key_secret) {
-      return res.status(401).json({
-        error: 'Razorpay RAZORPAY_KEY_SECRET is missing.',
-        help: 'Please set RAZORPAY_KEY_SECRET in your Vercel Project Settings -> Environment Variables.',
+        error: 'Razorpay Key ID or Key Secret is missing in code.',
       });
     }
 
@@ -89,7 +69,7 @@ export default async function handler(req: any, res: any) {
     const status = isAuthError ? 401 : (err.statusCode || 500);
     return res.status(status).json({
       error: isAuthError
-        ? 'Razorpay Authentication Failed (401). The Key ID or Key Secret is invalid or rejected by Razorpay. Please verify that your RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET match in your Razorpay Dashboard (Settings -> API Keys), and that you did not mix Live keys with Test keys.'
+        ? 'Razorpay Authentication Failed (401). Please verify your Live Key ID and Key Secret in Razorpay Dashboard.'
         : (err.error?.description || err.message || 'Failed to create order'),
       details: err.error || err,
     });
