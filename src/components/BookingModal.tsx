@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { TourPackage, BookingRecord } from '../types';
 import { calculateBookingFees, formatINR } from '../utils/pricing';
 import { getPaymentConfig, PaymentConfig } from '../utils/paymentConfig';
-import { startRazorpayCheckout } from '../utils/razorpayClient';
+import { startCashfreeCheckout } from '../utils/cashfreeClient';
 import { triggerBookingConfirmationEmail } from '../utils/supabaseClient';
 import { X, ShieldCheck, QrCode, CreditCard, Landmark, CheckCircle2, Lock, ArrowRight, Loader2, Sparkles, Smartphone, Copy, ExternalLink, AlertCircle } from 'lucide-react';
 
@@ -104,14 +104,14 @@ export const BookingModal: React.FC<BookingModalProps> = ({
       return;
     }
 
-    // Razorpay Standard Checkout Flow
-    if (config.enableRazorpay) {
+    // Cashfree Standard Checkout Flow
+    if (config.enableCashfree) {
       setIsProcessing(true);
-      setProcessingStep('Creating Razorpay order on server (/api/create-order)...');
+      setProcessingStep('Creating Cashfree order on server (/api/create-order)...');
 
       try {
-        await startRazorpayCheckout({
-          amountInPaise: calc.totalAdvancePayable * 100, // paise
+        await startCashfreeCheckout({
+          amountInRupees: calc.totalAdvancePayable,
           tourTitle: tour.title,
           travelersCount,
           customerName,
@@ -128,14 +128,14 @@ export const BookingModal: React.FC<BookingModalProps> = ({
             agencyUpi: tour.agency.upiId || 'Payout Registered',
           },
           onOrderCreated: (order) => {
-            setProcessingStep(`Razorpay order created (${order.order_id}). Launching Checkout modal...`);
+            setProcessingStep(`Cashfree order created (${order.order_id}). Launching Checkout modal...`);
           },
           onVerifying: () => {
             setIsProcessing(true);
-            setProcessingStep('Verifying payment signature on server (/api/verify-payment)...');
+            setProcessingStep('Verifying order status on Cashfree server (/api/verify-payment)...');
           },
           onSuccess: (verifiedResult) => {
-            setProcessingStep('Payment signature verified successfully! Unlocking agency...');
+            setProcessingStep('Payment verified successfully! Unlocking agency...');
             setTimeout(() => {
               setIsProcessing(false);
               completeBooking(verifiedResult.payment_id, paymentMethod);
@@ -152,9 +152,9 @@ export const BookingModal: React.FC<BookingModalProps> = ({
         });
         return;
       } catch (err: any) {
-        console.error('Razorpay Checkout failed:', err);
+        console.error('Cashfree Checkout failed:', err);
         setIsProcessing(false);
-        setPaymentError(err.message || 'Failed to initialize Razorpay Standard Checkout.');
+        setPaymentError(err.message || 'Failed to initialize Cashfree Checkout.');
         return;
       }
     }
@@ -442,7 +442,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                   <div className="flex items-center gap-2">
                     <div className="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 border border-emerald-200 rounded-md text-[11px] text-emerald-800 font-medium">
                       <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                      <span>Razorpay Standard Checkout</span>
+                      <span>Cashfree Instant Checkout</span>
                     </div>
                     <div className="flex items-center gap-1 text-[11px] text-[#0b4619] font-medium">
                       <Lock className="w-3.5 h-3.5" />
@@ -593,7 +593,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                             onClick={onOpenPaymentSettings}
                             className="text-[10px] text-stone-500 hover:text-[#0b4619] underline cursor-pointer"
                           >
-                            ⚙️ Configure Razorpay / Custom UPI
+                            ⚙️ Configure Cashfree / Custom UPI
                           </button>
                         </div>
                       )}
@@ -682,7 +682,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                   type="submit"
                   className="w-full sm:w-auto px-6 py-3 text-sm font-semibold text-white bg-[#0b4619] hover:bg-[#062b0f] rounded-lg shadow-md transition-all cursor-pointer flex items-center justify-center gap-2 whitespace-nowrap"
                 >
-                  <span>Pay {formatINR(calc.totalAdvancePayable)} via Razorpay</span>
+                  <span>Pay {formatINR(calc.totalAdvancePayable)} via Cashfree</span>
                   <ArrowRight className="w-4 h-4 text-[#f39c12]" />
                 </button>
               </div>

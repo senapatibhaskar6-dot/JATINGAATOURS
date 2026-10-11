@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ShieldCheck, UserCheck, Menu, X, ReceiptText, CreditCard, Building2, Users, Lock, MessageCircle } from 'lucide-react';
+import { ShieldCheck, UserCheck, Menu, X, ReceiptText, CreditCard, Building2, Users, Lock, MessageCircle, TrendingUp } from 'lucide-react';
 import jatingaaLogo from '../assets/images/jatingaa_tours_logo.png';
 
 interface HeaderProps {
@@ -8,6 +8,7 @@ interface HeaderProps {
   onOpenRegisterAgency: () => void;
   onOpenCodeGuidance?: () => void;
   onOpenPaymentSettings?: () => void;
+  onOpenAdminDashboard?: () => void;
   onOpenB2BHub?: () => void;
   isB2BMode?: boolean;
   onToggleB2BMode?: () => void;
@@ -25,6 +26,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenRegisterAgency,
   onOpenCodeGuidance,
   onOpenPaymentSettings,
+  onOpenAdminDashboard,
   onOpenB2BHub,
   isB2BMode = false,
   onToggleB2BMode,
@@ -142,6 +144,17 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Zone 3: Primary Action Controls */}
         <div className="hidden sm:flex items-center gap-2">
+          {isAdminLoggedIn && onOpenAdminDashboard && (
+            <button
+              onClick={onOpenAdminDashboard}
+              className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-stone-950 bg-amber-400 hover:bg-amber-300 rounded-lg transition-colors cursor-pointer whitespace-nowrap shadow-xs"
+              title="Admin: Overview of Guides, Agencies, Monthly Bookings & PDF Reports"
+            >
+              <TrendingUp className="w-3.5 h-3.5 text-stone-950" />
+              <span>Admin Dashboard</span>
+            </button>
+          )}
+
           {isAdminLoggedIn && onOpenAgenciesDirectory && (
             <button
               onClick={onOpenAgenciesDirectory}
@@ -162,7 +175,7 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               onClick={onOpenPaymentSettings}
               className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-stone-700 hover:text-stone-900 bg-amber-50/80 hover:bg-amber-100 border border-amber-200/90 rounded-lg transition-colors cursor-pointer whitespace-nowrap"
-              title="Admin: Configure Razorpay Keys, UPI ID & Payment Gateway"
+              title="Admin: Configure Cashfree Keys, UPI ID & Payment Gateway"
             >
               <CreditCard className="w-3.5 h-3.5 text-amber-700" />
               <span>Payment Gateway</span>
@@ -305,6 +318,18 @@ export const Header: React.FC<HeaderProps> = ({
             >
               About Us (Global & Local Mission)
             </button>
+            {isAdminLoggedIn && onOpenAdminDashboard && (
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  onOpenAdminDashboard();
+                }}
+                className="text-left py-2 px-2.5 bg-amber-100/80 hover:bg-amber-100 rounded-lg flex items-center gap-2 text-stone-950 font-bold"
+              >
+                <TrendingUp className="w-4 h-4 text-stone-950" />
+                <span>Admin Dashboard & PDF Audit</span>
+              </button>
+            )}
             {isAdminLoggedIn && onOpenAgenciesDirectory && (
               <button
                 onClick={() => {

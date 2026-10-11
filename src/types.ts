@@ -243,6 +243,7 @@ export interface BookingRecord {
 
 declare global {
   interface Window {
+    Cashfree?: any;
     Razorpay?: any;
     dataLayer?: any[];
     gtag?: (...args: any[]) => void;

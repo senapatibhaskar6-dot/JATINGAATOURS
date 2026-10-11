@@ -2,7 +2,7 @@ import express, { Request, Response } from 'express';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { createOrder, verifySignature } from './src/server/razorpay.js';
+import { createCashfreeOrder, verifyCashfreePayment } from './src/server/cashfree.js';
 
 // Load environment variables
 dotenv.config();
@@ -17,92 +17,100 @@ app.use(express.json());
 
 // Health check endpoint
 app.get('/api/health', (_req: Request, res: Response) => {
+  const keyId =
+    process.env.CASHFREE_KEY_ID ||
+    process.env.CASHFREE_APP_ID ||
+    process.env.CASHFREE_CLIENT_ID ||
+    null;
+  const isConfigured = Boolean(
+    keyId &&
+    (process.env.CASHFREE_KEY_SECRET || process.env.CASHFREE_SECRET_KEY)
+  );
+
   res.json({
     status: 'ok',
     timestamp: new Date().toISOString(),
-    razorpayConfigured: Boolean(process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET),
-    keyId: process.env.RAZORPAY_KEY_ID ? `${process.env.RAZORPAY_KEY_ID.substring(0, 8)}...` : null,
+    paymentGateway: 'Cashfree',
+    cashfreeConfigured: isConfigured,
+    keyId: keyId ? `${keyId.substring(0, 8)}...` : null,
+    env: process.env.CASHFREE_ENV || 'production',
   });
 });
 
 /**
- * STEP 1: BACKEND - Create Order
+ * BACKEND - Create Cashfree Order
  * Endpoint: POST /api/create-order
- * Request: { amount (paise), currency, receipt }
- * Return: { order_id, amount, currency }
- * Minimum amount: 100 paise
  */
 app.post('/api/create-order', async (req: Request, res: Response) => {
   try {
-    const { amount, currency = 'INR', receipt, notes } = req.body || {};
+    const {
+      amount,
+      currency = 'INR',
+      customerName,
+      customerEmail,
+      customerPhone,
+      orderNote,
+      notes,
+      returnUrl,
+    } = req.body || {};
 
-    if (!amount) {
+    let amountInRupees = Number(amount);
+    if (!amountInRupees || isNaN(amountInRupees) || amountInRupees < 1) {
       return res.status(400).json({
-        error: 'Amount is required and must be in paise (minimum 100 paise)',
+        error: 'Order amount is required and must be at least ₹1.00',
       });
     }
 
-    const order = await createOrder({
-      amount: Number(amount),
+    if (amountInRupees > 10000 && amountInRupees % 100 === 0) {
+      amountInRupees = amountInRupees / 100;
+    }
+
+    const order = await createCashfreeOrder({
+      amount: amountInRupees,
       currency,
-      receipt: receipt || `rcpt_${Date.now()}`,
+      customer_name: customerName,
+      customer_email: customerEmail,
+      customer_phone: customerPhone,
+      order_note: orderNote,
       notes: notes || {},
+      return_url: returnUrl,
     });
 
     return res.status(200).json(order);
   } catch (err: any) {
-    console.error('Error in /api/create-order:', err);
+    console.error('Error in /api/create-order (Cashfree):', err);
     const status = err.statusCode || 500;
     return res.status(status).json({
-      error: err.message || 'Failed to create order',
+      error: err.message || 'Failed to create Cashfree order',
       details: err.details,
     });
   }
 });
 
 /**
- * STEP 3: BACKEND - Verify Signature
+ * BACKEND - Verify Cashfree Order
  * Endpoint: POST /api/verify-payment
- * Algorithm: HMAC-SHA256(order_id + "|" + payment_id, KEY_SECRET)
- * Compare generated signature with razorpay_signature
- * Return success only if signatures match
  */
-app.post('/api/verify-payment', (req: Request, res: Response) => {
+app.post('/api/verify-payment', async (req: Request, res: Response) => {
   try {
-    const {
-      order_id,
-      payment_id,
-      signature,
-      razorpay_order_id,
-      razorpay_payment_id,
-      razorpay_signature,
-    } = req.body || {};
+    const { order_id, cf_order_id } = req.body || {};
+    const resolvedOrderId = order_id || cf_order_id;
 
-    // Support both standard and prefixed field names
-    const resolvedOrderId = order_id || razorpay_order_id;
-    const resolvedPaymentId = payment_id || razorpay_payment_id;
-    const resolvedSignature = signature || razorpay_signature;
-
-    if (!resolvedOrderId || !resolvedPaymentId || !resolvedSignature) {
+    if (!resolvedOrderId) {
       return res.status(400).json({
         success: false,
-        error: 'Missing required parameters. Required: order_id, payment_id, signature',
+        error: 'Missing required parameter: order_id',
       });
     }
 
-    const result = verifySignature({
-      order_id: resolvedOrderId,
-      payment_id: resolvedPaymentId,
-      signature: resolvedSignature,
-    });
-
-    return res.status(200).json(result);
+    const verification = await verifyCashfreePayment(resolvedOrderId);
+    return res.status(200).json(verification);
   } catch (err: any) {
-    console.error('Error in /api/verify-payment:', err);
-    const status = err.statusCode || 400;
+    console.error('Error in /api/verify-payment (Cashfree):', err);
+    const status = err.statusCode || 500;
     return res.status(status).json({
       success: false,
-      error: err.message || 'Payment signature verification failed',
+      error: err.message || 'Payment verification failed',
     });
   }
 });

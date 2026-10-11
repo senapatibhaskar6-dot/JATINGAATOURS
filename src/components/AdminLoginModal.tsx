@@ -93,7 +93,8 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
                   </p>
                   <ul className="list-disc list-inside text-[11px] text-emerald-900 space-y-0.5 mt-1 font-medium">
                     <li>All Registered Agencies Directory & Verification</li>
-                    <li>Payment Gateway & Razorpay Credentials</li>
+                    <li>Payment Gateway & Cashfree Credentials</li>
+                    <li>Operations Dashboard, Guides & PDF Audit Reports</li>
                     <li>Agency Bank Payouts & Settlement Accounts</li>
                     <li>Export Full Database to CSV/Excel</li>
                   </ul>

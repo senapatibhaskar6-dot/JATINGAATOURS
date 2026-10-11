@@ -1,7 +1,7 @@
-import crypto from 'crypto';
+import { verifyCashfreePayment } from '../src/server/cashfree.js';
 
 export default async function handler(req: any, res: any) {
-  // CORS configuration for Vercel deployments
+  // CORS configuration for Vercel Serverless Functions
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
@@ -19,66 +19,41 @@ export default async function handler(req: any, res: any) {
   }
 
   try {
-    const rawKeySecret = process.env.RAZORPAY_KEY_SECRET || '';
-    const key_secret = rawKeySecret.trim().replace(/^["']|["']$/g, '');
-
-    if (!key_secret) {
-      return res.status(500).json({
-        success: false,
-        error: 'RAZORPAY_KEY_SECRET is not configured on the server. Please add it to Vercel Environment Variables.',
-      });
-    }
-
     const body = typeof req.body === 'string' ? JSON.parse(req.body) : (req.body || {});
-    const {
-      order_id,
-      payment_id,
-      signature,
-      razorpay_order_id,
-      razorpay_payment_id,
-      razorpay_signature,
-    } = body;
+    const { order_id, cf_order_id } = body;
 
-    const resolvedOrderId = order_id || razorpay_order_id;
-    const resolvedPaymentId = payment_id || razorpay_payment_id;
-    const resolvedSignature = signature || razorpay_signature;
-
-    if (!resolvedOrderId || !resolvedPaymentId || !resolvedSignature) {
+    const resolvedOrderId = order_id || cf_order_id;
+    if (!resolvedOrderId) {
       return res.status(400).json({
         success: false,
-        error: 'Missing required parameters. Required: order_id, payment_id, signature',
+        error: 'Missing required parameter: order_id',
       });
     }
 
-    const payload = `${resolvedOrderId}|${resolvedPaymentId}`;
-    const generatedSignature = crypto
-      .createHmac('sha256', key_secret)
-      .update(payload)
-      .digest('hex');
+    const verification = await verifyCashfreePayment(resolvedOrderId);
 
-    const genBuf = Buffer.from(generatedSignature, 'utf-8');
-    const sigBuf = Buffer.from(resolvedSignature, 'utf-8');
-
-    const isMatch = genBuf.length === sigBuf.length && crypto.timingSafeEqual(genBuf, sigBuf);
-
-    if (!isMatch) {
+    if (verification.success || verification.status === 'PAID') {
+      return res.status(200).json({
+        success: true,
+        message: 'Cashfree order payment verified successfully!',
+        order_id: resolvedOrderId,
+        payment_id: verification.data?.cf_order_id || `cf_pay_${Date.now()}`,
+        status: verification.status,
+        order: verification.data,
+      });
+    } else {
       return res.status(400).json({
         success: false,
-        error: 'Invalid payment signature. Verification failed.',
+        error: `Order payment status is ${verification.status || 'UNPAID'}`,
+        status: verification.status,
+        order_id: resolvedOrderId,
       });
     }
-
-    return res.status(200).json({
-      success: true,
-      message: 'Payment signature verified successfully',
-      order_id: resolvedOrderId,
-      payment_id: resolvedPaymentId,
-    });
   } catch (err: any) {
-    console.error('Error in /api/verify-payment handler:', err);
-    return res.status(400).json({
+    console.error('Error in /api/verify-payment handler (Cashfree):', err);
+    return res.status(err.statusCode || 500).json({
       success: false,
-      error: err.message || 'Payment signature verification failed',
+      error: err.message || 'Failed to verify Cashfree order payment',
     });
   }
 }

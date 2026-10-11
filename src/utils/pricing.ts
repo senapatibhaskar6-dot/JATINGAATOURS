@@ -30,7 +30,7 @@ export function calculateBookingFees(
   // 5% Commission + ₹1,000 platform deduction & instant net operator transfer model
   const totalPlatformDeduction = platformCommission + platformFixedFee;
   const netOperatorInstantTransfer = Math.max(0, totalPackagePrice - totalPlatformDeduction);
-  const instantTransferStatus = 'Transferred Instantly via Razorpay Route / IMPS';
+  const instantTransferStatus = 'Transferred Instantly via Cashfree Payouts / IMPS';
 
   return {
     packagePrice,
@@ -47,7 +47,7 @@ export function calculateBookingFees(
     agencyDeduction,
     travelerTotalAmount,
     instantTransferStatus,
-    operatorBankPayoutAccount: operatorBank || 'Registered Operator Bank / UPI (Razorpay Linked)',
+    operatorBankPayoutAccount: operatorBank || 'Registered Operator Bank / UPI (Cashfree Linked)',
   };
 }
 

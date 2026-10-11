@@ -32,6 +32,7 @@ import { AdminLoginModal } from './components/AdminLoginModal';
 import { AboutUsModal } from './components/AboutUsModal';
 import { AboutUsSection } from './components/AboutUsSection';
 import { FloatingWhatsAppButton } from './components/FloatingWhatsAppButton';
+import { AdminDashboardModal } from './components/AdminDashboardModal';
 import { getIsAdminLoggedIn, setIsAdminLoggedIn } from './utils/adminAuth';
 import { supabase, fetchAgenciesFromSupabase, SupabaseAgencyRow } from './utils/supabaseClient';
 import {
@@ -124,6 +125,7 @@ export default function App() {
   const [isCodeGuidanceOpen, setIsCodeGuidanceOpen] = useState(false);
   const [isMyBookingsOpen, setIsMyBookingsOpen] = useState(false);
   const [isPaymentSettingsOpen, setIsPaymentSettingsOpen] = useState(false);
+  const [isAdminDashboardOpen, setIsAdminDashboardOpen] = useState(false);
   const [isAboutUsOpen, setIsAboutUsOpen] = useState(false);
   const [isAdminLoginModalOpen, setIsAdminLoginModalOpen] = useState(false);
   const [isAdminLoggedIn, setIsAdminLoggedInState] = useState<boolean>(getIsAdminLoggedIn);
@@ -681,6 +683,7 @@ export default function App() {
         onOpenRegisterAgency={() => setIsRegisterAgencyOpen(true)}
         onOpenCodeGuidance={() => setIsCodeGuidanceOpen(true)}
         onOpenPaymentSettings={() => setIsPaymentSettingsOpen(true)}
+        onOpenAdminDashboard={() => setIsAdminDashboardOpen(true)}
         onOpenB2BHub={() => setIsB2BHubOpen(true)}
         isB2BMode={isB2BMode}
         onToggleB2BMode={() => setIsB2BMode(!isB2BMode)}
@@ -758,6 +761,7 @@ export default function App() {
         onOpenRegisterAgency={() => setIsRegisterAgencyOpen(true)}
         onOpenCodeGuidance={() => setIsCodeGuidanceOpen(true)}
         onOpenPaymentSettings={() => setIsPaymentSettingsOpen(true)}
+        onOpenAdminDashboard={() => setIsAdminDashboardOpen(true)}
         isAdminLoggedIn={isAdminLoggedIn}
         onOpenAdminLogin={() => setIsAdminLoginModalOpen(true)}
         onOpenAgenciesDirectory={() => setIsAgenciesDirectoryOpen(true)}
@@ -1006,6 +1010,19 @@ export default function App() {
           onExploreTours={() => {
             setIsAboutUsOpen(false);
             scrollToPackages();
+          }}
+        />
+      )}
+
+      {/* 16. Platform Admin Operations & PDF Audit Dashboard Modal */}
+      {isAdminDashboardOpen && (
+        <AdminDashboardModal
+          onClose={() => setIsAdminDashboardOpen(false)}
+          bookings={bookings}
+          agencies={b2bAgencies}
+          onOpenPaymentSettings={() => {
+            setIsAdminDashboardOpen(false);
+            setIsPaymentSettingsOpen(true);
           }}
         />
       )}

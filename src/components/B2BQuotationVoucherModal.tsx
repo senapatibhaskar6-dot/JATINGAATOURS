@@ -491,7 +491,7 @@ export const B2BQuotationVoucherModal: React.FC<B2BQuotationVoucherModalProps> =
                 onClick={() => onProceedToPayAdvance(currentQuote)}
                 className="px-4 py-2 bg-[#0b4619] hover:bg-[#073011] text-white text-xs font-semibold rounded-lg shadow-sm flex items-center gap-1.5 transition-colors cursor-pointer"
               >
-                <span>Book Slot via Razorpay ({formatINR(wholesale.advanceDepositRequired)})</span>
+                <span>Book Slot via Cashfree ({formatINR(wholesale.advanceDepositRequired)})</span>
                 <ArrowRight className="w-3.5 h-3.5 text-amber-300" />
               </button>
             )}

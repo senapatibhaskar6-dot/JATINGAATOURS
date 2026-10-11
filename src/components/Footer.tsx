@@ -7,6 +7,7 @@ interface FooterProps {
   onOpenRegisterAgency: () => void;
   onOpenCodeGuidance?: () => void;
   onOpenPaymentSettings?: () => void;
+  onOpenAdminDashboard?: () => void;
   isAdminLoggedIn?: boolean;
   onOpenAdminLogin?: () => void;
   onOpenAgenciesDirectory?: () => void;
@@ -18,6 +19,7 @@ export const Footer: React.FC<FooterProps> = ({
   onOpenRegisterAgency,
   onOpenCodeGuidance,
   onOpenPaymentSettings,
+  onOpenAdminDashboard,
   isAdminLoggedIn = false,
   onOpenAdminLogin,
   onOpenAgenciesDirectory,
@@ -137,6 +139,13 @@ export const Footer: React.FC<FooterProps> = ({
                   Compare vs 25% OTAs
                 </button>
               </li>
+              {isAdminLoggedIn && onOpenAdminDashboard && (
+                <li>
+                  <button onClick={onOpenAdminDashboard} className="hover:text-[#0b4619] cursor-pointer text-amber-700 font-bold flex items-center gap-1">
+                    📊 Admin Operations & PDF Audit
+                  </button>
+                </li>
+              )}
               {isAdminLoggedIn && onOpenAgenciesDirectory && (
                 <li>
                   <button onClick={onOpenAgenciesDirectory} className="hover:text-[#0b4619] cursor-pointer text-[#0b4619] font-bold">

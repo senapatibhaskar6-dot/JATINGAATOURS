@@ -190,7 +190,7 @@ export const BookingConfirmationModal: React.FC<BookingConfirmationModalProps> =
               <div className="flex justify-between items-center pt-1 text-[11px] text-emerald-950 bg-emerald-50/90 p-2.5 rounded-lg border border-emerald-200">
                 <div>
                   <span className="font-bold block text-emerald-900">Instant Operator Fund Transfer (5% + ₹1,000 Deducted):</span>
-                  <span className="text-[10px] text-emerald-800">Transferred automatically to operator bank account via Razorpay Route</span>
+                  <span className="text-[10px] text-emerald-800">Transferred automatically to operator bank account via Cashfree Payouts / IMPS</span>
                 </div>
                 <span className="font-bold text-[#0b4619] text-xs font-mono tabular-nums">
                   +{formatINR(booking.calculation.netOperatorInstantTransfer || (booking.calculation.totalPackagePrice - (booking.calculation.platformCommission + 1000)))}

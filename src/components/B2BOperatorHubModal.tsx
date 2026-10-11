@@ -514,9 +514,9 @@ export const B2BOperatorHubModal: React.FC<B2BOperatorHubModalProps> = ({
                                   <button
                                     onClick={() => onConvertHoldToBooking(h)}
                                     className="px-3 py-2 bg-[#0b4619] hover:bg-[#073011] text-white text-xs font-semibold rounded-lg shadow-xs transition-colors cursor-pointer flex items-center gap-1"
-                                    title="Pay Advance via Razorpay Live to convert to confirmed voucher"
+                                    title="Pay Advance via Cashfree Live to convert to confirmed voucher"
                                   >
-                                    <span>Confirm via Razorpay</span>
+                                    <span>Confirm via Cashfree</span>
                                     <ArrowRight className="w-3.5 h-3.5 text-amber-300" />
                                   </button>
                                   <button

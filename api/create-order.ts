@@ -1,7 +1,7 @@
-import Razorpay from 'razorpay';
+import { createCashfreeOrder } from '../src/server/cashfree.js';
 
 export default async function handler(req: any, res: any) {
-  // CORS configuration for Vercel deployments
+  // CORS configuration for Vercel Serverless Functions
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
@@ -19,59 +19,80 @@ export default async function handler(req: any, res: any) {
   }
 
   try {
-    // পোনপটীয়াকৈ কোডত নতুন লাইভ কী কেইটা বহুৱাই দিয়া হ’ল
-    const key_id = 'rzp_live_TkACHzLu5HND2q';
-    const key_secret = '***********************'; // ইয়াত আপোনাৰ আচল লাইভ Key Secret টো বহুৱাই দিব
+    const rawKeyId =
+      process.env.CASHFREE_KEY_ID ||
+      process.env.CASHFREE_APP_ID ||
+      process.env.CASHFREE_CLIENT_ID ||
+      process.env.VITE_CASHFREE_KEY_ID ||
+      '';
+
+    const rawKeySecret =
+      process.env.CASHFREE_KEY_SECRET ||
+      process.env.CASHFREE_SECRET_KEY ||
+      '';
+
+    const key_id = rawKeyId.trim().replace(/^["']|["']$/g, '');
+    const key_secret = rawKeySecret.trim().replace(/^["']|["']$/g, '');
 
     if (!key_id || !key_secret) {
       return res.status(401).json({
-        error: 'Razorpay Key ID or Key Secret is missing in code.',
+        error: 'Cashfree credentials missing.',
+        help: 'Please set CASHFREE_KEY_ID and CASHFREE_KEY_SECRET in your Vercel Project Settings -> Environment Variables.',
       });
     }
 
     const body = typeof req.body === 'string' ? JSON.parse(req.body) : (req.body || {});
-    const { amount, currency = 'INR', receipt, notes } = body;
+    const {
+      amount,
+      currency = 'INR',
+      customerName,
+      customerEmail,
+      customerPhone,
+      orderNote,
+      notes,
+      returnUrl,
+    } = body;
 
-    const numericAmount = Math.round(Number(amount));
-    if (!numericAmount || isNaN(numericAmount) || numericAmount < 100) {
+    // Convert amount: if passed in paise (> 10000 and typically in paise from legacy code), convert to rupees
+    let amountInRupees = Number(amount);
+    if (!amountInRupees || isNaN(amountInRupees) || amountInRupees < 1) {
       return res.status(400).json({
-        error: 'Amount is required and must be in paise (minimum 100 paise / ₹1.00)',
+        error: 'Order amount is required and must be at least ₹1.00',
       });
     }
 
-    const razorpay = new Razorpay({
-      key_id,
-      key_secret,
-    });
+    // If client passes amount in paise (e.g. 150000 paise for ₹1,500), convert to ₹1,500
+    if (amountInRupees > 10000 && amountInRupees % 100 === 0) {
+      amountInRupees = amountInRupees / 100;
+    }
 
-    const order = await razorpay.orders.create({
-      amount: numericAmount,
+    const order = await createCashfreeOrder({
+      amount: amountInRupees,
       currency: currency || 'INR',
-      receipt: receipt || `rcpt_${Date.now()}`,
+      customer_name: customerName || 'Valued Traveler',
+      customer_email: customerEmail || 'traveler@jatingaatours.com',
+      customer_phone: customerPhone || '9999999999',
+      order_note: orderNote || 'Jatingaa Tours Booking Advance (5% Platform Fee + ₹1,000 Agency Lock-in)',
       notes: notes || {},
+      return_url: returnUrl,
     });
 
     return res.status(200).json({
-      order_id: order.id,
-      amount: order.amount,
-      currency: order.currency,
-      receipt: order.receipt,
+      order_id: order.order_id,
+      cf_order_id: order.cf_order_id,
+      payment_session_id: order.payment_session_id,
+      order_status: order.order_status,
+      amount: order.order_amount,
+      currency: order.order_currency,
       key_id: key_id,
     });
   } catch (err: any) {
-    console.error('Error in /api/create-order:', err);
-    const isAuthError =
-      err.statusCode === 401 ||
-      (err.error?.code === 'BAD_REQUEST_ERROR' &&
-        (err.error?.description?.toLowerCase().includes('auth') ||
-         err.message?.toLowerCase().includes('auth')));
+    console.error('Error in /api/create-order (Cashfree):', err);
+    const status = err.statusCode || (err.message?.includes('credentials') ? 401 : 500);
 
-    const status = isAuthError ? 401 : (err.statusCode || 500);
     return res.status(status).json({
-      error: isAuthError
-        ? 'Razorpay Authentication Failed (401). Please verify your Live Key ID and Key Secret in Razorpay Dashboard.'
-        : (err.error?.description || err.message || 'Failed to create order'),
-      details: err.error || err,
+      error: err.message || 'Failed to create Cashfree order',
+      details: err.details || err,
     });
   }
 }

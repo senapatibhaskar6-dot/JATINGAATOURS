@@ -1,24 +1,30 @@
 export interface PaymentConfig {
-  razorpayKeyId: string;
+  cashfreeAppId: string;
+  cashfreeEnv: 'production' | 'sandbox';
   upiId: string;
   merchantName: string;
-  enableRazorpay: boolean;
+  enableCashfree: boolean;
   enableDirectUpi: boolean;
   supportPhone: string;
   supportEmail: string;
 }
 
 export const DEFAULT_PAYMENT_CONFIG: PaymentConfig = {
-  razorpayKeyId: (typeof import.meta !== 'undefined' && import.meta.env?.VITE_RAZORPAY_KEY_ID) || 'rzp_live_ThljE1Bf73fysn',
+  cashfreeAppId:
+    (typeof import.meta !== 'undefined' &&
+      ((import.meta as any).env?.VITE_CASHFREE_KEY_ID ||
+        (import.meta as any).env?.VITE_CASHFREE_APP_ID)) ||
+    '',
+  cashfreeEnv: 'production',
   upiId: 'jatingaatours@upi',
   merchantName: 'Jatingaa Tours Pvt Ltd',
-  enableRazorpay: true,
+  enableCashfree: true,
   enableDirectUpi: true,
   supportPhone: '+91 69135 14367',
   supportEmail: 'senapatibhaskar6@gmail.com',
 };
 
-const STORAGE_KEY = 'jatingaa_payment_config_v1';
+const STORAGE_KEY = 'jatingaa_payment_config_v2_cashfree';
 
 export function getPaymentConfig(): PaymentConfig {
   try {

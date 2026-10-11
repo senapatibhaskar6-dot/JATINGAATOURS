@@ -11,6 +11,7 @@ interface B2BHoldSlotModalProps {
   activeAgency: B2BAgency;
   onClose: () => void;
   onConfirmHold: (hold: B2BHoldSlot) => void;
+  onPayHoldDepositWithCashfree?: (hold: B2BHoldSlot) => void;
   onPayHoldDepositWithRazorpay?: (hold: B2BHoldSlot) => void;
 }
 
@@ -19,8 +20,10 @@ export const B2BHoldSlotModal: React.FC<B2BHoldSlotModalProps> = ({
   activeAgency,
   onClose,
   onConfirmHold,
+  onPayHoldDepositWithCashfree,
   onPayHoldDepositWithRazorpay,
 }) => {
+  const triggerDepositPay = onPayHoldDepositWithCashfree || onPayHoldDepositWithRazorpay;
   const [clientName, setClientName] = useState('');
   const [clientContact, setClientContact] = useState('');
   const [travelDate, setTravelDate] = useState(() => {
@@ -76,8 +79,8 @@ export const B2BHoldSlotModal: React.FC<B2BHoldSlotModalProps> = ({
       notes: clientNotes,
     };
 
-    if (payDepositNow && onPayHoldDepositWithRazorpay) {
-      onPayHoldDepositWithRazorpay(newHold);
+    if (payDepositNow && triggerDepositPay) {
+      triggerDepositPay(newHold);
     } else {
       onConfirmHold(newHold);
     }
@@ -246,7 +249,7 @@ export const B2BHoldSlotModal: React.FC<B2BHoldSlotModalProps> = ({
           {/* Deposit Toggle */}
           <div className="p-3.5 rounded-xl border border-stone-200 bg-stone-50 flex items-center justify-between text-xs">
             <div className="space-y-0.5">
-              <strong className="text-stone-900 block">Optional Razorpay Live Advance Deposit ({formatINR(depositAmount)})</strong>
+              <strong className="text-stone-900 block">Optional Cashfree Live Advance Deposit ({formatINR(depositAmount)})</strong>
               <p className="text-stone-500 text-[11px]">
                 Paying a token deposit locks the slots indefinitely until final arrival balance settlement.
               </p>
@@ -281,7 +284,7 @@ export const B2BHoldSlotModal: React.FC<B2BHoldSlotModalProps> = ({
                 type="submit"
                 className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-[#0b4619] hover:bg-[#073011] text-white text-xs font-semibold shadow-sm transition-colors cursor-pointer flex items-center justify-center gap-1.5"
               >
-                <span>{payDepositNow ? `Lock Slots with Razorpay (${formatINR(depositAmount)})` : `Block ${slotsCount} Slots (${holdDurationHours}h Hold)`}</span>
+                <span>{payDepositNow ? `Lock Slots with Cashfree (${formatINR(depositAmount)})` : `Block ${slotsCount} Slots (${holdDurationHours}h Hold)`}</span>
                 <ArrowRight className="w-3.5 h-3.5 text-amber-300" />
               </button>
             </div>
