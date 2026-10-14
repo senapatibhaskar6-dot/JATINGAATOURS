@@ -33,6 +33,8 @@ import { AboutUsModal } from './components/AboutUsModal';
 import { AboutUsSection } from './components/AboutUsSection';
 import { FloatingWhatsAppButton } from './components/FloatingWhatsAppButton';
 import { AdminDashboardModal } from './components/AdminDashboardModal';
+import { TourAmenitiesUploadModal } from './components/TourAmenitiesUploadModal';
+import { getPlatformGuides } from './data/guidesData';
 import { getIsAdminLoggedIn, setIsAdminLoggedIn } from './utils/adminAuth';
 import { supabase, fetchAgenciesFromSupabase, SupabaseAgencyRow } from './utils/supabaseClient';
 import {
@@ -89,8 +91,19 @@ const INITIAL_BOOKINGS: BookingRecord[] = [
 ];
 
 export default function App() {
-  // Tour packages state (dynamically updated by vendor additions)
-  const [packages, setPackages] = useState<TourPackage[]>(TOUR_PACKAGES);
+  // Tour packages state (persisted so agency and guide additions stay permanent)
+  const [packages, setPackages] = useState<TourPackage[]>(() => {
+    try {
+      const stored = localStorage.getItem('jatingaa_tour_packages_v2');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {
+      console.warn('Failed to parse stored packages:', e);
+    }
+    return TOUR_PACKAGES;
+  });
 
   // User-Generated Content: Travel Stories & Field Journals
   const [stories, setStories] = useState<TravelStory[]>(INITIAL_TRAVEL_STORIES);
@@ -126,9 +139,31 @@ export default function App() {
   const [isMyBookingsOpen, setIsMyBookingsOpen] = useState(false);
   const [isPaymentSettingsOpen, setIsPaymentSettingsOpen] = useState(false);
   const [isAdminDashboardOpen, setIsAdminDashboardOpen] = useState(false);
+  const [isUploadAmenitiesModalOpen, setIsUploadAmenitiesModalOpen] = useState(false);
+  const [uploadTargetAgencyId, setUploadTargetAgencyId] = useState<string | undefined>();
+  const [uploadTargetGuideId, setUploadTargetGuideId] = useState<string | undefined>();
   const [isAboutUsOpen, setIsAboutUsOpen] = useState(false);
   const [isAdminLoginModalOpen, setIsAdminLoginModalOpen] = useState(false);
   const [isAdminLoggedIn, setIsAdminLoggedInState] = useState<boolean>(getIsAdminLoggedIn);
+
+  const handleOpenUploadTourModal = (agencyId?: string, guideId?: string) => {
+    setUploadTargetAgencyId(agencyId);
+    setUploadTargetGuideId(guideId);
+    setIsUploadAmenitiesModalOpen(true);
+  };
+
+  const handleAddPackageFromAmenitiesForm = (newPkg: TourPackage) => {
+    setPackages((prev) => {
+      const updated = [newPkg, ...prev];
+      try {
+        localStorage.setItem('jatingaa_tour_packages_v2', JSON.stringify(updated));
+      } catch (e) {
+        console.warn('Failed to save tour package', e);
+      }
+      return updated;
+    });
+    showToast(`✓ "${newPkg.title}" (₹${newPkg.pricePerPerson.toLocaleString('en-IN')}) সকলো সা-সুবিধাসহ লাইভ আপলোড কৰা হ'ল!`);
+  };
 
   const handleAdminLoginSuccess = () => {
     setIsAdminLoggedIn(true);
@@ -684,6 +719,7 @@ export default function App() {
         onOpenCodeGuidance={() => setIsCodeGuidanceOpen(true)}
         onOpenPaymentSettings={() => setIsPaymentSettingsOpen(true)}
         onOpenAdminDashboard={() => setIsAdminDashboardOpen(true)}
+        onOpenUploadAmenitiesForm={() => handleOpenUploadTourModal()}
         onOpenB2BHub={() => setIsB2BHubOpen(true)}
         isB2BMode={isB2BMode}
         onToggleB2BMode={() => setIsB2BMode(!isB2BMode)}
@@ -705,6 +741,8 @@ export default function App() {
           onSearchChange={setSearchQuery}
           selectedRegion={selectedRegion}
           onSelectRegion={setSelectedRegion}
+          onOpenAdminDashboard={() => setIsAdminDashboardOpen(true)}
+          onOpenUploadTourModal={() => handleOpenUploadTourModal()}
         />
 
         {/* 5% + ₹1,000 Pricing & Financial Model Explainer */}
@@ -742,6 +780,7 @@ export default function App() {
         <AgencySection
           onOpenAgencyPortal={() => setIsAgencyPortalOpen(true)}
           onOpenRegisterAgency={() => setIsRegisterAgencyOpen(true)}
+          onOpenUploadTourModal={() => handleOpenUploadTourModal()}
         />
 
         {/* Verified Traveler Testimonials Carousel */}
@@ -1020,10 +1059,24 @@ export default function App() {
           onClose={() => setIsAdminDashboardOpen(false)}
           bookings={bookings}
           agencies={b2bAgencies}
+          packages={packages}
           onOpenPaymentSettings={() => {
             setIsAdminDashboardOpen(false);
             setIsPaymentSettingsOpen(true);
           }}
+          onOpenUploadTourModal={(agId, gdId) => handleOpenUploadTourModal(agId, gdId)}
+        />
+      )}
+
+      {/* 17. Tour Package & Amenities Upload Form Modal (Khubidha Form) */}
+      {isUploadAmenitiesModalOpen && (
+        <TourAmenitiesUploadModal
+          onClose={() => setIsUploadAmenitiesModalOpen(false)}
+          onAddPackage={handleAddPackageFromAmenitiesForm}
+          agencies={agenciesList}
+          guides={getPlatformGuides()}
+          preSelectedAgencyId={uploadTargetAgencyId}
+          preSelectedGuideId={uploadTargetGuideId}
         />
       )}
 

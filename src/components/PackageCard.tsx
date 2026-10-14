@@ -76,6 +76,16 @@ export const PackageCard: React.FC<PackageCardProps> = ({
             {tour.tagline}
           </p>
 
+          {/* Included Amenities / Khubidha Highlight */}
+          {tour.inclusions && tour.inclusions.length > 0 && (
+            <div className="mt-2.5 flex items-center gap-1.5 text-[11px] text-emerald-950 bg-emerald-50/90 px-2.5 py-1 rounded-lg border border-emerald-200/80">
+              <span className="font-bold text-[#0b4619] shrink-0">✓ {tour.inclusions.length} টা সুবিধা</span>
+              <span className="text-emerald-800 text-[10px] truncate">
+                ({tour.inclusions.slice(0, 3).map(i => i.split('(')[0].trim()).join(' · ')})
+              </span>
+            </div>
+          )}
+
           {/* Verified Local Agency Attribution */}
           <div className="mt-4 pt-3.5 border-t border-stone-100 flex items-start justify-between gap-2">
             <div>

@@ -85,6 +85,8 @@ export interface HeroProps {
   onSearchChange?: (query: string) => void;
   selectedRegion?: string;
   onSelectRegion?: (region: string) => void;
+  onOpenAdminDashboard?: () => void;
+  onOpenUploadTourModal?: () => void;
 }
 
 export const Hero: React.FC<HeroProps> = ({
@@ -100,6 +102,8 @@ export const Hero: React.FC<HeroProps> = ({
   onSearchChange,
   selectedRegion = 'all',
   onSelectRegion,
+  onOpenAdminDashboard,
+  onOpenUploadTourModal,
 }) => {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [internalSearch, setInternalSearch] = useState(searchQuery);
@@ -315,6 +319,34 @@ export const Hero: React.FC<HeroProps> = ({
           </button>
 
         </div>
+
+        {/* Quick Portal Action Buttons for Agency Owners & Tourist Guides */}
+        {(onOpenAdminDashboard || onOpenUploadTourModal) && (
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-2.5">
+            {onOpenAdminDashboard && (
+              <button
+                type="button"
+                onClick={onOpenAdminDashboard}
+                className="px-4 py-2 rounded-xl text-xs font-bold text-stone-900 bg-amber-400 hover:bg-amber-300 shadow-md transition-all flex items-center gap-1.5 cursor-pointer"
+                title="এজেন্সী মালিক আৰু গাইড তালিকা চাওক"
+              >
+                <span>🏢 এজেন্সী মালিক আৰু গাইড ৰ'ষ্টাৰ (Dashboard)</span>
+              </button>
+            )}
+
+            {onOpenUploadTourModal && (
+              <button
+                type="button"
+                onClick={onOpenUploadTourModal}
+                className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-emerald-800/90 hover:bg-emerald-700 border border-emerald-500/50 shadow-md transition-all flex items-center gap-1.5 cursor-pointer backdrop-blur-md"
+                title="১ জনৰ ₹৫,০০০ টকাত কি কি সুবিধা দিব তাৰ ফৰ্ম ফিলাপ কৰি আপলোড কৰক"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+                <span>+ সা-সুবিধা আপলোড ফৰ্ম (₹৫,০০০/জন)</span>
+              </button>
+            )}
+          </div>
+        )}
 
         {/* Current Active Destination Banner (Highlights the 8 destinations with count) */}
         <div className="mt-10 flex flex-wrap items-center justify-center gap-3 sm:gap-6 text-xs text-stone-200">

@@ -5,11 +5,13 @@ import { ShieldCheck, TrendingUp, Users, Clock, CheckCircle2, ArrowRight, Zap, B
 interface AgencySectionProps {
   onOpenAgencyPortal: () => void;
   onOpenRegisterAgency: () => void;
+  onOpenUploadTourModal?: () => void;
 }
 
 export const AgencySection: React.FC<AgencySectionProps> = ({
   onOpenAgencyPortal,
   onOpenRegisterAgency,
+  onOpenUploadTourModal,
 }) => {
   const [monthlyBookings, setMonthlyBookings] = useState<number>(10);
   const [avgPackagePrice, setAvgPackagePrice] = useState<number>(20000);
@@ -255,7 +257,15 @@ export const AgencySection: React.FC<AgencySectionProps> = ({
                   </div>
                 </div>
 
-                <div className="flex gap-2 w-full sm:w-auto">
+                <div className="flex flex-wrap gap-2 w-full sm:w-auto">
+                  {onOpenUploadTourModal && (
+                    <button
+                      onClick={onOpenUploadTourModal}
+                      className="flex-1 sm:flex-none px-4 py-2.5 text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-600 rounded-lg transition-colors cursor-pointer whitespace-nowrap shadow border border-emerald-500"
+                    >
+                      + সা-সুবিধা আৰু ট্যুৰ আপলোড
+                    </button>
+                  )}
                   <button
                     onClick={onOpenRegisterAgency}
                     className="flex-1 sm:flex-none px-4 py-2.5 text-xs font-bold text-stone-900 bg-[#f39c12] hover:bg-[#d68407] rounded-lg transition-colors cursor-pointer whitespace-nowrap shadow"

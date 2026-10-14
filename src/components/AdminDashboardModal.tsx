@@ -19,8 +19,9 @@ import {
   TrendingUp,
   Landmark,
   Sparkles,
+  Plus,
 } from 'lucide-react';
-import { BookingRecord, B2BAgency, Agency } from '../types';
+import { BookingRecord, B2BAgency, Agency, TourPackage } from '../types';
 import { GuideProfile, getPlatformGuides } from '../data/guidesData';
 import { formatINR } from '../utils/pricing';
 import { generateMonthlyReportPdf } from '../utils/reportPdfGenerator';
@@ -29,16 +30,20 @@ interface AdminDashboardModalProps {
   onClose: () => void;
   bookings: BookingRecord[];
   agencies: (B2BAgency | Agency)[];
+  packages?: TourPackage[];
   onOpenPaymentSettings?: () => void;
+  onOpenUploadTourModal?: (agencyId?: string, guideId?: string) => void;
 }
 
 export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
   onClose,
   bookings,
   agencies,
+  packages = [],
   onOpenPaymentSettings,
+  onOpenUploadTourModal,
 }) => {
-  const [activeTab, setActiveTab] = useState<'overview' | 'guides' | 'agencies' | 'bookings'>('overview');
+  const [activeTab, setActiveTab] = useState<'agencies' | 'guides' | 'overview' | 'bookings'>('agencies');
   const [selectedMonth, setSelectedMonth] = useState<string>('all');
   const [guideSearch, setGuideSearch] = useState<string>('');
   const [guideRegionFilter, setGuideRegionFilter] = useState<string>('all');
@@ -173,6 +178,17 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
           </div>
 
           <div className="flex items-center gap-2">
+            {onOpenUploadTourModal && (
+              <button
+                onClick={() => onOpenUploadTourModal()}
+                className="hidden md:flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-emerald-800 hover:bg-emerald-700 border border-emerald-600 rounded-lg shadow-sm transition-all cursor-pointer whitespace-nowrap"
+                title="এজেন্সী বা গাইডৰ বাবে নতুন ট্যুৰ আৰু সা-সুবিধা আপলোড কৰক"
+              >
+                <Plus className="w-3.5 h-3.5 text-amber-300" />
+                <span>+ নতুন ট্যুৰ আৰু সুবিধা আপলোড</span>
+              </button>
+            )}
+
             <button
               onClick={handleDownloadPdf}
               disabled={isExportingPdf}
@@ -197,51 +213,51 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
         <div className="px-6 py-2.5 bg-white border-b border-stone-200 flex flex-wrap items-center justify-between gap-3 text-xs">
           <div className="flex items-center gap-1 sm:gap-2">
             <button
+              onClick={() => setActiveTab('agencies')}
+              className={`px-3 py-1.5 font-bold rounded-lg transition-colors cursor-pointer flex items-center gap-1.5 ${
+                activeTab === 'agencies'
+                  ? 'bg-[#0b4619] text-white shadow-xs'
+                  : 'text-stone-600 hover:text-stone-900 hover:bg-stone-100'
+              }`}
+            >
+              <Building2 className="w-3.5 h-3.5 text-emerald-400" />
+              <span>🏢 টুৰিষ্ট এজেন্সী মালিকসকল ({agencies.length})</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('guides')}
+              className={`px-3 py-1.5 font-bold rounded-lg transition-colors cursor-pointer flex items-center gap-1.5 ${
+                activeTab === 'guides'
+                  ? 'bg-[#0b4619] text-white shadow-xs'
+                  : 'text-stone-600 hover:text-stone-900 hover:bg-stone-100'
+              }`}
+            >
+              <Compass className="w-3.5 h-3.5 text-amber-400" />
+              <span>🧭 টুৰিষ্ট গাইডসকল ({guides.length})</span>
+            </button>
+
+            <button
               onClick={() => setActiveTab('overview')}
-              className={`px-3 py-1.5 font-semibold rounded-lg transition-colors cursor-pointer flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 font-bold rounded-lg transition-colors cursor-pointer flex items-center gap-1.5 ${
                 activeTab === 'overview'
                   ? 'bg-[#0b4619] text-white shadow-xs'
                   : 'text-stone-600 hover:text-stone-900 hover:bg-stone-100'
               }`}
             >
               <TrendingUp className="w-3.5 h-3.5" />
-              <span>Monthly Overview & Financials</span>
-            </button>
-
-            <button
-              onClick={() => setActiveTab('guides')}
-              className={`px-3 py-1.5 font-semibold rounded-lg transition-colors cursor-pointer flex items-center gap-1.5 ${
-                activeTab === 'guides'
-                  ? 'bg-[#0b4619] text-white shadow-xs'
-                  : 'text-stone-600 hover:text-stone-900 hover:bg-stone-100'
-              }`}
-            >
-              <Compass className="w-3.5 h-3.5 text-amber-500" />
-              <span>Native Guides ({guides.length})</span>
-            </button>
-
-            <button
-              onClick={() => setActiveTab('agencies')}
-              className={`px-3 py-1.5 font-semibold rounded-lg transition-colors cursor-pointer flex items-center gap-1.5 ${
-                activeTab === 'agencies'
-                  ? 'bg-[#0b4619] text-white shadow-xs'
-                  : 'text-stone-600 hover:text-stone-900 hover:bg-stone-100'
-              }`}
-            >
-              <Building2 className="w-3.5 h-3.5 text-emerald-600" />
-              <span>Agencies ({agencies.length})</span>
+              <span>📊 মাহিলী হিচাব & PDF Audit</span>
             </button>
 
             <button
               onClick={() => setActiveTab('bookings')}
-              className={`px-3 py-1.5 font-semibold rounded-lg transition-colors cursor-pointer flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 font-bold rounded-lg transition-colors cursor-pointer flex items-center gap-1.5 ${
                 activeTab === 'bookings'
                   ? 'bg-[#0b4619] text-white shadow-xs'
                   : 'text-stone-600 hover:text-stone-900 hover:bg-stone-100'
               }`}
             >
-              <ReceiptText className="w-3.5 h-3.5 text-sky-600" />
-              <span>Bookings ({bookings.length})</span>
+              <ReceiptText className="w-3.5 h-3.5 text-sky-400" />
+              <span>🧾 গ্ৰাহকৰ বুকিং ({bookings.length})</span>
             </button>
           </div>
 
@@ -269,55 +285,88 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
 
         {/* Modal Scrollable Body */}
         <div className="overflow-y-auto flex-1 p-4 sm:p-6 space-y-6">
-          {/* Top 4 KPI Metrics */}
+          {/* Top 4 KPI Metrics (Clickable Quick Switchers) */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-            {/* KPI 1: Guides Count */}
-            <div className="p-4 rounded-xl bg-white border border-stone-200 shadow-2xs space-y-1">
+            {/* KPI 1: Agencies Count */}
+            <div
+              onClick={() => setActiveTab('agencies')}
+              className={`p-4 rounded-xl border shadow-2xs space-y-1 cursor-pointer transition-all ${
+                activeTab === 'agencies'
+                  ? 'bg-emerald-50/80 border-[#0b4619] ring-2 ring-[#0b4619]/20'
+                  : 'bg-white border-stone-200 hover:border-[#0b4619] hover:shadow-md'
+              }`}
+              title="এজেন্সী মালিকসকলৰ তালিকা চাবলৈ ক্লিক কৰক"
+            >
               <div className="flex items-center justify-between text-xs text-stone-500">
-                <span className="font-medium">Total Native Guides</span>
-                <Compass className="w-4 h-4 text-amber-600" />
-              </div>
-              <div className="text-2xl font-bold text-stone-900 font-display">
-                {guides.length}
-              </div>
-              <div className="text-[11px] text-emerald-700 font-semibold flex items-center gap-1">
-                <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-                100% Certified Field Naturalists
-              </div>
-            </div>
-
-            {/* KPI 2: Agencies Count */}
-            <div className="p-4 rounded-xl bg-white border border-stone-200 shadow-2xs space-y-1">
-              <div className="flex items-center justify-between text-xs text-stone-500">
-                <span className="font-medium">Registered Agencies</span>
+                <span className="font-bold text-stone-800">পঞ্জীয়নভুক্ত এজেন্সী মালিক</span>
                 <Building2 className="w-4 h-4 text-[#0b4619]" />
               </div>
               <div className="text-2xl font-bold text-stone-900 font-display">
                 {agencies.length}
               </div>
-              <div className="text-[11px] text-stone-500">
-                Local Inbound DMCs & Collectives
+              <div className="text-[11px] text-emerald-800 font-semibold flex items-center gap-1">
+                <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                Verified Operators Directory
+              </div>
+            </div>
+
+            {/* KPI 2: Guides Count */}
+            <div
+              onClick={() => setActiveTab('guides')}
+              className={`p-4 rounded-xl border shadow-2xs space-y-1 cursor-pointer transition-all ${
+                activeTab === 'guides'
+                  ? 'bg-amber-50/80 border-amber-500 ring-2 ring-amber-500/20'
+                  : 'bg-white border-stone-200 hover:border-amber-400 hover:shadow-md'
+              }`}
+              title="থলুৱা গাইডসকলৰ তালিকা চাবলৈ ক্লিক কৰক"
+            >
+              <div className="flex items-center justify-between text-xs text-stone-500">
+                <span className="font-bold text-stone-800">মুঠ প্ৰমাণিত গাইড (Guides)</span>
+                <Compass className="w-4 h-4 text-amber-600" />
+              </div>
+              <div className="text-2xl font-bold text-stone-900 font-display">
+                {guides.length}
+              </div>
+              <div className="text-[11px] text-amber-800 font-semibold flex items-center gap-1">
+                <BadgeCheck className="w-3 h-3 text-amber-600" />
+                100% Certified Field Naturalists
               </div>
             </div>
 
             {/* KPI 3: Period Bookings */}
-            <div className="p-4 rounded-xl bg-white border border-stone-200 shadow-2xs space-y-1">
+            <div
+              onClick={() => setActiveTab('bookings')}
+              className={`p-4 rounded-xl border shadow-2xs space-y-1 cursor-pointer transition-all ${
+                activeTab === 'bookings'
+                  ? 'bg-sky-50/80 border-sky-500 ring-2 ring-sky-500/20'
+                  : 'bg-white border-stone-200 hover:border-sky-400 hover:shadow-md'
+              }`}
+              title="গ্ৰাহকৰ বুকিং তালিকা চাবলৈ ক্লিক কৰক"
+            >
               <div className="flex items-center justify-between text-xs text-stone-500">
-                <span className="font-medium">Customer Bookings</span>
+                <span className="font-bold text-stone-800">মুঠ গ্ৰাহক বুকিং (Bookings)</span>
                 <ReceiptText className="w-4 h-4 text-sky-600" />
               </div>
               <div className="text-2xl font-bold text-stone-900 font-display">
                 {periodStats.bookingsCount}
               </div>
-              <div className="text-[11px] text-emerald-700 font-semibold">
+              <div className="text-[11px] text-sky-800 font-semibold">
                 Cashfree PG Order Settled
               </div>
             </div>
 
             {/* KPI 4: 5% Platform Revenue */}
-            <div className="p-4 rounded-xl bg-emerald-900 text-white shadow-2xs space-y-1 border border-emerald-800">
+            <div
+              onClick={() => setActiveTab('overview')}
+              className={`p-4 rounded-xl text-white shadow-2xs space-y-1 border cursor-pointer transition-all ${
+                activeTab === 'overview'
+                  ? 'bg-emerald-950 border-amber-400 ring-2 ring-amber-400/30'
+                  : 'bg-emerald-900 border-emerald-800 hover:border-amber-400 hover:shadow-md'
+              }`}
+              title="মাহিলী বিত্তীয় হিচাব আৰু PDF Audit চাবলৈ ক্লিক কৰক"
+            >
               <div className="flex items-center justify-between text-xs text-emerald-200">
-                <span className="font-medium">5% Platform Earnings</span>
+                <span className="font-bold text-emerald-100">৫% প্লেটফৰ্ম মাচুল</span>
                 <Sparkles className="w-4 h-4 text-amber-300" />
               </div>
               <div className="text-2xl font-bold text-amber-300 font-display tabular-nums">
@@ -480,6 +529,29 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
           {/* TAB 2: NATIVE GUIDES DIRECTORY */}
           {activeTab === 'guides' && (
             <div className="space-y-4">
+              {/* Guides Header Bar with Direct Upload Action */}
+              <div className="p-4 rounded-xl bg-gradient-to-r from-emerald-50 to-amber-50 border border-emerald-200/90 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+                <div>
+                  <h3 className="text-sm font-bold text-emerald-950 flex items-center gap-1.5">
+                    <Compass className="w-4 h-4 text-amber-500" />
+                    <span>থলুৱা টুৰিষ্ট গাইড সকল (Native Tourist Guides - {guides.length} Guides)</span>
+                  </h3>
+                  <p className="text-[11px] text-stone-600 mt-0.5">
+                    প্ৰত্যেক গাইডে প্ৰতিজনৰ নিৰ্দিষ্ট মূল্যত (যেনে: ₹৫,০০০) থকা, খোৱা, বাহন আৰু নিৰাপত্তাসহ সা-সুবিধা আপলোড কৰিব পাৰে
+                  </p>
+                </div>
+
+                {onOpenUploadTourModal && (
+                  <button
+                    onClick={() => onOpenUploadTourModal(undefined, guides[0]?.id)}
+                    className="px-3.5 py-2 bg-[#0b4619] hover:bg-[#073011] text-white text-xs font-bold rounded-lg shadow-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer whitespace-nowrap"
+                  >
+                    <Plus className="w-3.5 h-3.5 text-amber-300" />
+                    <span>+ গাইডৰ বাবে ট্যুৰ আৰু সুবিধা আপলোড</span>
+                  </button>
+                )}
+              </div>
+
               <div className="p-4 rounded-xl bg-white border border-stone-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="flex-1 relative">
                   <Search className="w-4 h-4 text-stone-400 absolute left-3 top-2.5" />
@@ -511,67 +583,110 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {filteredGuides.map((guide) => (
-                  <div
-                    key={guide.id}
-                    className="p-4 rounded-xl bg-white border border-stone-200 shadow-2xs space-y-3 hover:border-emerald-300 transition-colors"
-                  >
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-[#0b4619] text-white flex items-center justify-center font-bold text-sm shadow-xs">
-                          {guide.avatarInitials}
-                        </div>
-                        <div>
-                          <div className="flex items-center gap-1.5">
-                            <h4 className="text-sm font-bold text-stone-900">{guide.name}</h4>
-                            <BadgeCheck className="w-4 h-4 text-amber-500" />
+                {filteredGuides.map((guide) => {
+                  const guidePackages = packages.filter(
+                    (p) =>
+                      p.agency?.founder?.toLowerCase().includes(guide.name.toLowerCase()) ||
+                      p.agency?.name?.toLowerCase().includes(guide.name.toLowerCase())
+                  );
+
+                  return (
+                    <div
+                      key={guide.id}
+                      className="p-4 rounded-xl bg-white border border-stone-200 shadow-2xs space-y-3 hover:border-emerald-300 transition-colors flex flex-col justify-between"
+                    >
+                      <div className="space-y-3">
+                        <div className="flex items-start justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full bg-[#0b4619] text-white flex items-center justify-center font-bold text-sm shadow-xs">
+                              {guide.avatarInitials}
+                            </div>
+                            <div>
+                              <div className="flex items-center gap-1.5">
+                                <h4 className="text-sm font-bold text-stone-900">{guide.name}</h4>
+                                <BadgeCheck className="w-4 h-4 text-amber-500" />
+                              </div>
+                              <div className="text-[11px] font-mono text-stone-500">
+                                Lic: {guide.licenseNo}
+                              </div>
+                            </div>
                           </div>
-                          <div className="text-[11px] font-mono text-stone-500">
-                            Lic: {guide.licenseNo}
+
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">
+                            {guide.experienceYears} Years Exp
+                          </span>
+                        </div>
+
+                        <div className="text-xs space-y-1.5 pt-2 border-t border-stone-100">
+                          <div>
+                            <span className="text-stone-500">Region:</span>{' '}
+                            <strong className="text-stone-800">{guide.region} ({guide.state})</strong>
+                          </div>
+                          <div>
+                            <span className="text-stone-500">Affiliation:</span>{' '}
+                            <span className="text-stone-700">{guide.agencyAffiliation}</span>
+                          </div>
+                          <div>
+                            <span className="text-stone-500">Specialty:</span>{' '}
+                            <span className="text-stone-800 font-medium">{guide.specialty}</span>
+                          </div>
+                          <div className="text-[11px] text-stone-500">
+                            Languages: {guide.languages.join(', ')} · Expeditions: {guide.totalExpeditions}
                           </div>
                         </div>
+
+                        {/* Active Packages by this Guide */}
+                        {guidePackages.length > 0 && (
+                          <div className="pt-2 border-t border-stone-100 space-y-1">
+                            <span className="text-[10px] font-bold text-stone-500 uppercase tracking-wider">
+                              আপলোড কৰা ট্যুৰ আৰু সা-সুবিধাসমূহ:
+                            </span>
+                            {guidePackages.map((pkg) => (
+                              <div key={pkg.id} className="p-2 rounded-lg bg-emerald-50/70 border border-emerald-100 text-xs">
+                                <div className="flex justify-between font-bold text-stone-900">
+                                  <span>{pkg.title}</span>
+                                  <span className="text-[#0b4619]">{formatINR(pkg.pricePerPerson)}/pax</span>
+                                </div>
+                                <div className="text-[10px] text-emerald-800 mt-0.5">
+                                  ✓ {pkg.inclusions?.length || 0} টা সা-সুবিধা অন্তৰ্ভুক্ত (Stay, Meals, Transport, Guide)
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
 
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">
-                        {guide.experienceYears} Years Exp
-                      </span>
-                    </div>
+                      <div className="space-y-2 pt-2 border-t border-stone-100">
+                        <div className="flex items-center justify-between text-xs">
+                          <div className="flex items-center gap-2 text-stone-600">
+                            <Phone className="w-3.5 h-3.5 text-[#0b4619]" />
+                            <span>{guide.phone}</span>
+                          </div>
+                          <a
+                            href={`https://wa.me/${guide.whatsapp.replace(/\D/g, '')}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-[#0b4619] hover:underline flex items-center gap-1 text-[11px] font-semibold"
+                          >
+                            <MessageCircle className="w-3 h-3 text-[#25D366]" />
+                            WhatsApp
+                          </a>
+                        </div>
 
-                    <div className="text-xs space-y-1.5 pt-2 border-t border-stone-100">
-                      <div>
-                        <span className="text-stone-500">Region:</span>{' '}
-                        <strong className="text-stone-800">{guide.region} ({guide.state})</strong>
-                      </div>
-                      <div>
-                        <span className="text-stone-500">Affiliation:</span>{' '}
-                        <span className="text-stone-700">{guide.agencyAffiliation}</span>
-                      </div>
-                      <div>
-                        <span className="text-stone-500">Specialty:</span>{' '}
-                        <span className="text-stone-800 font-medium">{guide.specialty}</span>
-                      </div>
-                      <div className="text-[11px] text-stone-500">
-                        Languages: {guide.languages.join(', ')} · Expeditions: {guide.totalExpeditions}
+                        {onOpenUploadTourModal && (
+                          <button
+                            type="button"
+                            onClick={() => onOpenUploadTourModal(undefined, guide.id)}
+                            className="w-full py-1.5 px-3 bg-amber-50 hover:bg-amber-100 border border-amber-300 text-stone-900 text-xs font-bold rounded-lg transition-colors cursor-pointer flex items-center justify-center gap-1.5"
+                          >
+                            <Plus className="w-3.5 h-3.5 text-[#0b4619]" />
+                            <span>এই গাইডৰ বাবে নতুন ট্যুৰ আৰু সুবিধা আপলোড কৰক</span>
+                          </button>
+                        )}
                       </div>
                     </div>
-
-                    <div className="pt-2 border-t border-stone-100 flex items-center justify-between text-xs">
-                      <div className="flex items-center gap-2 text-stone-600">
-                        <Phone className="w-3.5 h-3.5 text-[#0b4619]" />
-                        <span>{guide.phone}</span>
-                      </div>
-                      <a
-                        href={`https://wa.me/${guide.whatsapp.replace(/\D/g, '')}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-[#0b4619] hover:underline flex items-center gap-1 text-[11px] font-semibold"
-                      >
-                        <MessageCircle className="w-3 h-3 text-[#25D366]" />
-                        WhatsApp
-                      </a>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           )}
@@ -579,6 +694,29 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
           {/* TAB 3: AGENCIES ROSTER */}
           {activeTab === 'agencies' && (
             <div className="space-y-4">
+              {/* Agencies Header Bar with Direct Upload Action */}
+              <div className="p-4 rounded-xl bg-gradient-to-r from-emerald-50 to-stone-100 border border-emerald-200/90 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+                <div>
+                  <h3 className="text-sm font-bold text-emerald-950 flex items-center gap-1.5">
+                    <Building2 className="w-4 h-4 text-[#0b4619]" />
+                    <span>টুৰিষ্ট এজেন্সী মালিক সকল (Tourist Agency Owners & Operators)</span>
+                  </h3>
+                  <p className="text-[11px] text-stone-600 mt-0.5">
+                    পঞ্জীয়নভুক্ত এজেন্সীৰ মালিকসকলে প্ৰতিজনৰ নিৰ্দিষ্ট মূল্যত (যেনে: ₹৫,০০০) নিজৰ সা-সুবিধাসমূহ ফিলাপ কৰি আপলোড কৰক
+                  </p>
+                </div>
+
+                {onOpenUploadTourModal && (
+                  <button
+                    onClick={() => onOpenUploadTourModal(agencies[0]?.id)}
+                    className="px-3.5 py-2 bg-[#0b4619] hover:bg-[#073011] text-white text-xs font-bold rounded-lg shadow-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer whitespace-nowrap"
+                  >
+                    <Plus className="w-3.5 h-3.5 text-amber-300" />
+                    <span>+ এজেন্সীৰ বাবে ট্যুৰ আৰু সুবিধা আপলোড</span>
+                  </button>
+                )}
+              </div>
+
               <div className="p-4 rounded-xl bg-white border border-stone-200">
                 <div className="relative">
                   <Search className="w-4 h-4 text-stone-400 absolute left-3 top-2.5" />
@@ -602,42 +740,81 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
                   const city = agency.city || agency.baseCity;
                   const state = agency.state;
 
+                  const agencyPackages = packages.filter(
+                    (p) => p.agency?.id === agency.id || p.agency?.name?.toLowerCase() === name?.toLowerCase()
+                  );
+
                   return (
                     <div
                       key={agency.id || idx}
-                      className="p-4 rounded-xl bg-white border border-stone-200 shadow-2xs space-y-3"
+                      className="p-4 rounded-xl bg-white border border-stone-200 shadow-2xs space-y-3 flex flex-col justify-between"
                     >
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <div className="flex items-center gap-1.5">
-                            <Building2 className="w-4 h-4 text-[#0b4619]" />
-                            <h4 className="text-sm font-bold text-stone-900">{name}</h4>
+                      <div className="space-y-3">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <div className="flex items-center gap-1.5">
+                              <Building2 className="w-4 h-4 text-[#0b4619]" />
+                              <h4 className="text-sm font-bold text-stone-900">{name}</h4>
+                            </div>
+                            <div className="text-[11px] text-stone-500 mt-0.5">
+                              মালিক / পৰিচালক: <strong>{founder}</strong> · {city}, {state}
+                            </div>
                           </div>
-                          <div className="text-[11px] text-stone-500 mt-0.5">
-                            Host: {founder} · {city}, {state}
-                          </div>
+
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">
+                            Verified Operator
+                          </span>
                         </div>
 
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">
-                          Verified Operator
-                        </span>
-                      </div>
+                        <div className="text-xs space-y-1 pt-2 border-t border-stone-100 text-stone-600">
+                          <div>
+                            <span className="text-stone-500">License / Reg:</span>{' '}
+                            <span className="font-mono text-stone-800">{license}</span>
+                          </div>
+                          <div>
+                            <span className="text-stone-500">Contact:</span>{' '}
+                            <span>{phone} · {email}</span>
+                          </div>
+                          {agency.bankAccountNumber && (
+                            <div className="text-[11px] text-stone-500">
+                              Bank Account: {agency.bankAccountNumber.slice(-4).padStart(agency.bankAccountNumber.length, '•')} ({agency.bankName || 'Registered'})
+                            </div>
+                          )}
+                        </div>
 
-                      <div className="text-xs space-y-1 pt-2 border-t border-stone-100 text-stone-600">
-                        <div>
-                          <span className="text-stone-500">License / Reg:</span>{' '}
-                          <span className="font-mono text-stone-800">{license}</span>
-                        </div>
-                        <div>
-                          <span className="text-stone-500">Contact:</span>{' '}
-                          <span>{phone} · {email}</span>
-                        </div>
-                        {agency.bankAccountNumber && (
-                          <div className="text-[11px] text-stone-500">
-                            Bank Account: {agency.bankAccountNumber.slice(-4).padStart(agency.bankAccountNumber.length, '•')} ({agency.bankName || 'Registered'})
+                        {/* Packages uploaded by this Agency Owner */}
+                        {agencyPackages.length > 0 && (
+                          <div className="pt-2 border-t border-stone-100 space-y-1">
+                            <span className="text-[10px] font-bold text-stone-500 uppercase tracking-wider">
+                              এই এজেন্সীয়ে আপলোড কৰা ট্যুৰসমূহ ({agencyPackages.length}):
+                            </span>
+                            {agencyPackages.map((pkg) => (
+                              <div key={pkg.id} className="p-2 rounded-lg bg-emerald-50/70 border border-emerald-100 text-xs">
+                                <div className="flex justify-between font-bold text-stone-900">
+                                  <span>{pkg.title}</span>
+                                  <span className="text-[#0b4619]">{formatINR(pkg.pricePerPerson)}/pax</span>
+                                </div>
+                                <div className="text-[10px] text-emerald-800 mt-0.5">
+                                  ✓ {pkg.inclusions?.length || 0} টা সা-সুবিধা অন্তৰ্ভুক্ত (Stay, Meals, Transport, Permits)
+                                </div>
+                              </div>
+                            ))}
                           </div>
                         )}
                       </div>
+
+                      {onOpenUploadTourModal && (
+                        <div className="pt-3 border-t border-stone-100">
+                          <button
+                            type="button"
+                            onClick={() => onOpenUploadTourModal(agency.id)}
+                            className="w-full py-1.5 px-3 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-950 text-xs font-bold rounded-lg transition-colors cursor-pointer flex items-center justify-center gap-1.5"
+                          >
+                            <Plus className="w-3.5 h-3.5 text-[#0b4619]" />
+                            <span>এই এজেন্সী মালিকৰ বাবে ট্যুৰ আৰু সুবিধা আপলোড কৰক</span>
+                          </button>
+                        </div>
+                      )}
                     </div>
                   );
                 })}

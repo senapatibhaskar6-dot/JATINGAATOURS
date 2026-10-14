@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ShieldCheck, UserCheck, Menu, X, ReceiptText, CreditCard, Building2, Users, Lock, MessageCircle, TrendingUp } from 'lucide-react';
+import { ShieldCheck, UserCheck, Menu, X, ReceiptText, CreditCard, Building2, Users, Lock, MessageCircle, TrendingUp, Plus, Compass } from 'lucide-react';
 import jatingaaLogo from '../assets/images/jatingaa_tours_logo.png';
 
 interface HeaderProps {
@@ -9,6 +9,7 @@ interface HeaderProps {
   onOpenCodeGuidance?: () => void;
   onOpenPaymentSettings?: () => void;
   onOpenAdminDashboard?: () => void;
+  onOpenUploadAmenitiesForm?: () => void;
   onOpenB2BHub?: () => void;
   isB2BMode?: boolean;
   onToggleB2BMode?: () => void;
@@ -27,6 +28,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenCodeGuidance,
   onOpenPaymentSettings,
   onOpenAdminDashboard,
+  onOpenUploadAmenitiesForm,
   onOpenB2BHub,
   isB2BMode = false,
   onToggleB2BMode,
@@ -144,14 +146,25 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Zone 3: Primary Action Controls */}
         <div className="hidden sm:flex items-center gap-2">
-          {isAdminLoggedIn && onOpenAdminDashboard && (
+          {onOpenAdminDashboard && (
             <button
               onClick={onOpenAdminDashboard}
               className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-stone-950 bg-amber-400 hover:bg-amber-300 rounded-lg transition-colors cursor-pointer whitespace-nowrap shadow-xs"
-              title="Admin: Overview of Guides, Agencies, Monthly Bookings & PDF Reports"
+              title="ডেচব'ৰ্ড: টুৰিষ্ট এজেন্সী মালিক আৰু গাইড ৰ'ষ্টাৰ, মাহিলী বুকিং আৰু PDF ৰিপৰ্ট"
             >
               <TrendingUp className="w-3.5 h-3.5 text-stone-950" />
-              <span>Admin Dashboard</span>
+              <span>ডেচব'ৰ্ড (Dashboard)</span>
+            </button>
+          )}
+
+          {onOpenUploadAmenitiesForm && (
+            <button
+              onClick={onOpenUploadAmenitiesForm}
+              className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-white bg-[#0b4619] hover:bg-[#073011] rounded-lg transition-colors cursor-pointer whitespace-nowrap shadow-xs border border-emerald-700"
+              title="এজেন্সী মালিক আৰু গাইডৰ বাবে: ১ জনৰ ₹৫,০০০ টকাত কি কি সুবিধা দিব তাৰ ফৰ্ম ফিলাপ কৰি আপলোড কৰক"
+            >
+              <Plus className="w-3.5 h-3.5 text-amber-300" />
+              <span>+ সা-সুবিধা আপলোড</span>
             </button>
           )}
 
@@ -318,16 +331,38 @@ export const Header: React.FC<HeaderProps> = ({
             >
               About Us (Global & Local Mission)
             </button>
-            {isAdminLoggedIn && onOpenAdminDashboard && (
+            {onOpenAdminDashboard && (
               <button
                 onClick={() => {
                   setMobileMenuOpen(false);
                   onOpenAdminDashboard();
                 }}
-                className="text-left py-2 px-2.5 bg-amber-100/80 hover:bg-amber-100 rounded-lg flex items-center gap-2 text-stone-950 font-bold"
+                className="text-left py-2 px-2.5 bg-amber-100 hover:bg-amber-200 rounded-lg flex items-center justify-between text-stone-950 font-bold"
               >
-                <TrendingUp className="w-4 h-4 text-stone-950" />
-                <span>Admin Dashboard & PDF Audit</span>
+                <span className="flex items-center gap-2">
+                  <TrendingUp className="w-4 h-4 text-stone-950" />
+                  <span>ডেচব'ৰ্ড (Agencies, Guides & Audit)</span>
+                </span>
+                <span className="text-[10px] bg-amber-400 text-stone-950 px-2 py-0.5 rounded font-mono font-bold">
+                  Dashboard
+                </span>
+              </button>
+            )}
+            {onOpenUploadAmenitiesForm && (
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  onOpenUploadAmenitiesForm();
+                }}
+                className="text-left py-2 px-2.5 bg-emerald-50 hover:bg-emerald-100 rounded-lg flex items-center justify-between text-emerald-950 font-bold border border-emerald-200"
+              >
+                <span className="flex items-center gap-2">
+                  <Plus className="w-4 h-4 text-[#0b4619]" />
+                  <span>+ সা-সুবিধা আপলোড ফৰ্ম (₹৫,০০০/জন)</span>
+                </span>
+                <span className="text-[10px] bg-[#0b4619] text-white px-2 py-0.5 rounded font-bold">
+                  Upload
+                </span>
               </button>
             )}
             {isAdminLoggedIn && onOpenAgenciesDirectory && (
