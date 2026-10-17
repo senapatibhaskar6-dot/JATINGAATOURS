@@ -270,7 +270,7 @@ export const AgencySection: React.FC<AgencySectionProps> = ({
                     onClick={onOpenRegisterAgency}
                     className="flex-1 sm:flex-none px-4 py-2.5 text-xs font-bold text-stone-900 bg-[#f39c12] hover:bg-[#d68407] rounded-lg transition-colors cursor-pointer whitespace-nowrap shadow"
                   >
-                    List Your Agency
+                    পঞ্জীয়ন আৰু সা-সুবিধা ফৰ্ম (Register)
                   </button>
                   <button
                     onClick={onOpenAgencyPortal}

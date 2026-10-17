@@ -225,7 +225,7 @@ export const Header: React.FC<HeaderProps> = ({
             target="_blank"
             rel="noopener noreferrer"
             className="hidden md:flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition-colors cursor-pointer whitespace-nowrap shadow-2xs"
-            title="Chat with Official Jatingaa Tours WhatsApp (+91 6913514367)"
+            title="Chat with Official Jatingaa Tours on WhatsApp"
           >
             <MessageCircle className="w-3.5 h-3.5 text-[#25D366] fill-[#25D366]" />
             <span>WhatsApp</span>
@@ -241,10 +241,11 @@ export const Header: React.FC<HeaderProps> = ({
 
           <button
             onClick={onOpenRegisterAgency}
-            className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-white bg-[#0b4619] hover:bg-[#062b0f] rounded-lg shadow-sm transition-all hover:shadow cursor-pointer whitespace-nowrap"
+            className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-white bg-[#0b4619] hover:bg-[#062b0f] rounded-lg shadow-sm transition-all hover:shadow cursor-pointer whitespace-nowrap border border-emerald-700"
+            title="এজেন্সী মালিক আৰু গাইড পঞ্জীয়ন: ১ জনৰ ₹৫,০০০ টকাত কি কি সা-সুবিধা দিব পঞ্জীয়নৰ সময়তে ফিলাপ কৰি আপলোড কৰক"
           >
             <UserCheck className="w-4 h-4 text-[#f39c12]" />
-            <span>Register Agency</span>
+            <span>পঞ্জীয়ন আৰু সা-সুবিধা ফৰ্ম (Register)</span>
           </button>
 
           {/* Admin Mode Badge & Login Trigger */}
@@ -407,9 +408,10 @@ export const Header: React.FC<HeaderProps> = ({
               rel="noopener noreferrer"
               onClick={() => setMobileMenuOpen(false)}
               className="w-full flex items-center justify-center gap-2 py-2.5 text-xs font-bold text-white bg-[#25D366] hover:bg-[#20ba59] rounded-lg shadow-xs"
+              title="Chat with Official Jatingaa Tours on WhatsApp"
             >
               <MessageCircle className="w-4 h-4 fill-white" />
-              <span>Chat on WhatsApp (+91 6913514367)</span>
+              <span>Chat on WhatsApp</span>
             </a>
 
             {isAdminLoggedIn && onOpenB2BHub && (
@@ -455,10 +457,10 @@ export const Header: React.FC<HeaderProps> = ({
                 setMobileMenuOpen(false);
                 onOpenRegisterAgency();
               }}
-              className="w-full flex items-center justify-center gap-2 py-2.5 text-xs font-semibold text-white bg-[#0b4619] rounded-lg"
+              className="w-full flex items-center justify-center gap-2 py-2.5 text-xs font-bold text-white bg-[#0b4619] hover:bg-[#073011] rounded-lg shadow-xs"
             >
               <UserCheck className="w-4 h-4 text-[#f39c12]" />
-              List Your Agency (Zero Listing Fee)
+              পঞ্জীয়ন আৰু সা-সুবিধা ফৰ্ম (Register & Package Form)
             </button>
 
             {onOpenAdminLogin && (

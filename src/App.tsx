@@ -147,9 +147,14 @@ export default function App() {
   const [isAdminLoggedIn, setIsAdminLoggedInState] = useState<boolean>(getIsAdminLoggedIn);
 
   const handleOpenUploadTourModal = (agencyId?: string, guideId?: string) => {
-    setUploadTargetAgencyId(agencyId);
-    setUploadTargetGuideId(guideId);
-    setIsUploadAmenitiesModalOpen(true);
+    if (agencyId || guideId) {
+      setUploadTargetAgencyId(agencyId);
+      setUploadTargetGuideId(guideId);
+      setIsUploadAmenitiesModalOpen(true);
+    } else {
+      // The tour amenities form is provided directly during registration as requested!
+      setIsRegisterAgencyOpen(true);
+    }
   };
 
   const handleAddPackageFromAmenitiesForm = (newPkg: TourPackage) => {
@@ -582,7 +587,7 @@ export default function App() {
   };
 
   // Handlers for UGC & Agency Management
-  const handleAgencyRegistered = (newAgency: Agency) => {
+  const handleAgencyRegistered = (newAgency: Agency, initialPackage?: TourPackage) => {
     setAgenciesList((prev) => [newAgency, ...prev]);
     setActiveAgency(newAgency);
 
@@ -612,10 +617,11 @@ export default function App() {
       creditLimit: 50000,
       activeHoldsCount: 0,
       totalWholesaleBookings: 0,
-      bankName: 'State Bank of India',
-      bankAccountName: newAgency.name,
-      bankAccountNumber: '38920194821',
-      bankIfsc: 'SBIN0000001',
+      bankName: newAgency.bankName || 'State Bank of India',
+      bankAccountName: newAgency.bankAccountName || newAgency.name,
+      bankAccountNumber: newAgency.bankAccountNumber || '38920194821',
+      bankIfsc: newAgency.bankIfsc || 'SBIN0000001',
+      upiId: newAgency.upiId || `${newAgency.phone.replace(/\D/g, '')}@upi`,
       payoutStatus: 'verified',
     };
 
@@ -625,9 +631,23 @@ export default function App() {
       return updated;
     });
 
+    if (initialPackage) {
+      setPackages((prev) => {
+        const updated = [initialPackage, ...prev];
+        try {
+          localStorage.setItem('jatingaa_tour_packages_v2', JSON.stringify(updated));
+        } catch (e) {
+          console.warn('Failed to save tour package', e);
+        }
+        return updated;
+      });
+      showToast(`✓ "${newAgency.name}" পঞ্জীয়ন হ'ল আৰু আপোনাৰ ট্যুৰ পেকেজটি ₹${initialPackage.pricePerPerson.toLocaleString('en-IN')} মূল্যত (${initialPackage.inclusions.length} টা সুবিধাসহ) লাইভ আপলোড কৰা হ'ল!`);
+    } else {
+      showToast(`Agency "${newAgency.name}" onboarded! Total registered agencies: ${b2bAgencies.length + 1}`);
+    }
+
     setIsRegisterAgencyOpen(false);
     setIsAgencyPortalOpen(true);
-    showToast(`Agency "${newAgency.name}" onboarded! Total registered agencies: ${b2bAgencies.length + 1}`);
   };
 
   const handleUpdateAgencyProfile = (updatedAgency: Agency) => {

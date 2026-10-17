@@ -339,10 +339,10 @@ export const Hero: React.FC<HeroProps> = ({
                 type="button"
                 onClick={onOpenUploadTourModal}
                 className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-emerald-800/90 hover:bg-emerald-700 border border-emerald-500/50 shadow-md transition-all flex items-center gap-1.5 cursor-pointer backdrop-blur-md"
-                title="১ জনৰ ₹৫,০০০ টকাত কি কি সুবিধা দিব তাৰ ফৰ্ম ফিলাপ কৰি আপলোড কৰক"
+                title="পঞ্জীয়নৰ সময়তে ১ জনৰ ₹৫,০০০ টকাত কি কি সা-সুবিধা দিব তাৰ ফৰ্ম ফিলাপ কৰি আপলোড কৰক"
               >
                 <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-                <span>+ সা-সুবিধা আপলোড ফৰ্ম (₹৫,০০০/জন)</span>
+                <span>পঞ্জীয়ন আৰু সা-সুবিধা ফৰ্ম (₹৫,০০০/জন)</span>
               </button>
             )}
           </div>

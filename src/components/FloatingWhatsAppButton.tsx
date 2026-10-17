@@ -26,7 +26,7 @@ export const FloatingWhatsAppButton: React.FC<FloatingWhatsAppButtonProps> = ({
           <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping shrink-0" />
           <div className="flex flex-col">
             <span className="font-bold text-stone-900">Need Help? Chat on WhatsApp</span>
-            <span className="text-[10px] text-stone-500">+91 {phoneNumber} (Official Support)</span>
+            <span className="text-[10px] text-stone-500">Official Support Team (Online)</span>
           </div>
           <button
             onClick={(e) => {
@@ -48,7 +48,7 @@ export const FloatingWhatsAppButton: React.FC<FloatingWhatsAppButtonProps> = ({
         target="_blank"
         rel="noopener noreferrer"
         className="group relative flex items-center justify-center w-14 h-14 rounded-full bg-[#25D366] text-white shadow-xl hover:shadow-2xl hover:scale-105 active:scale-95 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-emerald-400/50"
-        title="Chat with Official Jatingaa Tours on WhatsApp (+91 691351436)"
+        title="Chat with Official Jatingaa Tours on WhatsApp"
         aria-label="Chat with Official Jatingaa Tours on WhatsApp"
       >
         <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5">
