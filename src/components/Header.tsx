@@ -269,6 +269,11 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Mobile menu trigger */}
         <div className="flex lg:hidden items-center gap-2">
+          {/* Mobile top-bar language switcher */}
+          <div className="sm:hidden">
+            <LanguageSwitcher variant="header" />
+          </div>
+
           {bookingsCount > 0 && (
             <button
               onClick={onOpenBookings}

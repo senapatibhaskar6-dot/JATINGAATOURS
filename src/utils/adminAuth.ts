@@ -1,6 +1,7 @@
 const ADMIN_LOGIN_KEY = 'jatingaa_is_admin_logged_in';
 const ADMIN_PIN_KEY = 'jatingaa_admin_pin';
-const DEFAULT_PIN = '2026';
+export const DEFAULT_PIN = '2026';
+export const MASTER_PIN = 'admin2026';
 
 export function getIsAdminLoggedIn(): boolean {
   try {
@@ -35,7 +36,21 @@ export function setAdminPin(newPin: string): void {
   }
 }
 
+export function resetAdminPinToDefault(): string {
+  try {
+    localStorage.removeItem(ADMIN_PIN_KEY);
+  } catch {
+    // Ignore
+  }
+  return DEFAULT_PIN;
+}
+
 export function verifyAdminPin(inputPin: string): boolean {
   const currentPin = getAdminPin();
-  return inputPin.trim() === currentPin.trim() || inputPin.trim() === 'admin2026' || inputPin.trim() === DEFAULT_PIN;
+  const trimmed = inputPin.trim();
+  return (
+    trimmed === currentPin.trim() ||
+    trimmed === MASTER_PIN ||
+    trimmed === DEFAULT_PIN
+  );
 }

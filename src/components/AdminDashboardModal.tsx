@@ -25,6 +25,7 @@ import { BookingRecord, B2BAgency, Agency, TourPackage } from '../types';
 import { GuideProfile, getPlatformGuides } from '../data/guidesData';
 import { formatINR } from '../utils/pricing';
 import { generateMonthlyReportPdf } from '../utils/reportPdfGenerator';
+import { useLanguage } from '../context/LanguageContext';
 
 interface AdminDashboardModalProps {
   onClose: () => void;
@@ -43,6 +44,9 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
   onOpenPaymentSettings,
   onOpenUploadTourModal,
 }) => {
+  const { t, language } = useLanguage();
+  const isAssamese = language === 'as';
+
   const [activeTab, setActiveTab] = useState<'agencies' | 'guides' | 'overview' | 'bookings'>('agencies');
   const [selectedMonth, setSelectedMonth] = useState<string>('all');
   const [guideSearch, setGuideSearch] = useState<string>('');
@@ -182,10 +186,10 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
               <button
                 onClick={() => onOpenUploadTourModal()}
                 className="hidden md:flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-emerald-800 hover:bg-emerald-700 border border-emerald-600 rounded-lg shadow-sm transition-all cursor-pointer whitespace-nowrap"
-                title="এজেন্সী বা গাইডৰ বাবে নতুন ট্যুৰ আৰু সা-সুবিধা আপলোড কৰক"
+                title={isAssamese ? 'এজেন্সী বা গাইডৰ বাবে নতুন ট্যুৰ আৰু সা-সুবিধা আপলোড কৰক' : 'Upload new tour & amenities for agency or guide'}
               >
                 <Plus className="w-3.5 h-3.5 text-amber-300" />
-                <span>+ নতুন ট্যুৰ আৰু সুবিধা আপলোড</span>
+                <span>{isAssamese ? '+ নতুন ট্যুৰ আৰু সুবিধা আপলোড' : '+ Upload Tour & Amenities'}</span>
               </button>
             )}
 
@@ -221,7 +225,7 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
               }`}
             >
               <Building2 className="w-3.5 h-3.5 text-emerald-400" />
-              <span>🏢 টুৰিষ্ট এজেন্সী মালিকসকল ({agencies.length})</span>
+              <span>🏢 {isAssamese ? 'টুৰিষ্ট এজেন্সী মালিকসকল' : 'Tourist Agencies'} ({agencies.length})</span>
             </button>
 
             <button
@@ -233,7 +237,7 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
               }`}
             >
               <Compass className="w-3.5 h-3.5 text-amber-400" />
-              <span>🧭 টুৰিষ্ট গাইডসকল ({guides.length})</span>
+              <span>🧭 {isAssamese ? 'টুৰিষ্ট গাইডসকল' : 'Certified Guides'} ({guides.length})</span>
             </button>
 
             <button
@@ -245,7 +249,7 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
               }`}
             >
               <TrendingUp className="w-3.5 h-3.5" />
-              <span>📊 মাহিলী হিচাব & PDF Audit</span>
+              <span>📊 {isAssamese ? 'মাহিলী হিচাব & PDF Audit' : 'Overview & PDF Audit'}</span>
             </button>
 
             <button
@@ -295,10 +299,10 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
                   ? 'bg-emerald-50/80 border-[#0b4619] ring-2 ring-[#0b4619]/20'
                   : 'bg-white border-stone-200 hover:border-[#0b4619] hover:shadow-md'
               }`}
-              title="এজেন্সী মালিকসকলৰ তালিকা চাবলৈ ক্লিক কৰক"
+              title={isAssamese ? 'এজেন্সী মালিকসকলৰ তালিকা চাবলৈ ক্লিক কৰক' : 'Click to view agency owners list'}
             >
               <div className="flex items-center justify-between text-xs text-stone-500">
-                <span className="font-bold text-stone-800">পঞ্জীয়নভুক্ত এজেন্সী মালিক</span>
+                <span className="font-bold text-stone-800">{isAssamese ? 'পঞ্জীয়নভুক্ত এজেন্সী মালিক' : 'Registered Agencies'}</span>
                 <Building2 className="w-4 h-4 text-[#0b4619]" />
               </div>
               <div className="text-2xl font-bold text-stone-900 font-display">
@@ -318,10 +322,10 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
                   ? 'bg-amber-50/80 border-amber-500 ring-2 ring-amber-500/20'
                   : 'bg-white border-stone-200 hover:border-amber-400 hover:shadow-md'
               }`}
-              title="থলুৱা গাইডসকলৰ তালিকা চাবলৈ ক্লিক কৰক"
+              title={isAssamese ? 'থলুৱা গাইডসকলৰ তালিকা চাবলৈ ক্লিক কৰক' : 'Click to view certified guides list'}
             >
               <div className="flex items-center justify-between text-xs text-stone-500">
-                <span className="font-bold text-stone-800">মুঠ প্ৰমাণিত গাইড (Guides)</span>
+                <span className="font-bold text-stone-800">{isAssamese ? 'মুঠ প্ৰমাণিত গাইড (Guides)' : 'Certified Local Guides'}</span>
                 <Compass className="w-4 h-4 text-amber-600" />
               </div>
               <div className="text-2xl font-bold text-stone-900 font-display">

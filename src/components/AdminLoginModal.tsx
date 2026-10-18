@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Lock, ShieldCheck, KeyRound, Eye, EyeOff, X, CheckCircle2, AlertCircle, LogOut } from 'lucide-react';
-import { verifyAdminPin, setAdminPin, getAdminPin } from '../utils/adminAuth';
+import { verifyAdminPin, setAdminPin, getAdminPin, resetAdminPinToDefault, DEFAULT_PIN } from '../utils/adminAuth';
+import { useLanguage } from '../context/LanguageContext';
 
 interface AdminLoginModalProps {
   isAdminLoggedIn: boolean;
@@ -15,6 +16,9 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
   onLoginSuccess,
   onLogout,
 }) => {
+  const { language, t } = useLanguage();
+  const isAssamese = language === 'as';
+
   const [pin, setPin] = useState('');
   const [showPin, setShowPin] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
@@ -22,6 +26,8 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
   const [newPin, setNewPin] = useState('');
   const [confirmPin, setConfirmPin] = useState('');
   const [pinSuccessMsg, setPinSuccessMsg] = useState('');
+  const [showForgotHelp, setShowForgotHelp] = useState(false);
+  const [resetNotice, setResetNotice] = useState('');
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -230,8 +236,87 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
                 className="w-full py-2.5 px-4 bg-[#0b4619] hover:bg-[#062b0f] text-white rounded-xl text-xs font-bold transition-all shadow-sm hover:shadow cursor-pointer flex items-center justify-center gap-1.5"
               >
                 <Lock className="w-3.5 h-3.5 text-amber-300" />
-                <span>Unlock Admin Portal</span>
+                <span>{isAssamese ? 'এডমিন পৰ্টেল আনলক কৰক' : 'Unlock Admin Portal'}</span>
               </button>
+
+              {/* Forgot Passcode / Password Recovery Section */}
+              <div className="pt-2 border-t border-stone-100">
+                {!showForgotHelp ? (
+                  <button
+                    type="button"
+                    onClick={() => setShowForgotHelp(true)}
+                    className="w-full text-center text-xs font-semibold text-emerald-800 hover:text-emerald-950 hover:underline py-1 cursor-pointer flex items-center justify-center gap-1"
+                  >
+                    <KeyRound className="w-3.5 h-3.5 text-amber-500" />
+                    <span>{isAssamese ? 'পাছক\'ড পাহৰিলে? (Forgot Passcode / Recovery)' : 'Forgot Passcode? (Password Recovery)'}</span>
+                  </button>
+                ) : (
+                  <div className="p-3.5 rounded-2xl bg-amber-50/90 border border-amber-300 text-stone-900 space-y-2.5 text-xs animate-fade-in">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center gap-1.5 font-bold text-amber-950">
+                        <KeyRound className="w-4 h-4 text-[#0b4619]" />
+                        <span>{isAssamese ? 'পাছক\'ড উদ্ধাৰ ব্যৱস্থা (Admin Passcode Recovery)' : 'Admin Passcode Recovery'}</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setShowForgotHelp(false)}
+                        className="text-stone-400 hover:text-stone-700 text-[11px] font-bold"
+                      >
+                        ✕
+                      </button>
+                    </div>
+
+                    <p className="text-[11px] text-stone-700 leading-relaxed">
+                      {isAssamese ? (
+                        <>
+                          ডিফল্ট বা মাষ্টাৰ এডমিন পাছক'ড হ'ল: <strong className="font-mono text-emerald-900 bg-white px-1.5 py-0.5 rounded border border-emerald-300 text-xs">2026</strong> (বা <strong className="font-mono text-emerald-900 bg-white px-1.5 py-0.5 rounded border border-emerald-300 text-xs">admin2026</strong>)। আপুনি পাছক'ড সলনি কৰি পাহৰিলেও এই মাষ্টাৰ পাছক'ড সদায় কাম কৰিব।
+                        </>
+                      ) : (
+                        <>
+                          The built-in Master Recovery PIN is: <strong className="font-mono text-emerald-900 bg-white px-1.5 py-0.5 rounded border border-emerald-300 text-xs">2026</strong> (or <strong className="font-mono text-emerald-900 bg-white px-1.5 py-0.5 rounded border border-emerald-300 text-xs">admin2026</strong>). Even if you customized your passcode, this master PIN always works.
+                        </>
+                      )}
+                    </p>
+
+                    <div className="flex flex-col sm:flex-row gap-2 pt-1">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setPin('2026');
+                          setErrorMsg('');
+                        }}
+                        className="flex-1 py-1.5 px-3 rounded-lg bg-emerald-800 text-white font-bold text-[11px] hover:bg-emerald-900 transition-colors shadow-2xs cursor-pointer flex items-center justify-center gap-1"
+                      >
+                        <span>{isAssamese ? 'ডিফল্ট PIN (2026) ব্যৱহাৰ কৰক' : 'Fill Master PIN (2026)'}</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          resetAdminPinToDefault();
+                          setPin('2026');
+                          setErrorMsg('');
+                          setResetNotice(isAssamese ? 'পাছক\'ড 2026 লৈ ৰিছেট কৰা হ\'ল!' : 'Passcode reset to 2026!');
+                          setTimeout(() => setResetNotice(''), 3500);
+                        }}
+                        className="flex-1 py-1.5 px-3 rounded-lg bg-white border border-stone-300 text-stone-800 font-semibold text-[11px] hover:bg-stone-50 transition-colors cursor-pointer"
+                      >
+                        {isAssamese ? 'PIN পুনৰ সংস্থাপন (Reset to 2026)' : 'Reset Passcode to 2026'}
+                      </button>
+                    </div>
+
+                    {resetNotice && (
+                      <div className="p-2 rounded-lg bg-emerald-100 text-emerald-900 text-[11px] font-bold text-center">
+                        ✓ {resetNotice}
+                      </div>
+                    )}
+
+                    <div className="text-[10px] text-stone-500 pt-1 border-t border-amber-200/80">
+                      <span>Owner Email: <strong>senapatibhaskar6@gmail.com</strong></span>
+                    </div>
+                  </div>
+                )}
+              </div>
             </form>
           )}
         </div>
