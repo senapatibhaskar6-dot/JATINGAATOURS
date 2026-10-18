@@ -2,6 +2,7 @@ import React from 'react';
 import { TourPackage, B2BAgency } from '../types';
 import { calculateBookingFees, calculateB2BWholesale, formatINR } from '../utils/pricing';
 import { ShieldCheck, MapPin, Calendar, Users, ArrowRight, Clock, FileText } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 interface PackageCardProps {
   tour: TourPackage;
@@ -22,6 +23,7 @@ export const PackageCard: React.FC<PackageCardProps> = ({
   onHoldSlot,
   onGenerateQuote,
 }) => {
+  const { t } = useLanguage();
   const calc = calculateBookingFees(tour.pricePerPerson, 1);
   const wholesale = calculateB2BWholesale(tour.pricePerPerson, 1, b2bAgency?.tier || 'Gold');
 
@@ -79,7 +81,7 @@ export const PackageCard: React.FC<PackageCardProps> = ({
           {/* Included Amenities / Khubidha Highlight */}
           {tour.inclusions && tour.inclusions.length > 0 && (
             <div className="mt-2.5 flex items-center gap-1.5 text-[11px] text-emerald-950 bg-emerald-50/90 px-2.5 py-1 rounded-lg border border-emerald-200/80">
-              <span className="font-bold text-[#0b4619] shrink-0">✓ {tour.inclusions.length} টা সুবিধা</span>
+              <span className="font-bold text-[#0b4619] shrink-0">✓ {tour.inclusions.length} {t('packages.inclusions')}</span>
               <span className="text-emerald-800 text-[10px] truncate">
                 ({tour.inclusions.slice(0, 3).map(i => i.split('(')[0].trim()).join(' · ')})
               </span>
@@ -164,14 +166,14 @@ export const PackageCard: React.FC<PackageCardProps> = ({
                   <span className="text-lg font-extrabold text-stone-900 font-display tabular-nums">
                     {formatINR(tour.pricePerPerson)}
                   </span>
-                  <span className="text-[11px] text-stone-400"> / person</span>
+                  <span className="text-[11px] text-stone-400"> / {t('packages.perPerson')}</span>
                 </div>
               </div>
 
               {/* Core Formula Advance Badge */}
               <div className="p-2.5 rounded-xl bg-emerald-50/70 border border-emerald-200/80 flex items-center justify-between mb-3 text-xs shadow-xs">
                 <span className="text-stone-700 font-medium">
-                  Initial Advance to Lock:
+                  {t('packages.lockAdvance')}:
                 </span>
                 <span className="font-bold text-[#0b4619] tabular-nums">
                   {formatINR(calc.totalAdvancePayable)}
@@ -185,13 +187,13 @@ export const PackageCard: React.FC<PackageCardProps> = ({
                   onClick={() => onSelect(tour)}
                   className="px-3 py-2 text-xs font-semibold text-stone-700 hover:text-stone-900 bg-stone-100 hover:bg-stone-200 rounded-xl transition-all cursor-pointer text-center active:scale-[0.98]"
                 >
-                  View Itinerary
+                  {t('packages.viewDetails')}
                 </button>
                 <button
                   onClick={() => onBook(tour)}
                   className="px-3 py-2 text-xs font-semibold text-white bg-[#0b4619] hover:bg-[#062b0f] active:bg-[#041c09] rounded-xl shadow-sm hover:shadow-md transition-all cursor-pointer flex items-center justify-center gap-1 active:scale-[0.98]"
                 >
-                  <span>Book Now</span>
+                  <span>{t('packages.bookTour')}</span>
                   <ArrowRight className="w-3.5 h-3.5 text-[#f39c12]" />
                 </button>
               </div>

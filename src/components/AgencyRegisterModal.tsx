@@ -24,6 +24,7 @@ import { Agency, TourPackage } from '../types';
 import { insertAgencyToSupabase, triggerAgencyWelcomeEmail } from '../utils/supabaseClient';
 import { formatINR } from '../utils/pricing';
 import { getPlatformGuides, savePlatformGuides, GuideProfile } from '../data/guidesData';
+import { useLanguage } from '../context/LanguageContext';
 
 import heroImg from '../assets/images/hero_jatingaa_landscape_1790299532077.jpg';
 import scenicImg from '../assets/images/scenic_nature_hero_1790322395376.jpg';
@@ -39,6 +40,9 @@ export const AgencyRegisterModal: React.FC<AgencyRegisterModalProps> = ({
   onClose,
   onRegistered,
 }) => {
+  const { t, language } = useLanguage();
+  const isAssamese = language === 'as';
+
   // Step Navigation: Step 1 (Operator Profile & Bank) | Step 2 (Tour Package & Khubidha Amenities)
   const [currentStep, setCurrentStep] = useState<1 | 2>(1);
 
@@ -374,14 +378,14 @@ export const AgencyRegisterModal: React.FC<AgencyRegisterModalProps> = ({
             <div>
               <div className="flex items-center gap-2">
                 <h2 className="text-base sm:text-lg font-bold font-display">
-                  এজেন্সী / গাইড পঞ্জীয়ন আৰু সা-সুবিধা ফৰ্ম
+                  {t('register.modalTitle')}
                 </h2>
                 <span className="text-[10px] bg-amber-400 text-stone-950 px-2 py-0.5 rounded-full font-bold">
-                  Registration & Amenities Form
+                  {isAssamese ? 'পঞ্জীয়ন আৰু সুবিধা ফৰ্ম' : 'Registration & Amenities'}
                 </span>
               </div>
               <p className="text-xs text-emerald-100/90">
-                পঞ্জীয়নৰ সময়তে আপোনাৰ ট্যুৰ পেকেজ আৰু ১ জনৰ ₹৫,০০০ টকাত কি কি সা-সুবিধা (Khubidha) দিব তাৰ সম্পূৰ্ণ ফৰ্ম ফিলাপ কৰি আপলোড কৰক
+                {t('register.modalSubtitle')}
               </p>
             </div>
           </div>
@@ -413,9 +417,9 @@ export const AgencyRegisterModal: React.FC<AgencyRegisterModalProps> = ({
                   currentStep === 1 ? 'bg-[#0b4619] text-white' : 'bg-stone-300 text-stone-700'
                 }`}
               >
-                ১
+                1
               </span>
-              <span>এজেন্সী / গাইড আৰু বেংক একাউণ্ট</span>
+              <span>{t('register.step1')}</span>
             </button>
 
             <span className="text-stone-400">→</span>
@@ -435,9 +439,9 @@ export const AgencyRegisterModal: React.FC<AgencyRegisterModalProps> = ({
                   currentStep === 2 ? 'bg-[#0b4619] text-white' : 'bg-stone-300 text-stone-700'
                 }`}
               >
-                ২
+                2
               </span>
-              <span>ট্যুৰ পেকেজ আৰু সা-সুবিধাসমূহ (₹৫,০০০ Khubidha ফৰ্ম)</span>
+              <span>{t('register.step2')}</span>
             </button>
           </div>
         </div>

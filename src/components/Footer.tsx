@@ -1,6 +1,8 @@
 import React from 'react';
 import { ShieldCheck, Heart, MapPin, Mail, Phone, Lock, MessageCircle } from 'lucide-react';
 import jatingaaLogo from '../assets/images/jatingaa_tours_logo.png';
+import { useLanguage } from '../context/LanguageContext';
+import { LanguageSwitcher } from './LanguageSwitcher';
 
 interface FooterProps {
   onOpenAgencyPortal: () => void;
@@ -25,6 +27,7 @@ export const Footer: React.FC<FooterProps> = ({
   onOpenAgenciesDirectory,
   onOpenAboutUs,
 }) => {
+  const { t } = useLanguage();
   const scrollTo = (id: string) => {
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: 'smooth' });
@@ -173,7 +176,7 @@ export const Footer: React.FC<FooterProps> = ({
           {/* Support & Legal */}
           <div className="md:col-span-2 space-y-3">
             <div className="font-semibold text-stone-900 uppercase tracking-wider text-[11px]">
-              Direct Contact
+              {t('footer.directContact')}
             </div>
             <div className="space-y-2 text-stone-500 text-[11px]">
               <div>Email: partners@jatingaatours.in</div>
@@ -185,20 +188,23 @@ export const Footer: React.FC<FooterProps> = ({
                 title="Open WhatsApp Chat with Jatingaa Tours"
               >
                 <MessageCircle className="w-3.5 h-3.5 text-[#25D366] fill-[#25D366]" />
-                <span>Official WhatsApp Chat</span>
+                <span>{t('footer.whatsappChat')}</span>
               </a>
               <div>Guwahati & Shillong, India</div>
               <div className="pt-2 text-[10px] text-stone-400">
-                All listed tour agencies are verified under State Tourism Department Acts.
+                {t('footer.verifiedNotice')}
               </div>
             </div>
           </div>
         </div>
 
-        {/* Bottom bar */}
+        {/* Bottom bar with Language Switcher */}
         <div className="mt-12 pt-6 border-t border-stone-200 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-stone-500">
-          <div>
-            © {new Date().getFullYear()} Jatingaa Tours Private Limited. All rights reserved.
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+            <div>
+              © {new Date().getFullYear()} Jatingaa Tours Private Limited. {t('footer.rights')}
+            </div>
+            <LanguageSwitcher variant="footer" />
           </div>
           <div className="flex items-center gap-4">
             <span>5% Fair Platform Model</span>

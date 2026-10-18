@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Search, Compass, Users, Sparkles, MapPin, ShieldCheck, ChevronRight, ArrowRight, Camera, Upload, Sun, RotateCcw, X, ChevronLeft } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 // Local high-fidelity photography assets
 import northeastTeaImg from '../assets/images/hero_jatingaa_landscape_1790299532077.jpg';
@@ -105,6 +106,7 @@ export const Hero: React.FC<HeroProps> = ({
   onOpenAdminDashboard,
   onOpenUploadTourModal,
 }) => {
+  const { t } = useLanguage();
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [internalSearch, setInternalSearch] = useState(searchQuery);
   const [customImage, setCustomImage] = useState<string | null>(null);
@@ -252,15 +254,15 @@ export const Hero: React.FC<HeroProps> = ({
 
         {/* Main Headline (Centered) */}
         <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white leading-[1.1] font-display max-w-4xl drop-shadow-md">
-          Explore the Untamed Beauty of{' '}
+          {t('hero.titlePrefix')}{' '}
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-[#f39c12] to-emerald-300">
-            India.
+            {t('hero.titleHighlight')}
           </span>
         </h1>
 
         {/* Sub-headline (Centered) */}
         <p className="mt-6 text-base sm:text-xl text-stone-200 leading-relaxed max-w-2xl font-normal drop-shadow">
-          Discover curated eco-tours, ancient living root bridges, and tea valley sanctuaries directly from verified native guides in Northeast India.
+          {t('hero.subtitle')}
         </p>
 
         {/* Prominent Search Bar (Interactive) */}
@@ -277,7 +279,7 @@ export const Hero: React.FC<HeroProps> = ({
                 setInternalSearch(e.target.value);
                 if (onSearchChange) onSearchChange(e.target.value);
               }}
-              placeholder="Search destinations, waterfalls, homestays, or trekking trails..."
+              placeholder={t('hero.searchPlaceholder')}
               className="w-full pl-10 pr-3 py-2.5 text-sm text-stone-900 placeholder:text-stone-400 bg-transparent focus:outline-none"
             />
           </div>
@@ -287,7 +289,7 @@ export const Hero: React.FC<HeroProps> = ({
             className="w-full sm:w-auto px-6 py-2.5 text-sm font-bold text-white bg-[#0b4619] hover:bg-[#073011] active:bg-[#041c09] rounded-xl shadow-md transition-all cursor-pointer flex items-center justify-center gap-2 whitespace-nowrap active:scale-95"
           >
             <Compass className="w-4 h-4 text-[#f39c12]" />
-            <span>Search Tours</span>
+            <span>{t('hero.searchButton')}</span>
           </button>
         </form>
 
@@ -303,7 +305,7 @@ export const Hero: React.FC<HeroProps> = ({
             className="w-full sm:w-auto px-8 py-3.5 rounded-xl font-bold text-sm sm:text-base text-stone-950 bg-[#f39c12] hover:bg-amber-400 active:bg-amber-500 shadow-lg shadow-amber-900/30 transition-all flex items-center justify-center gap-2 cursor-pointer group active:scale-98"
           >
             <Compass className="w-5 h-5 text-stone-950" />
-            <span>Search Tours</span>
+            <span>{t('hero.searchButton')}</span>
             <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
           </button>
 
@@ -314,7 +316,7 @@ export const Hero: React.FC<HeroProps> = ({
             className="w-full sm:w-auto px-8 py-3.5 rounded-xl font-bold text-sm sm:text-base text-white bg-white/10 hover:bg-white/20 active:bg-white/25 border border-white/30 backdrop-blur-md shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer group active:scale-98"
           >
             <Users className="w-5 h-5 text-emerald-400" />
-            <span>Become a Partner</span>
+            <span>{t('hero.becomePartner')}</span>
             <ChevronRight className="w-4 h-4 text-stone-300 transform group-hover:translate-x-1 transition-transform" />
           </button>
 
@@ -328,9 +330,9 @@ export const Hero: React.FC<HeroProps> = ({
                 type="button"
                 onClick={onOpenAdminDashboard}
                 className="px-4 py-2 rounded-xl text-xs font-bold text-stone-900 bg-amber-400 hover:bg-amber-300 shadow-md transition-all flex items-center gap-1.5 cursor-pointer"
-                title="এজেন্সী মালিক আৰু গাইড তালিকা চাওক"
+                title={t('nav.dashboardFull')}
               >
-                <span>🏢 এজেন্সী মালিক আৰু গাইড ৰ'ষ্টাৰ (Dashboard)</span>
+                <span>{t('hero.dashboardButton')}</span>
               </button>
             )}
 
@@ -339,10 +341,10 @@ export const Hero: React.FC<HeroProps> = ({
                 type="button"
                 onClick={onOpenUploadTourModal}
                 className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-emerald-800/90 hover:bg-emerald-700 border border-emerald-500/50 shadow-md transition-all flex items-center gap-1.5 cursor-pointer backdrop-blur-md"
-                title="পঞ্জীয়নৰ সময়তে ১ জনৰ ₹৫,০০০ টকাত কি কি সা-সুবিধা দিব তাৰ ফৰ্ম ফিলাপ কৰি আপলোড কৰক"
+                title={t('register.modalSubtitle')}
               >
                 <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-                <span>পঞ্জীয়ন আৰু সা-সুবিধা ফৰ্ম (₹৫,০০০/জন)</span>
+                <span>{t('hero.registerPackageButton')}</span>
               </button>
             )}
           </div>
@@ -425,7 +427,7 @@ export const Hero: React.FC<HeroProps> = ({
           title="Customize background image & brightness"
         >
           <Camera className="w-3.5 h-3.5 text-[#f39c12]" />
-          <span>ফটো গেলৰী (৮ খন ছবি)</span>
+          <span>{t('hero.photoGallery')}</span>
         </button>
 
         {/* Customization Popup Menu displaying all 8 destinations */}

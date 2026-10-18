@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { ShieldCheck, UserCheck, Menu, X, ReceiptText, CreditCard, Building2, Users, Lock, MessageCircle, TrendingUp, Plus, Compass } from 'lucide-react';
 import jatingaaLogo from '../assets/images/jatingaa_tours_logo.png';
+import { useLanguage } from '../context/LanguageContext';
+import { LanguageSwitcher } from './LanguageSwitcher';
 
 interface HeaderProps {
   onOpenAgencyPortal: () => void;
@@ -39,6 +41,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenAdminLogin,
   onOpenAboutUs,
 }) => {
+  const { t } = useLanguage();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const scrollToSection = (id: string) => {
@@ -82,7 +85,7 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={() => scrollToSection('packages-section')}
             className="hover:text-[#0b4619] transition-colors cursor-pointer py-1"
           >
-            Tour Packages
+            {t('nav.tours')}
           </button>
           <button
             onClick={() => scrollToSection('travel-stories-section')}
@@ -97,25 +100,25 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={() => scrollToSection('financial-model')}
             className="hover:text-[#0b4619] transition-colors cursor-pointer py-1"
           >
-            5% Pricing Model
+            {t('nav.feeModel')}
           </button>
           <button
             onClick={() => scrollToSection('how-it-works')}
             className="hover:text-[#0b4619] transition-colors cursor-pointer py-1"
           >
-            How It Works
+            {t('nav.howItWorks')}
           </button>
           <button
             onClick={() => scrollToSection('agency-section')}
             className="hover:text-[#0b4619] transition-colors cursor-pointer py-1"
           >
-            For Local Agencies
+            {t('nav.forAgencies')}
           </button>
           <button
             onClick={() => onOpenAboutUs ? onOpenAboutUs() : scrollToSection('about-us')}
             className="hover:text-[#0b4619] transition-colors cursor-pointer py-1 font-semibold text-[#0b4619]"
           >
-            About Us
+            {t('nav.aboutUs')}
           </button>
           {isAdminLoggedIn && onOpenAgenciesDirectory && (
             <button
@@ -135,7 +138,7 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={onOpenBookings}
             className="hover:text-[#0b4619] transition-colors cursor-pointer flex items-center gap-1.5 py-1"
           >
-            <span>My Bookings</span>
+            <span>{t('nav.myBookings')}</span>
             {bookingsCount > 0 && (
               <span className="inline-flex items-center justify-center px-1.5 py-0.5 text-[11px] font-bold text-white bg-[#0b4619] rounded-full">
                 {bookingsCount}
@@ -146,25 +149,17 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Zone 3: Primary Action Controls */}
         <div className="hidden sm:flex items-center gap-2">
+          {/* Language Switcher Dropdown */}
+          <LanguageSwitcher variant="header" />
+
           {onOpenAdminDashboard && (
             <button
               onClick={onOpenAdminDashboard}
               className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-stone-950 bg-amber-400 hover:bg-amber-300 rounded-lg transition-colors cursor-pointer whitespace-nowrap shadow-xs"
-              title="ডেচব'ৰ্ড: টুৰিষ্ট এজেন্সী মালিক আৰু গাইড ৰ'ষ্টাৰ, মাহিলী বুকিং আৰু PDF ৰিপৰ্ট"
+              title={t('nav.dashboardFull')}
             >
               <TrendingUp className="w-3.5 h-3.5 text-stone-950" />
-              <span>ডেচব'ৰ্ড (Dashboard)</span>
-            </button>
-          )}
-
-          {onOpenUploadAmenitiesForm && (
-            <button
-              onClick={onOpenUploadAmenitiesForm}
-              className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-white bg-[#0b4619] hover:bg-[#073011] rounded-lg transition-colors cursor-pointer whitespace-nowrap shadow-xs border border-emerald-700"
-              title="এজেন্সী মালিক আৰু গাইডৰ বাবে: ১ জনৰ ₹৫,০০০ টকাত কি কি সুবিধা দিব তাৰ ফৰ্ম ফিলাপ কৰি আপলোড কৰক"
-            >
-              <Plus className="w-3.5 h-3.5 text-amber-300" />
-              <span>+ সা-সুবিধা আপলোড</span>
+              <span>{t('nav.dashboard')}</span>
             </button>
           )}
 
@@ -228,7 +223,7 @@ export const Header: React.FC<HeaderProps> = ({
             title="Chat with Official Jatingaa Tours on WhatsApp"
           >
             <MessageCircle className="w-3.5 h-3.5 text-[#25D366] fill-[#25D366]" />
-            <span>WhatsApp</span>
+            <span>{t('nav.whatsapp')}</span>
           </a>
 
           <button
@@ -236,16 +231,16 @@ export const Header: React.FC<HeaderProps> = ({
             className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-stone-700 hover:text-stone-900 bg-stone-100 hover:bg-stone-200 rounded-lg transition-colors cursor-pointer whitespace-nowrap"
           >
             <ShieldCheck className="w-4 h-4 text-[#0b4619]" />
-            <span>Agency Portal</span>
+            <span>{t('nav.agencyPortal')}</span>
           </button>
 
           <button
             onClick={onOpenRegisterAgency}
             className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-white bg-[#0b4619] hover:bg-[#062b0f] rounded-lg shadow-sm transition-all hover:shadow cursor-pointer whitespace-nowrap border border-emerald-700"
-            title="এজেন্সী মালিক আৰু গাইড পঞ্জীয়ন: ১ জনৰ ₹৫,০০০ টকাত কি কি সা-সুবিধা দিব পঞ্জীয়নৰ সময়তে ফিলাপ কৰি আপলোড কৰক"
+            title={t('register.modalSubtitle')}
           >
             <UserCheck className="w-4 h-4 text-[#f39c12]" />
-            <span>পঞ্জীয়ন আৰু সা-সুবিধা ফৰ্ম (Register)</span>
+            <span>{t('nav.registerAgency')}</span>
           </button>
 
           {/* Admin Mode Badge & Login Trigger */}
@@ -297,30 +292,33 @@ export const Header: React.FC<HeaderProps> = ({
       {/* Mobile drawer */}
       {mobileMenuOpen && (
         <div className="lg:hidden border-t border-stone-200 bg-white px-4 pt-3 pb-5 space-y-3 shadow-lg">
+          {/* Mobile Language Switcher */}
+          <LanguageSwitcher variant="mobile" />
+
           <div className="flex flex-col space-y-2 text-sm font-medium text-stone-700">
             <button
               onClick={() => scrollToSection('packages-section')}
               className="text-left py-2 px-2 hover:bg-stone-50 rounded"
             >
-              Tour Packages
+              {t('nav.tours')}
             </button>
             <button
               onClick={() => scrollToSection('financial-model')}
               className="text-left py-2 px-2 hover:bg-stone-50 rounded"
             >
-              5% Commission & Fee Model
+              {t('nav.feeModel')}
             </button>
             <button
               onClick={() => scrollToSection('how-it-works')}
               className="text-left py-2 px-2 hover:bg-stone-50 rounded"
             >
-              How It Works
+              {t('nav.howItWorks')}
             </button>
             <button
               onClick={() => scrollToSection('agency-section')}
               className="text-left py-2 px-2 hover:bg-stone-50 rounded"
             >
-              For Local Travel Agencies
+              {t('nav.forAgencies')}
             </button>
             <button
               onClick={() => {
@@ -330,7 +328,7 @@ export const Header: React.FC<HeaderProps> = ({
               }}
               className="text-left py-2 px-2 hover:bg-stone-50 rounded font-semibold text-[#0b4619]"
             >
-              About Us (Global & Local Mission)
+              {t('nav.aboutUs')}
             </button>
             {onOpenAdminDashboard && (
               <button
@@ -342,27 +340,10 @@ export const Header: React.FC<HeaderProps> = ({
               >
                 <span className="flex items-center gap-2">
                   <TrendingUp className="w-4 h-4 text-stone-950" />
-                  <span>ডেচব'ৰ্ড (Agencies, Guides & Audit)</span>
+                  <span>{t('nav.dashboard')}</span>
                 </span>
                 <span className="text-[10px] bg-amber-400 text-stone-950 px-2 py-0.5 rounded font-mono font-bold">
                   Dashboard
-                </span>
-              </button>
-            )}
-            {onOpenUploadAmenitiesForm && (
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  onOpenUploadAmenitiesForm();
-                }}
-                className="text-left py-2 px-2.5 bg-emerald-50 hover:bg-emerald-100 rounded-lg flex items-center justify-between text-emerald-950 font-bold border border-emerald-200"
-              >
-                <span className="flex items-center gap-2">
-                  <Plus className="w-4 h-4 text-[#0b4619]" />
-                  <span>+ সা-সুবিধা আপলোড ফৰ্ম (₹৫,০০০/জন)</span>
-                </span>
-                <span className="text-[10px] bg-[#0b4619] text-white px-2 py-0.5 rounded font-bold">
-                  Upload
                 </span>
               </button>
             )}
@@ -392,7 +373,7 @@ export const Header: React.FC<HeaderProps> = ({
               }}
               className="text-left py-2 px-2 hover:bg-stone-50 rounded flex items-center justify-between"
             >
-              <span>My Bookings</span>
+              <span>{t('nav.myBookings')}</span>
               {bookingsCount > 0 && (
                 <span className="px-2 py-0.5 text-xs font-bold text-white bg-[#0b4619] rounded-full">
                   {bookingsCount}
@@ -411,7 +392,7 @@ export const Header: React.FC<HeaderProps> = ({
               title="Chat with Official Jatingaa Tours on WhatsApp"
             >
               <MessageCircle className="w-4 h-4 fill-white" />
-              <span>Chat on WhatsApp</span>
+              <span>{t('nav.whatsapp')}</span>
             </a>
 
             {isAdminLoggedIn && onOpenB2BHub && (
@@ -450,7 +431,7 @@ export const Header: React.FC<HeaderProps> = ({
               className="w-full flex items-center justify-center gap-2 py-2.5 text-xs font-semibold text-stone-800 bg-stone-100 rounded-lg"
             >
               <ShieldCheck className="w-4 h-4 text-[#0b4619]" />
-              Agency Portal & Verified Dashboard
+              {t('nav.agencyPortal')}
             </button>
             <button
               onClick={() => {
@@ -460,7 +441,7 @@ export const Header: React.FC<HeaderProps> = ({
               className="w-full flex items-center justify-center gap-2 py-2.5 text-xs font-bold text-white bg-[#0b4619] hover:bg-[#073011] rounded-lg shadow-xs"
             >
               <UserCheck className="w-4 h-4 text-[#f39c12]" />
-              পঞ্জীয়ন আৰু সা-সুবিধা ফৰ্ম (Register & Package Form)
+              {t('nav.registerAgency')}
             </button>
 
             {onOpenAdminLogin && (
