@@ -932,7 +932,7 @@ export const AgencyDashboardModal: React.FC<AgencyDashboardModalProps> = ({
                     {/* Camera Permission & Live Capture Uploader */}
                     <PhotoCaptureUploader
                       label="Capture Live Photo with Device Camera or Add From Storage"
-                      helpText="Click 'Capture with Live Camera' to trigger the browser camera permission prompt (কেমেৰা অনুমতি ল'ব). The captured photo will be added to your 4-photo package gallery."
+                      helpText="Click 'Capture with Live Camera' to trigger the browser camera permission prompt. The captured photo will be added to your 4-photo package gallery."
                       currentImage={newPkgImage}
                       onImageChange={(capturedUrl) => {
                         setNewPkgImage(capturedUrl);
@@ -1254,12 +1254,12 @@ export const AgencyDashboardModal: React.FC<AgencyDashboardModalProps> = ({
                     {/* Word Limit & Length Guidance Bar */}
                     <div className="mt-1.5 p-2.5 rounded-lg bg-stone-100 border border-stone-200 text-[11px] text-stone-600 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
                       <div className="flex items-center gap-1.5 flex-wrap">
-                        <span className="font-bold text-stone-800">শব্দৰ পৰিমাণ (Word Guidance):</span>
+                        <span className="font-bold text-stone-800">Word Guidance:</span>
                         <span className="text-emerald-800 font-semibold bg-emerald-100 px-1.5 py-0.5 rounded text-[10px]">
-                          আদৰ্শ দৈৰ্ঘ্য: ৩০০ — ৮০০ শব্দ
+                          Recommended Length: 300 — 800 words
                         </span>
                         <span className="text-stone-500">
-                          (নূন্যতম ৫০ শব্দৰ পৰা সৰ্বোচ্চ ৩,০০০+ শব্দলৈকে লিখিব পাৰিব)
+                          (Minimum 50 words up to 3,000+ words supported)
                         </span>
                       </div>
                       <span className="text-[10px] text-stone-500 italic">
@@ -1299,7 +1299,7 @@ export const AgencyDashboardModal: React.FC<AgencyDashboardModalProps> = ({
                   {/* Field Guide Cover Photo with Live Camera & Gallery */}
                   <PhotoCaptureUploader
                     label="Destination Story Cover Photo & Live Camera"
-                    helpText="Snap photos with your live camera (browser asks for camera permission / কেমেৰা পাৰ্মিছন ল'ব), upload from phone storage, or select a preset."
+                    helpText="Snap photos with your live camera, upload from phone storage, or select a preset."
                     currentImage={newStoryImage}
                     onImageChange={setNewStoryImage}
                     presets={DESTINATION_PRESETS}

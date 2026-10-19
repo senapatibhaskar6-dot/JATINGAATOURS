@@ -436,7 +436,7 @@ export const Hero: React.FC<HeroProps> = ({
             <div className="flex items-center justify-between pb-2 border-b border-stone-800 shrink-0">
               <span className="font-bold flex items-center gap-1.5 text-amber-300">
                 <Sun className="w-4 h-4 text-[#f39c12]" />
-                <span>ভাৰতৰ ৮ খন আকৰ্ষণীয় ফটো (Gallery)</span>
+                <span>Featured Destinations Gallery (8 Regions)</span>
               </span>
               <button
                 type="button"
@@ -451,8 +451,8 @@ export const Hero: React.FC<HeroProps> = ({
               {/* 1. All 8 Curated Indian Visuals */}
               <div>
                 <div className="text-[11px] font-semibold text-stone-300 mb-1.5 flex items-center justify-between">
-                  <span>১. যিকোনো এখন ফটো বাছক (৮ খন):</span>
-                  <span className="text-[10px] text-amber-400 font-mono">৮ টা অঞ্চল</span>
+                  <span>1. Choose a Destination Background (8 Regions):</span>
+                  <span className="text-[10px] text-amber-400 font-mono">8 Regions</span>
                 </div>
                 
                 <div className="grid grid-cols-2 gap-1.5">
@@ -494,7 +494,7 @@ export const Hero: React.FC<HeroProps> = ({
               {/* 2. Brightness / Openness Toggle */}
               <div className="pt-2 border-t border-stone-800">
                 <div className="text-[11px] font-semibold text-stone-300 mb-1.5">
-                  ২. ফটোৰ পোহৰ আৰু স্বচ্ছতা (Light Intensity):
+                  2. Photo Ambience & Contrast:
                 </div>
                 <div className="grid grid-cols-3 gap-1.5 p-1 bg-stone-950/80 rounded-xl border border-stone-800">
                   <button
@@ -506,7 +506,7 @@ export const Hero: React.FC<HeroProps> = ({
                         : 'text-stone-400 hover:text-white'
                     }`}
                   >
-                    উজ্জ্বল (Bright)
+                    Bright
                   </button>
                   <button
                     type="button"
@@ -517,7 +517,7 @@ export const Hero: React.FC<HeroProps> = ({
                         : 'text-stone-400 hover:text-white'
                     }`}
                   >
-                    মধ্যম (Normal)
+                    Normal
                   </button>
                   <button
                     type="button"
@@ -528,7 +528,7 @@ export const Hero: React.FC<HeroProps> = ({
                         : 'text-stone-400 hover:text-white'
                     }`}
                   >
-                    ডাৰ্ক (Dark)
+                    Dark
                   </button>
                 </div>
               </div>
@@ -536,7 +536,7 @@ export const Hero: React.FC<HeroProps> = ({
               {/* 3. Upload Own Image */}
               <div className="pt-2 border-t border-stone-800">
                 <div className="text-[11px] font-semibold text-stone-300 mb-1.5">
-                  ৩. নিজৰ ডিভাইচৰ পৰা ফটো আপলোড:
+                  3. Upload Custom Cover from Device:
                 </div>
                 <input
                   ref={fileInputRef}
@@ -551,7 +551,7 @@ export const Hero: React.FC<HeroProps> = ({
                   className="w-full py-2 px-3 rounded-xl bg-emerald-600/30 hover:bg-emerald-600/40 border border-emerald-500/40 text-emerald-200 font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer text-xs"
                 >
                   <Upload className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>মোবাইল/PC ৰ পৰা ফটো দিয়ক</span>
+                  <span>Choose Photo from Device (Mobile / PC)</span>
                 </button>
               </div>
 
@@ -563,7 +563,7 @@ export const Hero: React.FC<HeroProps> = ({
                   className="w-full py-1.5 text-[11px] text-stone-400 hover:text-white flex items-center justify-center gap-1 border-t border-stone-800 pt-2"
                 >
                   <RotateCcw className="w-3 h-3" />
-                  <span>মূল ৮ খন ফটোৰ গেলৰীলৈ উভতি যাওক (Reset)</span>
+                  <span>Reset to Default 8 Featured Photos</span>
                 </button>
               )}
             </div>

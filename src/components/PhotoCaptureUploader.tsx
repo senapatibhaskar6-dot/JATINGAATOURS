@@ -78,7 +78,7 @@ export const PhotoCaptureUploader: React.FC<PhotoCaptureUploaderProps> = ({
       console.error('Camera permission or access error:', err);
       if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
         setCameraError(
-          'Camera permission was blocked / denied (কেমেৰাৰ অনুমতি অস্বীকাৰ কৰা হৈছে). Please allow camera permission in your browser address bar settings to snap live photos.'
+          'Camera permission was blocked or denied. Please allow camera access in your browser address bar settings to snap live photos.'
         );
       } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
         setCameraError('No camera device detected on this device.');
@@ -195,7 +195,7 @@ export const PhotoCaptureUploader: React.FC<PhotoCaptureUploaderProps> = ({
               className="px-3 py-2 text-xs font-semibold text-white bg-[#0b4619] hover:bg-[#062b0f] rounded-lg shadow-sm transition-all flex items-center gap-1.5 cursor-pointer active:scale-98"
             >
               <Camera className="w-4 h-4 text-[#f39c12]" />
-              <span>Live Camera (কেমেৰাৰে তোলক)</span>
+              <span>Live Camera (Instant Snap)</span>
             </button>
 
             {/* Mobile Native Camera (Direct capture attribute) */}
@@ -222,7 +222,7 @@ export const PhotoCaptureUploader: React.FC<PhotoCaptureUploaderProps> = ({
           </div>
 
           <p className="text-[11px] text-stone-500 leading-tight">
-            * <strong>Camera Permission:</strong> Clicking &apos;Live Camera&apos; will ask for browser camera access (পাৰ্মিছন বিচাৰিব). You can grant access to snap real destination photos instantly!
+            * <strong>Camera Permission:</strong> Clicking &apos;Live Camera&apos; will ask for browser camera access. You can grant access to snap real destination photos instantly!
           </p>
 
           {/* Hidden inputs */}
@@ -287,7 +287,7 @@ export const PhotoCaptureUploader: React.FC<PhotoCaptureUploaderProps> = ({
                 <div>
                   <h4 className="text-sm font-bold text-white">Live Camera Capture</h4>
                   <p className="text-[11px] text-stone-400">
-                    Camera permission requested (কেমেৰা অনুমতি লৈ ফটো তোলক)
+                    Camera viewfinder active - snap real destination photo
                   </p>
                 </div>
               </div>
@@ -362,7 +362,7 @@ export const PhotoCaptureUploader: React.FC<PhotoCaptureUploaderProps> = ({
                 className="px-6 py-2.5 rounded-full font-bold text-xs text-stone-900 bg-[#f39c12] hover:bg-amber-400 active:scale-95 transition-all shadow-lg flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
               >
                 <div className="w-3 h-3 rounded-full bg-stone-900 animate-ping" />
-                <span>SNAP PHOTO (ফটো তোলক)</span>
+                <span>SNAP PHOTO</span>
               </button>
 
               <button

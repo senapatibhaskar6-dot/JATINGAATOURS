@@ -579,10 +579,10 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                       <div className="p-2.5 rounded-lg bg-emerald-50/90 border border-emerald-200 text-[11px] text-emerald-950 space-y-1">
                         <div className="font-bold flex items-center gap-1 text-[#0b4619]">
                           <ShieldCheck className="w-3.5 h-3.5 text-[#0b4619]" />
-                          <span>Google Ads ট্রাফিকেলৈ নিশ্চিত সুৰক্ষা:</span>
+                          <span>Direct Traveler Security Guarantee:</span>
                         </div>
                         <p>
-                          পেমেন্ট হোৱাৰ লগে লগে ₹১,০০০ এডভান্স এজেঞ্চিৰ বাবে লক হ'ব আৰু আপোনাৰ এজেঞ্চিৰ ফোন নম্বৰ, হোৱাটছএপ লিংক আৰু চৰকাৰী লাইচেন্সৰ ভাউচাৰ পৰ্যটকৰ বাবে মুকলি হৈ পৰিব।
+                          Upon payment confirmation, the ₹1,000 reservation advance is secured directly for the verified local agency. The operator&apos;s direct phone, WhatsApp link, and official license credentials are automatically unlocked on your voucher.
                         </p>
                       </div>
 

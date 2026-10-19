@@ -35,7 +35,7 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
       <div className={`p-2 rounded-xl bg-stone-50 border border-stone-200 ${className}`}>
         <div className="flex items-center gap-1.5 text-xs font-bold text-stone-700 mb-2 px-1">
           <Globe className="w-3.5 h-3.5 text-[#0b4619]" />
-          <span>Select Display Language / ভাষা নিৰ্বাচন:</span>
+          <span>Select Display Language:</span>
         </div>
         <div className="grid grid-cols-2 gap-1.5">
           {SUPPORTED_LANGUAGES.map((lang) => {
@@ -103,7 +103,7 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold text-stone-800 bg-white hover:bg-stone-100 border border-stone-200 shadow-2xs transition-colors cursor-pointer"
-        title="Change Display Language (English / অসমীয়া / हिन्दी / বাংলা)"
+        title="Change Display Language (English / Assamese / Hindi / Bengali)"
         aria-expanded={isOpen}
       >
         <Globe className="w-3.5 h-3.5 text-[#0b4619]" />

@@ -186,10 +186,10 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
               <button
                 onClick={() => onOpenUploadTourModal()}
                 className="hidden md:flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-emerald-800 hover:bg-emerald-700 border border-emerald-600 rounded-lg shadow-sm transition-all cursor-pointer whitespace-nowrap"
-                title={isAssamese ? 'এজেন্সী বা গাইডৰ বাবে নতুন ট্যুৰ আৰু সা-সুবিধা আপলোড কৰক' : 'Upload new tour & amenities for agency or guide'}
+                title="Upload new tour & amenities for agency or guide"
               >
                 <Plus className="w-3.5 h-3.5 text-amber-300" />
-                <span>{isAssamese ? '+ নতুন ট্যুৰ আৰু সুবিধা আপলোড' : '+ Upload Tour & Amenities'}</span>
+                <span>+ Upload Tour & Amenities</span>
               </button>
             )}
 
@@ -225,7 +225,7 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
               }`}
             >
               <Building2 className="w-3.5 h-3.5 text-emerald-400" />
-              <span>🏢 {isAssamese ? 'টুৰিষ্ট এজেন্সী মালিকসকল' : 'Tourist Agencies'} ({agencies.length})</span>
+              <span>🏢 Tourist Agencies ({agencies.length})</span>
             </button>
 
             <button
@@ -237,7 +237,7 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
               }`}
             >
               <Compass className="w-3.5 h-3.5 text-amber-400" />
-              <span>🧭 {isAssamese ? 'টুৰিষ্ট গাইডসকল' : 'Certified Guides'} ({guides.length})</span>
+              <span>🧭 Certified Guides ({guides.length})</span>
             </button>
 
             <button
@@ -249,7 +249,7 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
               }`}
             >
               <TrendingUp className="w-3.5 h-3.5" />
-              <span>📊 {isAssamese ? 'মাহিলী হিচাব & PDF Audit' : 'Overview & PDF Audit'}</span>
+              <span>📊 Overview & PDF Audit</span>
             </button>
 
             <button
@@ -261,7 +261,7 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
               }`}
             >
               <ReceiptText className="w-3.5 h-3.5 text-sky-400" />
-              <span>🧾 গ্ৰাহকৰ বুকিং ({bookings.length})</span>
+              <span>🧾 Customer Bookings ({bookings.length})</span>
             </button>
           </div>
 
@@ -299,10 +299,10 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
                   ? 'bg-emerald-50/80 border-[#0b4619] ring-2 ring-[#0b4619]/20'
                   : 'bg-white border-stone-200 hover:border-[#0b4619] hover:shadow-md'
               }`}
-              title={isAssamese ? 'এজেন্সী মালিকসকলৰ তালিকা চাবলৈ ক্লিক কৰক' : 'Click to view agency owners list'}
+              title="Click to view agency owners roster"
             >
               <div className="flex items-center justify-between text-xs text-stone-500">
-                <span className="font-bold text-stone-800">{isAssamese ? 'পঞ্জীয়নভুক্ত এজেন্সী মালিক' : 'Registered Agencies'}</span>
+                <span className="font-bold text-stone-800">Registered Agencies</span>
                 <Building2 className="w-4 h-4 text-[#0b4619]" />
               </div>
               <div className="text-2xl font-bold text-stone-900 font-display">
@@ -322,10 +322,10 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
                   ? 'bg-amber-50/80 border-amber-500 ring-2 ring-amber-500/20'
                   : 'bg-white border-stone-200 hover:border-amber-400 hover:shadow-md'
               }`}
-              title={isAssamese ? 'থলুৱা গাইডসকলৰ তালিকা চাবলৈ ক্লিক কৰক' : 'Click to view certified guides list'}
+              title="Click to view certified guides roster"
             >
               <div className="flex items-center justify-between text-xs text-stone-500">
-                <span className="font-bold text-stone-800">{isAssamese ? 'মুঠ প্ৰমাণিত গাইড (Guides)' : 'Certified Local Guides'}</span>
+                <span className="font-bold text-stone-800">Certified Local Guides</span>
                 <Compass className="w-4 h-4 text-amber-600" />
               </div>
               <div className="text-2xl font-bold text-stone-900 font-display">
@@ -345,10 +345,10 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
                   ? 'bg-sky-50/80 border-sky-500 ring-2 ring-sky-500/20'
                   : 'bg-white border-stone-200 hover:border-sky-400 hover:shadow-md'
               }`}
-              title="গ্ৰাহকৰ বুকিং তালিকা চাবলৈ ক্লিক কৰক"
+              title="Click to view customer bookings list"
             >
               <div className="flex items-center justify-between text-xs text-stone-500">
-                <span className="font-bold text-stone-800">মুঠ গ্ৰাহক বুকিং (Bookings)</span>
+                <span className="font-bold text-stone-800">Total Customer Bookings</span>
                 <ReceiptText className="w-4 h-4 text-sky-600" />
               </div>
               <div className="text-2xl font-bold text-stone-900 font-display">
@@ -367,10 +367,10 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
                   ? 'bg-emerald-950 border-amber-400 ring-2 ring-amber-400/30'
                   : 'bg-emerald-900 border-emerald-800 hover:border-amber-400 hover:shadow-md'
               }`}
-              title="মাহিলী বিত্তীয় হিচাব আৰু PDF Audit চাবলৈ ক্লিক কৰক"
+              title="Click to view monthly financial breakdown & PDF audit"
             >
               <div className="flex items-center justify-between text-xs text-emerald-200">
-                <span className="font-bold text-emerald-100">৫% প্লেটফৰ্ম মাচুল</span>
+                <span className="font-bold text-emerald-100">5% Platform Fee</span>
                 <Sparkles className="w-4 h-4 text-amber-300" />
               </div>
               <div className="text-2xl font-bold text-amber-300 font-display tabular-nums">
@@ -538,10 +538,10 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
                 <div>
                   <h3 className="text-sm font-bold text-emerald-950 flex items-center gap-1.5">
                     <Compass className="w-4 h-4 text-amber-500" />
-                    <span>থলুৱা টুৰিষ্ট গাইড সকল (Native Tourist Guides - {guides.length} Guides)</span>
+                    <span>Certified Native Guides Directory ({guides.length} Guides)</span>
                   </h3>
                   <p className="text-[11px] text-stone-600 mt-0.5">
-                    প্ৰত্যেক গাইডে প্ৰতিজনৰ নিৰ্দিষ্ট মূল্যত (যেনে: ₹৫,০০০) থকা, খোৱা, বাহন আৰু নিৰাপত্তাসহ সা-সুবিধা আপলোড কৰিব পাৰে
+                    Each certified guide can upload customized tour packages with verified stays, meals, transportation, and safety inclusions at transparent fixed pricing.
                   </p>
                 </div>
 
@@ -551,7 +551,7 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
                     className="px-3.5 py-2 bg-[#0b4619] hover:bg-[#073011] text-white text-xs font-bold rounded-lg shadow-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer whitespace-nowrap"
                   >
                     <Plus className="w-3.5 h-3.5 text-amber-300" />
-                    <span>+ গাইডৰ বাবে ট্যুৰ আৰু সুবিধা আপলোড</span>
+                    <span>+ Upload Tour & Amenities for Guide</span>
                   </button>
                 )}
               </div>
@@ -643,7 +643,7 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
                         {guidePackages.length > 0 && (
                           <div className="pt-2 border-t border-stone-100 space-y-1">
                             <span className="text-[10px] font-bold text-stone-500 uppercase tracking-wider">
-                              আপলোড কৰা ট্যুৰ আৰু সা-সুবিধাসমূহ:
+                              Uploaded Tours & Included Amenities:
                             </span>
                             {guidePackages.map((pkg) => (
                               <div key={pkg.id} className="p-2 rounded-lg bg-emerald-50/70 border border-emerald-100 text-xs">
@@ -652,7 +652,7 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
                                   <span className="text-[#0b4619]">{formatINR(pkg.pricePerPerson)}/pax</span>
                                 </div>
                                 <div className="text-[10px] text-emerald-800 mt-0.5">
-                                  ✓ {pkg.inclusions?.length || 0} টা সা-সুবিধা অন্তৰ্ভুক্ত (Stay, Meals, Transport, Guide)
+                                  ✓ {pkg.inclusions?.length || 0} Amenities Included (Stay, Meals, Transport, Guide)
                                 </div>
                               </div>
                             ))}
@@ -684,7 +684,7 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
                             className="w-full py-1.5 px-3 bg-amber-50 hover:bg-amber-100 border border-amber-300 text-stone-900 text-xs font-bold rounded-lg transition-colors cursor-pointer flex items-center justify-center gap-1.5"
                           >
                             <Plus className="w-3.5 h-3.5 text-[#0b4619]" />
-                            <span>এই গাইডৰ বাবে নতুন ট্যুৰ আৰু সুবিধা আপলোড কৰক</span>
+                            <span>Upload Tour & Amenities for this Guide</span>
                           </button>
                         )}
                       </div>
@@ -703,10 +703,10 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
                 <div>
                   <h3 className="text-sm font-bold text-emerald-950 flex items-center gap-1.5">
                     <Building2 className="w-4 h-4 text-[#0b4619]" />
-                    <span>টুৰিষ্ট এজেন্সী মালিক সকল (Tourist Agency Owners & Operators)</span>
+                    <span>Tourist Agency Owners & Operators ({agencies.length})</span>
                   </h3>
                   <p className="text-[11px] text-stone-600 mt-0.5">
-                    পঞ্জীয়নভুক্ত এজেন্সীৰ মালিকসকলে প্ৰতিজনৰ নিৰ্দিষ্ট মূল্যত (যেনে: ₹৫,০০০) নিজৰ সা-সুবিধাসমূহ ফিলাপ কৰি আপলোড কৰক
+                    Registered agency operators can upload live packages with comprehensive inclusions, amenities checklist, and bank payouts.
                   </p>
                 </div>
 
@@ -716,7 +716,7 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
                     className="px-3.5 py-2 bg-[#0b4619] hover:bg-[#073011] text-white text-xs font-bold rounded-lg shadow-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer whitespace-nowrap"
                   >
                     <Plus className="w-3.5 h-3.5 text-amber-300" />
-                    <span>+ এজেন্সীৰ বাবে ট্যুৰ আৰু সুবিধা আপলোড</span>
+                    <span>+ Upload Tour & Amenities for Agency</span>
                   </button>
                 )}
               </div>
@@ -761,7 +761,7 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
                               <h4 className="text-sm font-bold text-stone-900">{name}</h4>
                             </div>
                             <div className="text-[11px] text-stone-500 mt-0.5">
-                              মালিক / পৰিচালক: <strong>{founder}</strong> · {city}, {state}
+                              Founder / Managing Director: <strong>{founder}</strong> · {city}, {state}
                             </div>
                           </div>
 
@@ -790,7 +790,7 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
                         {agencyPackages.length > 0 && (
                           <div className="pt-2 border-t border-stone-100 space-y-1">
                             <span className="text-[10px] font-bold text-stone-500 uppercase tracking-wider">
-                              এই এজেন্সীয়ে আপলোড কৰা ট্যুৰসমূহ ({agencyPackages.length}):
+                              Tours Published by this Agency ({agencyPackages.length}):
                             </span>
                             {agencyPackages.map((pkg) => (
                               <div key={pkg.id} className="p-2 rounded-lg bg-emerald-50/70 border border-emerald-100 text-xs">
@@ -799,7 +799,7 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
                                   <span className="text-[#0b4619]">{formatINR(pkg.pricePerPerson)}/pax</span>
                                 </div>
                                 <div className="text-[10px] text-emerald-800 mt-0.5">
-                                  ✓ {pkg.inclusions?.length || 0} টা সা-সুবিধা অন্তৰ্ভুক্ত (Stay, Meals, Transport, Permits)
+                                  ✓ {pkg.inclusions?.length || 0} Amenities Included (Stay, Meals, Transport, Permits)
                                 </div>
                               </div>
                             ))}
@@ -815,7 +815,7 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
                             className="w-full py-1.5 px-3 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-950 text-xs font-bold rounded-lg transition-colors cursor-pointer flex items-center justify-center gap-1.5"
                           >
                             <Plus className="w-3.5 h-3.5 text-[#0b4619]" />
-                            <span>এই এজেন্সী মালিকৰ বাবে ট্যুৰ আৰু সুবিধা আপলোড কৰক</span>
+                            <span>Upload Tour & Amenities for this Agency</span>
                           </button>
                         </div>
                       )}

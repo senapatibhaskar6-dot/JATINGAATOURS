@@ -528,13 +528,15 @@ interface LanguageContextType {
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  // Default language is English ('en') as requested by user
+  // Default language is strictly English ('en')
   const [language, setLanguageState] = useState<LanguageCode>(() => {
     try {
-      const stored = localStorage.getItem('jatingaa_language_choice_v2');
-      if (stored === 'en' || stored === 'as' || stored === 'hi' || stored === 'bn') {
+      const stored = localStorage.getItem('jatingaa_language_choice_v3');
+      if (stored === 'en' || stored === 'hi' || stored === 'bn') {
         return stored;
       }
+      // If none or previously set to 'as', default to 'en'
+      localStorage.setItem('jatingaa_language_choice_v3', 'en');
     } catch (e) {
       console.warn('Could not read language from localStorage:', e);
     }
@@ -544,7 +546,7 @@ export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }
   const setLanguage = (lang: LanguageCode) => {
     setLanguageState(lang);
     try {
-      localStorage.setItem('jatingaa_language_choice_v2', lang);
+      localStorage.setItem('jatingaa_language_choice_v3', lang);
     } catch (e) {
       console.warn('Could not store language to localStorage:', e);
     }

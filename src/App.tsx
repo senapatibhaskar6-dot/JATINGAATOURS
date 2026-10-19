@@ -166,7 +166,7 @@ export default function App() {
       }
       return updated;
     });
-    showToast(`✓ "${newPkg.title}" (₹${newPkg.pricePerPerson.toLocaleString('en-IN')}) সকলো সা-সুবিধাসহ লাইভ আপলোড কৰা হ'ল!`);
+    showToast(`✓ "${newPkg.title}" (₹${newPkg.pricePerPerson.toLocaleString('en-IN')}) uploaded live with all amenities included!`);
   };
 
   const handleAdminLoginSuccess = () => {
@@ -640,7 +640,7 @@ export default function App() {
         }
         return updated;
       });
-      showToast(`✓ "${newAgency.name}" পঞ্জীয়ন হ'ল আৰু আপোনাৰ ট্যুৰ পেকেজটি ₹${initialPackage.pricePerPerson.toLocaleString('en-IN')} মূল্যত (${initialPackage.inclusions.length} টা সুবিধাসহ) লাইভ আপলোড কৰা হ'ল!`);
+      showToast(`✓ "${newAgency.name}" registered and your tour package at ₹${initialPackage.pricePerPerson.toLocaleString('en-IN')} (${initialPackage.inclusions.length} amenities included) is now live!`);
     } else {
       showToast(`Agency "${newAgency.name}" onboarded! Total registered agencies: ${b2bAgencies.length + 1}`);
     }

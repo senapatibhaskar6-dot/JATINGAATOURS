@@ -57,7 +57,7 @@ export const AgencyRegisterModal: React.FC<AgencyRegisterModalProps> = ({
   const [licenseNumber, setLicenseNumber] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
-  const [specialty, setSpecialty] = useState('প্ৰকৃতি, বন আৰু সাংস্কৃতিক ভ্ৰমণ (Eco & Cultural)');
+  const [specialty, setSpecialty] = useState('Eco-Tourism, Wildlife & Cultural Expeditions');
 
   // Bank details fields for automated ₹1,000 Cashfree advance payouts
   const [bankName, setBankName] = useState('State Bank of India');
@@ -65,7 +65,7 @@ export const AgencyRegisterModal: React.FC<AgencyRegisterModalProps> = ({
   const [bankIfsc, setBankIfsc] = useState('');
   const [upiId, setUpiId] = useState('');
 
-  // STEP 2: INITIAL TOUR PACKAGE & KHUBIDHA (সা-সুবিধাসমূহৰ ফৰ্ম)
+  // STEP 2: INITIAL TOUR PACKAGE & AMENITIES FORM
   const [tourTitle, setTourTitle] = useState('');
   const [tourDestination, setTourDestination] = useState('');
   const [tourDuration, setTourDuration] = useState('3 Days / 2 Nights');
@@ -74,45 +74,45 @@ export const AgencyRegisterModal: React.FC<AgencyRegisterModalProps> = ({
   const [selectedImage, setSelectedImage] = useState<string>(heroImg);
   const [regionTag, setRegionTag] = useState<'northeast' | 'himalayas' | 'south' | 'west'>('northeast');
 
-  // Pre-configured default amenities (সা-সুবিধাসমূহ)
+  // Pre-configured default amenities (Inclusions)
   const defaultInclusions = [
-    '২ ৰাতি পৰম্পৰাগত ইক\' কটেজ / হোমষ্টে\'ত থকাৰ সু-ব্যৱস্থা (Hot Water & Clean Bath)',
-    'প্ৰতিদিনে পুৱাৰ স্বাস্থ্যকৰ চাহ আৰু থলুৱা ব্ৰেকফাষ্ট',
-    'দুপৰীয়াৰ খাঁটি পৰম্পৰাগত থালি আহাৰ (Traditional Lunch Included)',
-    'ৰাতিৰ সাজ সুস্বাদু আহাৰ (Dinner Included)',
-    'প্ৰতিজনৰ বাবে দৈনিক পেকড মিনাৰেল ৱাটাৰ বটল',
-    'সমগ্ৰ ভ্ৰমণৰ বাবে ব্যক্তিগত এচি বাহন / ৪x৪ জীপ (ইন্ধন আৰু চালকৰ মাচুলসহ)',
-    'বিমানকোঠ বা ৰেল ষ্টেচনৰ পৰা পিক-আপ আৰু ড্ৰপ সুবিধা',
-    'চৰকাৰীভাৱে প্ৰমাণিত অভিজ্ঞ থলুৱা গাইডৰ সার্বক্ষণিক সহযোগিতা',
-    'ৰাষ্ট্ৰীয় উদ্যানৰ ১ টা বিশেষ জীপ চাফাৰী আৰু প্ৰৱেশ অনুমতি পত্ৰ',
-    'জৰুৰীকালীন প্ৰাথমিক চিকিৎসা কিট আৰু সুৰক্ষা সহযোগিতা',
+    '2 Nights Traditional Eco-Cottage / Homestay Stay (Hot Water & Clean Bath)',
+    'Daily Healthy Morning Tea & Fresh Local Breakfast',
+    'Authentic Traditional Lunch Thali (Local Cuisine)',
+    'Deluxe Dinner Included Every Evening',
+    'Daily Packaged Mineral Water Bottles per Traveler',
+    'Private AC Vehicle / 4x4 Gypsy for All Sightseeing (Fuel & Driver Allowance included)',
+    'Airport or Railway Station Pick-up and Drop-off Transfers',
+    'Certified Native Field Naturalist / Tour Guide Throughout',
+    '1 National Park Jeep Safari with Forest Permits & Entry Passes',
+    'Emergency First-Aid Medical Kit & Safety Assistance',
   ];
   const [inclusions, setInclusions] = useState<string[]>(defaultInclusions);
   const [customAmenityInput, setCustomAmenityInput] = useState('');
 
-  // Exclusions (কি কি সুবিধা অন্তৰ্ভুক্ত নহয়)
+  // Exclusions (Not Covered)
   const defaultExclusions = [
-    'ব্যক্তিগত কেনা-কটা আৰু টিপছ (Personal expenses & shopping)',
-    'বিমান বা ৰেলৰ টিকট (Flight/train tickets to destination)',
-    'কেমেৰা বা ভিডিঅ\'গ্ৰাফীৰ বিশেষ টোল মাচুল (Camera permit fees)',
+    'Personal shopping, souvenirs, and tips',
+    'Airfare or interstate train tickets to base airport/station',
+    'Commercial video / camera permit fees charged by forest dept',
   ];
   const [exclusions, setExclusions] = useState<string[]>(defaultExclusions);
   const [customExclusionInput, setCustomExclusionInput] = useState('');
 
   // Quick preset pills
   const quickAmenities = [
-    '🏨 হোমষ্টে\' / ইক\' ৰিজৰ্টত থকাৰ সু-ব্যৱস্থা',
-    '☕ পুৱাৰ চাহ আৰু থলুৱা পুষ্টিকৰ জলপান',
-    '🍛 দুপৰীয়াৰ খাঁটি পৰম্পৰাগত থালি আহাৰ',
-    '🍲 ৰাতিৰ সুস্বাদু আহাৰ (Dinner Included)',
-    '🚙 ব্যক্তিগত এচি বাহন / ৪x৪ জীপ (ইন্ধনসহ)',
-    '🛬 বিমানকোঠ বা ৰেল ষ্টেচনৰ পৰা পিক-আপ আৰু ড্ৰপ',
-    '🧗 চৰকাৰী প্ৰমাণিত থলুৱা গাইডৰ সার্বক্ষণিক সংগ',
-    '🎟️ ৰাষ্ট্ৰীয় উদ্যানৰ ১ টা বিশেষ জীপ চাফাৰী',
-    '🚣 নদীৰ নাও চলোৱাৰ সুন্দৰ অভিজ্ঞতা',
-    '🔥 সন্ধিয়া কেম্পফায়াৰ আৰু থলুৱা সংগীত',
-    '💧 প্ৰতিদিনে পেকড খোৱাপানীৰ বটল',
-    '🩹 প্ৰাথমিক চিকিৎসা কিট আৰু সুৰক্ষা সহযোগিতা',
+    '🏨 Verified Homestay / Eco-Resort Accommodation',
+    '☕ Morning Tea & Fresh Local Breakfast Daily',
+    '🍛 Traditional Organic Lunch (Local Cuisine)',
+    '🍲 Delicious Dinner Included Every Night',
+    '🚙 Dedicated AC Vehicle / 4x4 Gypsy with Fuel',
+    '🛬 Airport & Railway Station Pick-up / Drop',
+    '🧗 Certified Native Local Tour Guide Included',
+    '🎟️ National Park Jeep Safari & Forest Permits',
+    '🚣 Country Boat River Cruise & Sunset Experience',
+    '🔥 Evening Campfire & Cultural Music',
+    '💧 Daily Mineral Water Bottles Provided',
+    '🩹 First-Aid Kit & 24/7 Field Safety Assistance',
   ];
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -156,25 +156,25 @@ export const AgencyRegisterModal: React.FC<AgencyRegisterModalProps> = ({
   // Validation when moving from Step 1 to Step 2
   const handleProceedToStep2 = () => {
     if (!agencyName.trim()) {
-      alert('অনুগ্ৰহ কৰি এজেন্সী বা গাইডৰ নাম দিয়ক (Please enter Agency / Guide Name)');
+      alert('Please enter Agency / Guide Name.');
       return;
     }
     if (!founderName.trim()) {
-      alert('অনুগ্ৰহ কৰি মালিক বা মূল গাইডৰ নাম দিয়ক (Please enter Founder / Lead Guide Name)');
+      alert('Please enter Founder / Lead Guide Name.');
       return;
     }
     if (!phone.trim()) {
-      alert('অনুগ্ৰহ কৰি ফোন নম্বৰ দিয়ক (Please enter Phone number)');
+      alert('Please enter Phone number.');
       return;
     }
     if (!licenseNumber.trim()) {
-      alert('অনুগ্ৰহ কৰি পৰ্যটন লাইচেন্স বা পঞ্জীয়ন নম্বৰ দিয়ক (Please enter Tourism License / Reg ID)');
+      alert('Please enter Tourism License / Registration ID.');
       return;
     }
 
     // Auto-suggest tour title and destination if empty
     if (!tourTitle.trim()) {
-      setTourTitle(`${baseCity || stateRegion} প্ৰাকৃতিক আৰু কৃষ্টি ভ্ৰমণ (${tourDuration})`);
+      setTourTitle(`${baseCity || stateRegion} Eco & Cultural Heritage Trail (${tourDuration})`);
     }
     if (!tourDestination.trim()) {
       setTourDestination(`${baseCity ? `${baseCity}, ` : ''}${stateRegion}`);
@@ -187,18 +187,18 @@ export const AgencyRegisterModal: React.FC<AgencyRegisterModalProps> = ({
     e.preventDefault();
 
     if (!agencyName || !founderName || !phone || !licenseNumber) {
-      alert('অনুগ্ৰহ কৰি ১ নং খোজৰ সকলো প্ৰয়োজনীয় তথ্য পূৰণ কৰক।');
+      alert('Please fill in all required fields in Step 1.');
       setCurrentStep(1);
       return;
     }
 
     if (!tourTitle.trim() || !tourDestination.trim()) {
-      alert('অনুগ্ৰহ কৰি ট্যুৰ পেকেজৰ নাম আৰু ভ্ৰমণ স্থান দিয়ক।');
+      alert('Please provide a tour package title and destination.');
       return;
     }
 
     if (inclusions.length === 0) {
-      alert('অনুগ্ৰহ কৰি অতি কমেও এটা সা-সুবিধা নিৰ্বাচন কৰক (Please select at least 1 included amenity)');
+      alert('Please select at least 1 included amenity.');
       return;
     }
 
@@ -316,7 +316,7 @@ export const AgencyRegisterModal: React.FC<AgencyRegisterModalProps> = ({
     const initialPackage: TourPackage = {
       id: `pkg-${Date.now()}-${Math.floor(Math.random() * 900)}`,
       title: tourTitle.trim(),
-      tagline: `১ জনৰ ${formatINR(pricePerPerson)} টকাত ${inclusions.length} টা সম্পূৰ্ণ সা-সুবিধাসহ প্ৰাকৃতিক ভ্ৰমণ`,
+      tagline: `All-inclusive native tour at ${formatINR(pricePerPerson)}/person with ${inclusions.length} verified amenities`,
       region: regionTag,
       regionLabel: regionTag === 'northeast' ? 'Northeast India' : regionTag.toUpperCase(),
       location: tourDestination.trim(),
@@ -335,27 +335,27 @@ export const AgencyRegisterModal: React.FC<AgencyRegisterModalProps> = ({
       itinerary: [
         {
           day: 1,
-          title: 'প্ৰথম দিন: আগমন, আদৰণি আৰু স্থানীয় পৰিদৰ্শন',
-          description: `স্থানীয় হোষ্ট আৰু গাইডৰ লগত চিনাকি, বাহনৰে হোটেল/হোমষ্টে'লৈ যাত্ৰা আৰু বিশ্ৰাম। অন্তৰ্ভুক্ত সুবিধা: ${inclusions.slice(0, 3).join(', ')}।`,
-          highlights: ['পিক-আপ আৰু থকাৰ সুবিধা', 'থলুৱা পুষ্টিকৰ আহাৰ', 'স্থানীয় দৃশ্য উপভোগ'],
+          title: 'Day 1: Arrival, Traditional Welcome & Local Orientation',
+          description: `Meet and greet with local host and certified guide, private transfer to heritage eco-stay / homestay, and leisure orientation. Included amenities: ${inclusions.slice(0, 3).join(', ')}.`,
+          highlights: ['Pick-up & check-in', 'Authentic local lunch', 'Scenic surroundings'],
         },
         {
           day: 2,
-          title: 'দ্বিতীয় দিন: মূল চাফাৰী, প্ৰকৃতি আৰু কৃষ্টি ভ্ৰমণ',
-          description: `পুৱাৰ চাহ-জলপানৰ পিছত নিৰ্বাচিত পৰ্যটন ক্ষেত্ৰ আৰু ৰাষ্ট্ৰীয় উদ্যান/নৈ/পাহাৰ পৰিদৰ্শন। অন্তৰ্ভুক্ত সুবিধা: ${inclusions.slice(3, 7).join(', ')}।`,
-          highlights: ['মূল ভ্ৰমণ আৰু চাফাৰী', 'থলুৱা গাইডৰ ব্যাখ্যা', 'সন্ধিয়া কেম্পফায়াৰ/আড্ডা'],
+          title: 'Day 2: Core Wildlife Safari, Nature Trails & Cultural Exploration',
+          description: `After breakfast, proceed for full-day guided wildlife exploration and cultural immersion. Included amenities: ${inclusions.slice(3, 7).join(', ')}.`,
+          highlights: ['Park safari & permits', 'Expert naturalist guidance', 'Evening campfire experience'],
         },
         {
           day: 3,
-          title: 'তৃতীয় দিন: স্মৃতি বুটলি ঘৰমুৱা যাত্ৰা',
-          description: `পুৱাৰ আহাৰ গ্ৰহণ কৰি স্থানীয় হস্তশিল্প সংগ্ৰহ আৰু বিদায় সংবর্ধনাৰে পিক-আপ বাহনেৰে প্ৰস্থান।`,
-          highlights: ['হস্তশিল্প পৰিদৰ্শন', 'স্মৃতিৰ আলোকচিত্ৰ', 'সুৰক্ষিত ড্ৰপ-অফ'],
+          title: 'Day 3: Indigenous Crafts, Farewell & Departure Transfer',
+          description: `Morning local breakfast, community craft interaction, and timely departure transfer to base station/airport.`,
+          highlights: ['Local crafts & souvenirs', 'Scenic photographs', 'Safe departure transfer'],
         },
       ],
       featured: true,
       moderationStatus: 'published',
       isUserGenerated: true,
-      destinationDescription: `এই ভ্ৰমণত আপোনাক প্ৰদান কৰা হ'ব সম্পূৰ্ণ ${inclusions.length} টা সু-ব্যৱস্থা। ১ জনৰ মাত্ৰ ${formatINR(pricePerPerson)} টকাৰ ভিতৰতে থকা, খোৱা, যাতায়াত আৰু গাইডৰ সকলো খৰচ অন্তৰ্ভুক্ত কৰা হৈছে।`,
+      destinationDescription: `This tour includes a total of ${inclusions.length} verified amenities. Every expense including stay, meals, private vehicle, and certified guide is included at ${formatINR(pricePerPerson)} per person.`,
     };
 
     setIsSubmitting(false);
@@ -381,7 +381,7 @@ export const AgencyRegisterModal: React.FC<AgencyRegisterModalProps> = ({
                   {t('register.modalTitle')}
                 </h2>
                 <span className="text-[10px] bg-amber-400 text-stone-950 px-2 py-0.5 rounded-full font-bold">
-                  {isAssamese ? 'পঞ্জীয়ন আৰু সুবিধা ফৰ্ম' : 'Registration & Amenities'}
+                  Registration & Amenities Form
                 </span>
               </div>
               <p className="text-xs text-emerald-100/90">
@@ -454,14 +454,14 @@ export const AgencyRegisterModal: React.FC<AgencyRegisterModalProps> = ({
                 <CheckCircle2 className="w-10 h-10" />
               </div>
               <h3 className="text-xl sm:text-2xl font-bold text-stone-900 font-display">
-                পঞ্জীয়ন আৰু ট্যুৰ পেকেজ সফলভাৱে লাইভ আপলোড হ'ল!
+                Registration & Tour Package Successfully Uploaded Live!
               </h3>
               <p className="text-sm text-stone-600 max-w-lg mx-auto leading-relaxed">
-                অভিনন্দন, <strong>{agencyName}</strong> ({founderName})! আপোনাৰ পৰ্যটন অনুজ্ঞাপত্ৰ আৰু বেংক তথ্য সংৰক্ষিত হ'ল।
-                আপুনি আগবঢ়োৱা <strong>{inclusions.length} টা সা-সুবিধাসহ</strong> ১ জনৰ <strong>{formatINR(pricePerPerson)}</strong> টকাৰ ট্যুৰ পেকেজটি এতিয়া ৱেবছাইটত লাইভ বুকিঙৰ বাবে উপলব্ধ।
+                Congratulations, <strong>{agencyName}</strong> ({founderName})! Your tourism license and direct payout bank details are verified and securely saved.
+                Your curated tour package with <strong>{inclusions.length} amenities</strong> at <strong>{formatINR(pricePerPerson)}</strong> per traveler is now live on the marketplace for instant booking.
               </p>
               <div className="p-3 bg-emerald-50 rounded-xl max-w-md mx-auto text-xs text-emerald-900 border border-emerald-200">
-                ✓ ০% মাচুল নীতি সক্ৰিয় · প্ৰতিটো বুকিঙত ₹১,০০০ তাৎক্ষণিক অগ্ৰিম আপোনাৰ বেংক একাউণ্টলৈ যাব।
+                ✓ 0% Commission Policy Active · Instant ₹1,000 host advance is transferred directly to your bank account upon booking.
               </div>
             </div>
           ) : (
@@ -475,7 +475,7 @@ export const AgencyRegisterModal: React.FC<AgencyRegisterModalProps> = ({
                   <div className="p-4 rounded-xl bg-stone-50 border border-stone-200 space-y-3">
                     <span className="text-xs font-bold text-stone-800 uppercase tracking-wider flex items-center gap-1.5">
                       <Layers className="w-4 h-4 text-[#0b4619]" />
-                      {isAssamese ? 'পঞ্জীয়নৰ ধৰণ বাছনি কৰক (Operator Type):' : 'Select Operator Type:'}
+                      Select Operator Type:
                     </span>
 
                     <div className="grid grid-cols-2 gap-3">
@@ -492,7 +492,7 @@ export const AgencyRegisterModal: React.FC<AgencyRegisterModalProps> = ({
                           <Building2 className="w-4 h-4" />
                         </div>
                         <div>
-                          <div className="text-xs">{isAssamese ? 'টুৰিষ্ট এজেন্সী মালিক (Agency Owner)' : 'Tourist Agency Owner'}</div>
+                          <div className="text-xs">Tourist Agency Owner</div>
                           <div className="text-[10px] text-stone-500 font-normal">Registered Tour Operator / DMC</div>
                         </div>
                       </button>
@@ -510,7 +510,7 @@ export const AgencyRegisterModal: React.FC<AgencyRegisterModalProps> = ({
                           <Compass className="w-4 h-4" />
                         </div>
                         <div>
-                          <div className="text-xs">{isAssamese ? 'প্ৰমাণিত থলুৱা গাইড (Certified Guide)' : 'Certified Local Guide'}</div>
+                          <div className="text-xs">Certified Local Guide</div>
                           <div className="text-[10px] text-stone-500 font-normal">Licensed Field Naturalist / Guide</div>
                         </div>
                       </button>
@@ -521,22 +521,22 @@ export const AgencyRegisterModal: React.FC<AgencyRegisterModalProps> = ({
                   <div className="p-4 rounded-xl bg-white border border-stone-200 shadow-2xs space-y-4">
                     <span className="text-xs font-bold text-stone-800 uppercase tracking-wider flex items-center gap-1.5 border-b border-stone-100 pb-2">
                       <FileText className="w-4 h-4 text-[#0b4619]" />
-                      {isAssamese ? 'মৌলিক পৰিচয় আৰু অনুজ্ঞাপত্ৰ' : 'Basic Details & Tourism License'}
+                      Basic Details & Tourism License
                     </span>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                       <div>
                         <label className="block font-semibold text-stone-700 mb-1">
                           {hostCategory === 'agency'
-                            ? (isAssamese ? 'এজেন্সীৰ নাম: *' : 'Agency Name: *')
-                            : (isAssamese ? 'গাইড सन्থা / নাম: *' : 'Guide / Brand Name: *')}
+                            ? 'Agency Name: *'
+                            : 'Guide / Brand Name: *'}
                         </label>
                         <input
                           type="text"
                           required
                           value={agencyName}
                           onChange={(e) => setAgencyName(e.target.value)}
-                          placeholder={isAssamese ? 'যেনে: Jatinga Nature Trails / Kaziranga Safari Co.' : 'e.g. Jatinga Nature Trails / Kaziranga Safari Co.'}
+                          placeholder="e.g. Jatinga Nature Trails / Kaziranga Safari Co."
                           className="w-full px-3 py-2 rounded-lg border border-stone-300 focus:outline-none focus:ring-1 focus:ring-[#0b4619]"
                         />
                       </div>
@@ -544,15 +544,15 @@ export const AgencyRegisterModal: React.FC<AgencyRegisterModalProps> = ({
                       <div>
                         <label className="block font-semibold text-stone-700 mb-1">
                           {hostCategory === 'agency'
-                            ? (isAssamese ? 'মালিক / পৰিচালকৰ নাম: *' : 'Owner / Founder: *')
-                            : (isAssamese ? 'গাইডৰ সম্পূৰ্ণ নাম: *' : 'Lead Guide Full Name: *')}
+                            ? 'Owner / Founder Name: *'
+                            : 'Lead Guide Full Name: *'}
                         </label>
                         <input
                           type="text"
                           required
                           value={founderName}
                           onChange={(e) => setFounderName(e.target.value)}
-                          placeholder={isAssamese ? 'যেনে: প্ৰণৱ ডেকা / ৰাকেশ কলিতা' : 'e.g. Pranab Deka / Rakesh Kalita'}
+                          placeholder="e.g. Pranab Deka / Rakesh Kalita"
                           className="w-full px-3 py-2 rounded-lg border border-stone-300 focus:outline-none focus:ring-1 focus:ring-[#0b4619]"
                         />
                       </div>
@@ -584,7 +584,7 @@ export const AgencyRegisterModal: React.FC<AgencyRegisterModalProps> = ({
                           required
                           value={baseCity}
                           onChange={(e) => setBaseCity(e.target.value)}
-                          placeholder={isAssamese ? 'যেনে: Haflong, Guwahati, Kaziranga, Sohra' : 'e.g. Haflong, Guwahati, Kaziranga, Sohra'}
+                          placeholder="e.g. Haflong, Guwahati, Kaziranga, Sohra"
                           className="w-full px-3 py-2 rounded-lg border border-stone-300 focus:outline-none focus:ring-1 focus:ring-[#0b4619]"
                         />
                       </div>
@@ -598,7 +598,7 @@ export const AgencyRegisterModal: React.FC<AgencyRegisterModalProps> = ({
                           required
                           value={licenseNumber}
                           onChange={(e) => setLicenseNumber(e.target.value)}
-                          placeholder={isAssamese ? 'যেনে: ASM-TOU-2026-REG বা গাইড লাইচেন্স' : 'e.g. ASM-TOU-2026-REG or Guide License'}
+                          placeholder="e.g. ASM-TOU-2026-REG or Guide License"
                           className="w-full px-3 py-2 font-mono rounded-lg border border-stone-300 focus:outline-none focus:ring-1 focus:ring-[#0b4619]"
                         />
                       </div>
@@ -638,7 +638,7 @@ export const AgencyRegisterModal: React.FC<AgencyRegisterModalProps> = ({
                           type="text"
                           value={specialty}
                           onChange={(e) => setSpecialty(e.target.value)}
-                          placeholder={isAssamese ? 'যেনে: জীপ চাফাৰী, বন্যপ্ৰাণী আৰু জনজাতীয় কৃষ্টি' : 'e.g. Jeep Safaris, Wildlife & Cultural Trails'}
+                          placeholder="e.g. Jeep Safaris, Wildlife & Cultural Trails"
                           className="w-full px-3 py-2 rounded-lg border border-stone-300 focus:outline-none focus:ring-1 focus:ring-[#0b4619]"
                         />
                       </div>
@@ -663,7 +663,7 @@ export const AgencyRegisterModal: React.FC<AgencyRegisterModalProps> = ({
                           type="text"
                           value={bankName}
                           onChange={(e) => setBankName(e.target.value)}
-                          placeholder={isAssamese ? 'যেনে: State Bank of India, Assam Gramin Vikash Bank' : 'e.g. State Bank of India, HDFC Bank'}
+                          placeholder="e.g. State Bank of India, HDFC Bank"
                           className="w-full px-3 py-1.5 rounded-lg border border-stone-300 bg-white"
                         />
                       </div>
@@ -724,17 +724,15 @@ export const AgencyRegisterModal: React.FC<AgencyRegisterModalProps> = ({
               )}
 
               {/* ========================================================= */}
-              {/* STEP 2: TOUR PACKAGE & KHUBIDHA (সা-সুবিধাসমূহৰ ফৰ্ম)       */}
+              {/* STEP 2: TOUR PACKAGE & AMENITIES FORM                     */}
               {/* ========================================================= */}
               {currentStep === 2 && (
                 <div className="space-y-5">
                   <div className="p-3.5 rounded-xl bg-amber-50/90 border border-amber-300 text-xs text-amber-950 flex items-start gap-2">
                     <Sparkles className="w-4 h-4 text-[#0b4619] shrink-0 mt-0.5" />
                     <div>
-                      <strong>{isAssamese ? 'পঞ্জীয়নৰ সময়তে আপোনাৰ প্ৰথম ট্যুৰ পেকেজ লাইভ কৰক:' : 'Launch your first tour package live during registration:'}</strong>{' '}
-                      {isAssamese
-                        ? 'আপুনি ১ জনৰ ৫,০০০ টকাত (বা আপোনাৰ নিৰ্দিষ্ট মূল্যত) পৰ্যটকক কি কি সা-সুবিধা দিব তলত ফিলাপ কৰি আপলোড কৰক। পঞ্জীয়ন হোৱাৰ লগে লগে এই পেকেজটো ৱেবছাইটত লাইভ ওলাব!'
-                        : 'Specify all amenities and inclusions you provide for ₹5,000/person (or custom price). This tour package goes live on the marketplace immediately!'}
+                      <strong>Launch your first tour package live during registration:</strong>{' '}
+                      Specify all amenities and inclusions you provide for ₹5,000/person (or custom price). This tour package goes live on the marketplace immediately!
                     </div>
                   </div>
 
@@ -743,10 +741,10 @@ export const AgencyRegisterModal: React.FC<AgencyRegisterModalProps> = ({
                     <div className="flex items-center justify-between border-b border-stone-100 pb-2">
                       <span className="text-xs font-bold text-stone-800 uppercase tracking-wider flex items-center gap-1.5">
                         <DollarSign className="w-4 h-4 text-amber-600" />
-                        {isAssamese ? '১ জনৰ ভ্ৰমণ মূল্য আৰু মৌলিক বিৱৰণ' : 'Price Per Person & Tour Details'}
+                        Price Per Person & Tour Details
                       </span>
                       <span className="text-[11px] font-bold text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
-                        {isAssamese ? '₹৫,০০০ ডিফল্ট ম\'ডেল' : '₹5,000 Standard Model'}
+                        ₹5,000 Standard Model
                       </span>
                     </div>
 
@@ -758,9 +756,7 @@ export const AgencyRegisterModal: React.FC<AgencyRegisterModalProps> = ({
                             {t('register.priceLabel')}
                           </label>
                           <p className="text-[11px] text-stone-600">
-                            {isAssamese
-                              ? 'আপুনি বিচৰা ধৰণে ১ জনৰ বাবে মুঠ খৰচ দিয়ক (যেনে: ₹5,000)'
-                              : 'Specify total cost per 1 traveler (e.g. ₹5,000)'}
+                            Specify total cost per 1 traveler (e.g. ₹5,000)
                           </p>
                         </div>
                         <div className="flex items-center gap-2">
@@ -780,7 +776,7 @@ export const AgencyRegisterModal: React.FC<AgencyRegisterModalProps> = ({
                       {/* Quick Presets */}
                       <div className="flex items-center gap-2 pt-1 text-xs">
                         <span className="text-stone-500 font-medium text-[11px]">
-                          {isAssamese ? 'প্ৰস্তুত বাছনি:' : 'Quick Presets:'}
+                          Quick Presets:
                         </span>
                         {[3000, 5000, 8000, 12000, 18000].map((pr) => (
                           <button
@@ -793,7 +789,7 @@ export const AgencyRegisterModal: React.FC<AgencyRegisterModalProps> = ({
                                 : 'bg-white border border-stone-300 text-stone-700 hover:border-[#0b4619]'
                             }`}
                           >
-                            ₹{pr.toLocaleString('en-IN')} {pr === 5000 && (isAssamese ? '(নিৰ্দেশিত)' : '(Recommended)')}
+                            ₹{pr.toLocaleString('en-IN')} {pr === 5000 && '(Recommended)'}
                           </button>
                         ))}
                       </div>
@@ -802,35 +798,35 @@ export const AgencyRegisterModal: React.FC<AgencyRegisterModalProps> = ({
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-2 text-[11px]">
                         <div className="p-2.5 rounded-lg bg-white border border-emerald-200 shadow-2xs">
                           <span className="text-stone-500 block font-medium">
-                            {isAssamese ? '৫% প্লেটফৰ্ম মাচুল:' : '5% Platform Fee:'}
+                            5% Platform Fee:
                           </span>
                           <span className="text-base font-extrabold text-[#0b4619] font-mono tabular-nums">
                             {formatINR(Math.round(pricePerPerson * 0.05))}
                           </span>
                           <span className="text-[10px] text-emerald-800 block">
-                            {isAssamese ? '(গ্ৰাহকে দিব)' : '(Paid by Traveler)'}
+                            (Paid by Traveler)
                           </span>
                         </div>
                         <div className="p-2.5 rounded-lg bg-amber-50/80 border border-amber-300 shadow-2xs">
                           <span className="text-stone-600 block font-medium">
-                            {isAssamese ? 'হোষ্টৰ অগ্ৰিম (Cashfree):' : 'Instant Host Advance:'}
+                            Instant Host Advance:
                           </span>
                           <span className="text-base font-extrabold text-amber-900 font-mono tabular-nums">
                             ₹1,000
                           </span>
                           <span className="text-[10px] text-amber-800 block">
-                            {isAssamese ? '(লগে লগে বেংকত পাব)' : '(Direct to Bank)'}
+                            (Direct to Bank)
                           </span>
                         </div>
                         <div className="p-2.5 rounded-lg bg-white border border-stone-200 shadow-2xs">
                           <span className="text-stone-500 block font-medium">
-                            {isAssamese ? 'বাকী থকা পাৰিশ্ৰমিক:' : 'Balance Tour Payout:'}
+                            Balance Tour Payout:
                           </span>
                           <span className="text-base font-extrabold text-stone-900 font-mono tabular-nums">
                             {formatINR(Math.max(0, pricePerPerson - 1000))}
                           </span>
                           <span className="text-[10px] text-stone-500 block">
-                            {isAssamese ? '(ট্যুৰৰ সময়ত গ্ৰাহকে দিব)' : '(Paid at Tour Start)'}
+                            (Paid at Tour Start)
                           </span>
                         </div>
                       </div>
@@ -846,7 +842,7 @@ export const AgencyRegisterModal: React.FC<AgencyRegisterModalProps> = ({
                           required
                           value={tourTitle}
                           onChange={(e) => setTourTitle(e.target.value)}
-                          placeholder={isAssamese ? 'যেনে: হাফলং আৰু জাতিঙ্গা ৩ দিনীয়া প্ৰাকৃতিক ভ্ৰমণ' : 'e.g. Kaziranga Safari & Living Root Bridges Trail'}
+                          placeholder="e.g. Kaziranga Safari & Living Root Bridges Trail"
                           className="w-full px-3 py-2 rounded-lg border border-stone-300 focus:outline-none focus:ring-1 focus:ring-[#0b4619]"
                         />
                       </div>
@@ -860,7 +856,7 @@ export const AgencyRegisterModal: React.FC<AgencyRegisterModalProps> = ({
                           required
                           value={tourDestination}
                           onChange={(e) => setTourDestination(e.target.value)}
-                          placeholder={isAssamese ? 'যেনে: Haflong, Jatinga & Dima Hasao, Assam' : 'e.g. Kaziranga, Haflong or Sohra, Assam'}
+                          placeholder="e.g. Kaziranga, Haflong or Sohra, Assam"
                           className="w-full px-3 py-2 rounded-lg border border-stone-300 focus:outline-none focus:ring-1 focus:ring-[#0b4619]"
                         />
                       </div>
@@ -884,7 +880,7 @@ export const AgencyRegisterModal: React.FC<AgencyRegisterModalProps> = ({
                           >
                             {[1, 2, 3, 4, 5, 6, 7, 8].map((d) => (
                               <option key={d} value={d}>
-                                {d} {isAssamese ? 'দিন' : 'Days'}
+                                {d} Days
                               </option>
                             ))}
                           </select>
@@ -915,10 +911,10 @@ export const AgencyRegisterModal: React.FC<AgencyRegisterModalProps> = ({
                       </label>
                       <div className="grid grid-cols-4 gap-2">
                         {[
-                          { img: heroImg, label: isAssamese ? 'পাহাৰ / চাহ বাগান' : 'Hills & Tea Valleys' },
-                          { img: scenicImg, label: isAssamese ? 'কাজিৰঙা / প্ৰকৃতি' : 'Kaziranga / Nature' },
-                          { img: keralaImg, label: isAssamese ? 'কেৰালা / নদী' : 'Kerala / Backwaters' },
-                          { img: ladakhImg, label: isAssamese ? 'লাডাখ / হিমালয়' : 'Ladakh / Himalayas' },
+                          { img: heroImg, label: 'Hills & Tea Valleys' },
+                          { img: scenicImg, label: 'Kaziranga / Nature' },
+                          { img: keralaImg, label: 'Kerala / Backwaters' },
+                          { img: ladakhImg, label: 'Ladakh / Himalayas' },
                         ].map((item, idx) => (
                           <div
                             key={idx}
@@ -937,29 +933,27 @@ export const AgencyRegisterModal: React.FC<AgencyRegisterModalProps> = ({
                     </div>
                   </div>
 
-                  {/* KHUBIDHA (সা-সুবিধাসমূহৰ ফৰ্ম) */}
+                  {/* KHUBIDHA (Amenities Form) */}
                   <div className="p-4 rounded-xl bg-white border border-stone-200 shadow-2xs space-y-4">
                     <div className="flex items-center justify-between border-b border-stone-100 pb-2">
                       <div>
                         <span className="text-xs font-bold text-stone-900 uppercase tracking-wider flex items-center gap-1.5">
                           <CheckCircle2 className="w-4 h-4 text-[#0b4619]" />
-                          {formatINR(pricePerPerson)} {isAssamese ? 'টকাত কি কি সা-সুবিধা দিব? (Khubidha Checklist) *' : 'Inclusions & Amenities Checklist *'}
+                          {formatINR(pricePerPerson)} Inclusions & Amenities Checklist *
                         </span>
                         <p className="text-[11px] text-stone-500 mt-0.5">
-                          {isAssamese
-                            ? '১ জনৰ এই মূল্যৰ ভিতৰত থকা, খোৱা, বাহন আৰু গাইডৰ কি কি সুবিধা দিব নিৰ্বাচন কৰক'
-                            : 'Select all amenities included in this per-person rate (Stay, Meals, Transport, Guide)'}
+                          Select all amenities included in this per-person rate (Stay, Meals, Transport, Guide)
                         </p>
                       </div>
                       <span className="text-xs font-bold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200 tabular-nums">
-                        {inclusions.length} {isAssamese ? 'টা সুবিধা অন্তৰ্ভুক্ত' : 'Amenities Included'}
+                        {inclusions.length} Amenities Included
                       </span>
                     </div>
 
                     {/* Quick Preset Pills */}
                     <div className="space-y-2">
                       <span className="text-[11px] font-bold text-stone-700 block">
-                        {isAssamese ? 'দ্ৰুত বাছনিৰ সুবিধা (ক্লিক কৰি যোগ বা বাতিল কৰক):' : 'Quick Preset Amenities (Click to toggle):'}
+                        Quick Preset Amenities (Click to toggle):
                       </span>
                       <div className="flex flex-wrap gap-1.5">
                         {quickAmenities.map((q) => {
@@ -986,7 +980,7 @@ export const AgencyRegisterModal: React.FC<AgencyRegisterModalProps> = ({
                     {/* Custom Amenity Adder */}
                     <div className="pt-2 border-t border-stone-100">
                       <label className="block text-xs font-semibold text-stone-700 mb-1">
-                        অন্য কোনো বিশেষ সুবিধা যোগ কৰক (Add Custom Amenity / Facility):
+                        Add Custom Amenity / Facility:
                       </label>
                       <div className="flex gap-2">
                         <input
@@ -999,7 +993,7 @@ export const AgencyRegisterModal: React.FC<AgencyRegisterModalProps> = ({
                               handleAddCustomAmenity();
                             }
                           }}
-                          placeholder="যেনে: জীপ চাফাৰীত বিনামূলীয়া বাইনকুলাৰ আৰু অৰণ্য অনুমতি..."
+                          placeholder="e.g. Free binoculars & national park permits for safari..."
                           className="flex-1 px-3 py-2 text-xs rounded-lg border border-stone-300 focus:outline-none focus:ring-1 focus:ring-[#0b4619]"
                         />
                         <button
@@ -1008,7 +1002,7 @@ export const AgencyRegisterModal: React.FC<AgencyRegisterModalProps> = ({
                           className="px-4 py-2 bg-[#0b4619] hover:bg-[#073011] text-white text-xs font-bold rounded-lg shadow-xs flex items-center gap-1 cursor-pointer whitespace-nowrap"
                         >
                           <Plus className="w-3.5 h-3.5" />
-                          <span>+ যোগ কৰক</span>
+                          <span>+ Add Amenity</span>
                         </button>
                       </div>
                     </div>
@@ -1016,7 +1010,7 @@ export const AgencyRegisterModal: React.FC<AgencyRegisterModalProps> = ({
                     {/* Active Inclusions List */}
                     <div className="space-y-1.5 pt-2">
                       <span className="text-[11px] font-bold text-stone-600 block">
-                        বৰ্তমান পেকেজত অন্তৰ্ভুক্ত সা-সুবিধাসমূহ ({inclusions.length}):
+                        Included Amenities & Services in Package ({inclusions.length}):
                       </span>
                       <div className="space-y-1.5 max-h-52 overflow-y-auto pr-1">
                         {inclusions.map((item, idx) => (
@@ -1034,7 +1028,7 @@ export const AgencyRegisterModal: React.FC<AgencyRegisterModalProps> = ({
                               type="button"
                               onClick={() => handleRemoveAmenity(idx)}
                               className="p-1 rounded text-stone-400 hover:text-red-600 hover:bg-white transition-colors cursor-pointer"
-                              title="বাতিল কৰক"
+                              title="Remove"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
                             </button>
@@ -1048,7 +1042,7 @@ export const AgencyRegisterModal: React.FC<AgencyRegisterModalProps> = ({
                   <div className="p-4 rounded-xl bg-white border border-stone-200 shadow-2xs space-y-3">
                     <span className="text-xs font-bold text-stone-800 uppercase tracking-wider flex items-center gap-1.5">
                       <X className="w-4 h-4 text-stone-500" />
-                      কি কি সুবিধা অন্তৰ্ভুক্ত নহয় (Exclusions)
+                      What is Not Included (Exclusions)
                     </span>
 
                     <div className="flex gap-2">
@@ -1062,7 +1056,7 @@ export const AgencyRegisterModal: React.FC<AgencyRegisterModalProps> = ({
                             handleAddCustomExclusion();
                           }
                         }}
-                        placeholder="যেনে: ব্যক্তিগত চিকিৎসাজনিত খৰচ..."
+                        placeholder="e.g. Personal medical expenses, tips and flights..."
                         className="flex-1 px-3 py-2 text-xs rounded-lg border border-stone-300 focus:outline-none focus:ring-1 focus:ring-[#0b4619]"
                       />
                       <button
@@ -1071,7 +1065,7 @@ export const AgencyRegisterModal: React.FC<AgencyRegisterModalProps> = ({
                         className="px-3.5 py-2 bg-stone-800 hover:bg-black text-white text-xs font-bold rounded-lg shadow-xs flex items-center gap-1 cursor-pointer whitespace-nowrap"
                       >
                         <Plus className="w-3.5 h-3.5" />
-                        <span>যোগ কৰক</span>
+                        <span>+ Add</span>
                       </button>
                     </div>
 
@@ -1099,7 +1093,7 @@ export const AgencyRegisterModal: React.FC<AgencyRegisterModalProps> = ({
                   <div className="p-4 rounded-xl bg-stone-100 border border-stone-200 space-y-3">
                     <span className="text-xs font-bold text-stone-800 uppercase tracking-wider flex items-center gap-1.5">
                       <Sparkles className="w-4 h-4 text-amber-600" />
-                      গ্ৰাহকে ৱেবছাইটত যেনেদৰে দেখিব (Live Tour Card Preview)
+                      Live Tour Card Preview (How Travelers See It)
                     </span>
 
                     <div className="max-w-md mx-auto bg-white rounded-xl border border-stone-200 shadow-md overflow-hidden">
@@ -1114,23 +1108,21 @@ export const AgencyRegisterModal: React.FC<AgencyRegisterModalProps> = ({
                       </div>
                       <div className="p-3.5 space-y-2">
                         <div className="text-[11px] font-semibold text-stone-500">
-                          {hostCategory === 'guide' ? 'গাইড:' : 'এজেন্সী:'} <strong>{agencyName || 'Your Agency'}</strong> ({founderName || 'Founder'})
+                          {hostCategory === 'guide' ? 'Guide:' : 'Agency:'} <strong>{agencyName || 'Your Agency'}</strong> ({founderName || 'Founder'})
                         </div>
                         <h4 className="text-sm font-bold text-stone-900 line-clamp-1">
-                          {tourTitle || 'ট্যুৰ পেকেজৰ নাম (Title)'}
+                          {tourTitle || 'Tour Package Title'}
                         </h4>
                         <div className="text-[11px] text-emerald-900 font-semibold bg-emerald-50 px-2 py-1 rounded-md border border-emerald-200">
-                          ✓ {inclusions.length} {isAssamese ? 'টা সা-সুবিধা অন্তৰ্ভুক্ত (থকা, খোৱা, বাহন, গাইড)' : 'Amenities Included (Stay, Meals, Transport, Guide)'}
+                          ✓ {inclusions.length} Amenities Included (Stay, Meals, Transport, Guide)
                         </div>
                         <div className="flex items-center justify-between pt-1 border-t border-stone-100 text-xs">
                           <div>
-                            <span className="text-[10px] text-stone-500">{isAssamese ? 'প্ৰতিজনৰ মূল্য: ' : 'Price per person: '}</span>
+                            <span className="text-[10px] text-stone-500">Price per person: </span>
                             <strong className="text-sm font-bold text-[#0b4619]">{formatINR(pricePerPerson)}</strong>
                           </div>
                           <span className="text-[10px] font-bold text-amber-800 bg-amber-100 px-2 py-0.5 rounded">
-                            {isAssamese
-                              ? `লক কৰিবলৈ ₹${(1000 + Math.round(pricePerPerson * 0.05)).toLocaleString('en-IN')} অগ্ৰিম`
-                              : `Advance to Lock: ₹${(1000 + Math.round(pricePerPerson * 0.05)).toLocaleString('en-IN')}`}
+                            Advance to Lock: ₹{(1000 + Math.round(pricePerPerson * 0.05)).toLocaleString('en-IN')}
                           </span>
                         </div>
                       </div>
@@ -1154,7 +1146,7 @@ export const AgencyRegisterModal: React.FC<AgencyRegisterModalProps> = ({
                         disabled={isSubmitting}
                         className="w-full sm:w-auto px-4 py-2.5 text-xs font-bold text-stone-600 hover:bg-stone-100 rounded-lg cursor-pointer"
                       >
-                        {isAssamese ? 'বাতিল' : 'Cancel'}
+                        Cancel
                       </button>
 
                       <button
@@ -1165,7 +1157,7 @@ export const AgencyRegisterModal: React.FC<AgencyRegisterModalProps> = ({
                         {isSubmitting ? (
                           <>
                             <Loader2 className="w-4 h-4 animate-spin text-stone-950" />
-                            <span>{isAssamese ? 'আপলোড হৈ আছে...' : 'Registering & Uploading...'}</span>
+                            <span>Registering & Uploading...</span>
                           </>
                         ) : (
                           <>

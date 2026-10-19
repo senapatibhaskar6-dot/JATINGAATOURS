@@ -263,14 +263,14 @@ export const AgencySection: React.FC<AgencySectionProps> = ({
                       onClick={onOpenUploadTourModal}
                       className="flex-1 sm:flex-none px-4 py-2.5 text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-600 rounded-lg transition-colors cursor-pointer whitespace-nowrap shadow border border-emerald-500"
                     >
-                      + সা-সুবিধা আৰু ট্যুৰ আপলোড
+                      + Upload Tour & Amenities
                     </button>
                   )}
                   <button
                     onClick={onOpenRegisterAgency}
                     className="flex-1 sm:flex-none px-4 py-2.5 text-xs font-bold text-stone-900 bg-[#f39c12] hover:bg-[#d68407] rounded-lg transition-colors cursor-pointer whitespace-nowrap shadow"
                   >
-                    পঞ্জীয়ন আৰু সা-সুবিধা ফৰ্ম (Register)
+                    Register Agency & Upload Tour
                   </button>
                   <button
                     onClick={onOpenAgencyPortal}

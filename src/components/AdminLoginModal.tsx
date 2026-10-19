@@ -236,7 +236,7 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
                 className="w-full py-2.5 px-4 bg-[#0b4619] hover:bg-[#062b0f] text-white rounded-xl text-xs font-bold transition-all shadow-sm hover:shadow cursor-pointer flex items-center justify-center gap-1.5"
               >
                 <Lock className="w-3.5 h-3.5 text-amber-300" />
-                <span>{isAssamese ? 'এডমিন পৰ্টেল আনলক কৰক' : 'Unlock Admin Portal'}</span>
+                <span>Unlock Admin Portal</span>
               </button>
 
               {/* Forgot Passcode / Password Recovery Section */}
@@ -248,14 +248,14 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
                     className="w-full text-center text-xs font-semibold text-emerald-800 hover:text-emerald-950 hover:underline py-1 cursor-pointer flex items-center justify-center gap-1"
                   >
                     <KeyRound className="w-3.5 h-3.5 text-amber-500" />
-                    <span>{isAssamese ? 'পাছক\'ড পাহৰিলে? (Forgot Passcode / Recovery)' : 'Forgot Passcode? (Password Recovery)'}</span>
+                    <span>Forgot Passcode? (Password Recovery)</span>
                   </button>
                 ) : (
                   <div className="p-3.5 rounded-2xl bg-amber-50/90 border border-amber-300 text-stone-900 space-y-2.5 text-xs animate-fade-in">
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-1.5 font-bold text-amber-950">
                         <KeyRound className="w-4 h-4 text-[#0b4619]" />
-                        <span>{isAssamese ? 'পাছক\'ড উদ্ধাৰ ব্যৱস্থা (Admin Passcode Recovery)' : 'Admin Passcode Recovery'}</span>
+                        <span>Admin Passcode Recovery</span>
                       </div>
                       <button
                         type="button"
@@ -267,15 +267,7 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
                     </div>
 
                     <p className="text-[11px] text-stone-700 leading-relaxed">
-                      {isAssamese ? (
-                        <>
-                          ডিফল্ট বা মাষ্টাৰ এডমিন পাছক'ড হ'ল: <strong className="font-mono text-emerald-900 bg-white px-1.5 py-0.5 rounded border border-emerald-300 text-xs">2026</strong> (বা <strong className="font-mono text-emerald-900 bg-white px-1.5 py-0.5 rounded border border-emerald-300 text-xs">admin2026</strong>)। আপুনি পাছক'ড সলনি কৰি পাহৰিলেও এই মাষ্টাৰ পাছক'ড সদায় কাম কৰিব।
-                        </>
-                      ) : (
-                        <>
-                          The built-in Master Recovery PIN is: <strong className="font-mono text-emerald-900 bg-white px-1.5 py-0.5 rounded border border-emerald-300 text-xs">2026</strong> (or <strong className="font-mono text-emerald-900 bg-white px-1.5 py-0.5 rounded border border-emerald-300 text-xs">admin2026</strong>). Even if you customized your passcode, this master PIN always works.
-                        </>
-                      )}
+                      The built-in Master Recovery PIN is: <strong className="font-mono text-emerald-900 bg-white px-1.5 py-0.5 rounded border border-emerald-300 text-xs">2026</strong> (or <strong className="font-mono text-emerald-900 bg-white px-1.5 py-0.5 rounded border border-emerald-300 text-xs">admin2026</strong>). Even if you customized your passcode, this master PIN always works.
                     </p>
 
                     <div className="flex flex-col sm:flex-row gap-2 pt-1">
@@ -287,7 +279,7 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
                         }}
                         className="flex-1 py-1.5 px-3 rounded-lg bg-emerald-800 text-white font-bold text-[11px] hover:bg-emerald-900 transition-colors shadow-2xs cursor-pointer flex items-center justify-center gap-1"
                       >
-                        <span>{isAssamese ? 'ডিফল্ট PIN (2026) ব্যৱহাৰ কৰক' : 'Fill Master PIN (2026)'}</span>
+                        <span>Fill Master PIN (2026)</span>
                       </button>
 
                       <button
@@ -296,12 +288,12 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
                           resetAdminPinToDefault();
                           setPin('2026');
                           setErrorMsg('');
-                          setResetNotice(isAssamese ? 'পাছক\'ড 2026 লৈ ৰিছেট কৰা হ\'ল!' : 'Passcode reset to 2026!');
+                          setResetNotice('Passcode reset to 2026!');
                           setTimeout(() => setResetNotice(''), 3500);
                         }}
                         className="flex-1 py-1.5 px-3 rounded-lg bg-white border border-stone-300 text-stone-800 font-semibold text-[11px] hover:bg-stone-50 transition-colors cursor-pointer"
                       >
-                        {isAssamese ? 'PIN পুনৰ সংস্থাপন (Reset to 2026)' : 'Reset Passcode to 2026'}
+                        Reset Passcode to 2026
                       </button>
                     </div>
 
