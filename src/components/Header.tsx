@@ -216,7 +216,7 @@ export const Header: React.FC<HeaderProps> = ({
           )}
 
           <a
-            href="https://wa.me/916913514367?text=Hello%20Jatingaa%20Tours%2C%20I%20would%20like%20to%20inquire%20about%20tours%20and%20partnerships."
+            href="https://wa.me/?text=Hello%20Jatingaa%20Tours%2C%20I%20would%20like%20to%20inquire%20about%20tours%20and%20partnerships."
             target="_blank"
             rel="noopener noreferrer"
             className="hidden md:flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition-colors cursor-pointer whitespace-nowrap shadow-2xs"
@@ -389,7 +389,7 @@ export const Header: React.FC<HeaderProps> = ({
 
           <div className="pt-3 border-t border-stone-200 flex flex-col gap-2">
             <a
-              href="https://wa.me/916913514367?text=Hello%20Jatingaa%20Tours%2C%20I%20would%20like%20to%20inquire%20about%20tours%20and%20partnerships."
+              href="https://wa.me/?text=Hello%20Jatingaa%20Tours%2C%20I%20would%20like%20to%20inquire%20about%20tours%20and%20partnerships."
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => setMobileMenuOpen(false)}

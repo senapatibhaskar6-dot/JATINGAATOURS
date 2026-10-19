@@ -181,7 +181,7 @@ export const Footer: React.FC<FooterProps> = ({
             <div className="space-y-2 text-stone-500 text-[11px]">
               <div>Email: partners@jatingaatours.in</div>
               <a
-                href="https://wa.me/916913514367?text=Hello%20Jatingaa%20Tours%2C%20I%20would%20like%20to%20inquire%20about%20tours%20and%20partnerships."
+                href="https://wa.me/?text=Hello%20Jatingaa%20Tours%2C%20I%20would%20like%20to%20inquire%20about%20tours%20and%20partnerships."
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-1.5 text-emerald-800 hover:text-emerald-700 font-semibold transition-colors"

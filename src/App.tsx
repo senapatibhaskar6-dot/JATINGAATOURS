@@ -31,7 +31,6 @@ import { AgenciesDirectoryModal } from './components/AgenciesDirectoryModal';
 import { AdminLoginModal } from './components/AdminLoginModal';
 import { AboutUsModal } from './components/AboutUsModal';
 import { AboutUsSection } from './components/AboutUsSection';
-import { FloatingWhatsAppButton } from './components/FloatingWhatsAppButton';
 import { AdminDashboardModal } from './components/AdminDashboardModal';
 import { TourAmenitiesUploadModal } from './components/TourAmenitiesUploadModal';
 import { getPlatformGuides } from './data/guidesData';
@@ -1099,9 +1098,6 @@ export default function App() {
           preSelectedGuideId={uploadTargetGuideId}
         />
       )}
-
-      {/* Official Floating WhatsApp Chat Widget */}
-      <FloatingWhatsAppButton phoneNumber="6913514367" />
     </div>
   );
 }

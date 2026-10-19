@@ -20,8 +20,8 @@ export const DEFAULT_PAYMENT_CONFIG: PaymentConfig = {
   merchantName: 'Jatingaa Tours Pvt Ltd',
   enableCashfree: true,
   enableDirectUpi: true,
-  supportPhone: '+91 69135 14367',
-  supportEmail: 'senapatibhaskar6@gmail.com',
+  supportPhone: '+91 94361 00000',
+  supportEmail: 'partners@jatingaatours.in',
 };
 
 const STORAGE_KEY = 'jatingaa_payment_config_v2_cashfree';

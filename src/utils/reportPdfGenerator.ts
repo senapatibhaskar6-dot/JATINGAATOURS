@@ -235,9 +235,7 @@ export function generateMonthlyReportPdf(data: MonthlyReportData) {
 
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(6.5);
-  doc.setTextColor(100, 100, 100);
-  doc.text('Direct Native Tourism Escrow & Reservation Platform | 0% Agency Commission Policy', 14, currentY + 4);
-  doc.text('Official Contact: +91 69135 14367 | senapatibhaskar6@gmail.com | Vercel Live Deployment', pageWidth - 14, currentY, { align: 'right' });
+  doc.text('Official Platform Contact: partners@jatingaatours.in | Direct Verified Platform Escrow', pageWidth - 14, currentY, { align: 'right' });
 
   // Save the PDF
   const filename = `Jatingaa_Tours_Monthly_Report_${data.monthName}_${data.year}.pdf`;
